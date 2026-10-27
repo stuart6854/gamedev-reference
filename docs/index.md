@@ -31,6 +31,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 - [Event systems](unity/architecture/events.md) — C# events, UnityEvent, a typed bus, and ScriptableObject channels.
 - [Shared variables](unity/architecture/variables.md) — ScriptableObject floats, a constant-or-variable reference, and a runtime set.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — a Unity 6 URP outline, from an inverted hull to a fresnel highlight.
+- [Inventory](unity/systems/inventory/index.md) — a Unity 6 item model, list, grid, slots and hotbar, weight, and equipment.
 
 ## Reserved sections
 

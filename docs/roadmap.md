@@ -12,6 +12,7 @@ Pages that already exist are not listed here.
 - Wall run
 - Ledge climb
 - Grappling hook
+- Drag selection methods (RTS-style box/marquee selection: screen-space rectangle vs world-space frustum/volume selection, lasso selection, add/remove with modifier keys, click vs drag threshold, double-click to select all of a type, drawing the selection rectangle in UI)
 
 ### Combat
 
@@ -23,11 +24,7 @@ Pages that already exist are not listed here.
 
 - Gameplay abilities with cooldowns
 - Stat modifiers (buffs and debuffs)
-- Equipment system
-- List-based inventory
-- Grid inventory (Tetris-style)
-- Slot-based inventory and hotbar
-- Weight-based inventory
+- Loot tables (weighted random drops, rarity tiers, nested tables, guaranteed/pity drops)
 - Enemy wave spawning
 - Fog of war
 
@@ -76,6 +73,7 @@ Pages that already exist are not listed here.
 ### World
 
 - Noise for procedural generation
+- Dungeon-like procedural generation (rooms and corridors, BSP, random walk / drunkard's walk, graph-based room layouts)
 - Day and night cycle
 
 ## Ideas / maybe later
@@ -104,7 +102,6 @@ Not committed. These stay here until one of them is promoted into Planned, or wr
 
 ### World generation
 
-- Dungeon generation
 - Wave function collapse
 - Marching cubes
 

@@ -1083,7 +1083,7 @@ public class WeaponRecoil : MonoBehaviour
 
 ### Holder
 
-The keyboard is the number keys, R, and the left mouse button. A gamepad uses the right trigger, the north face button, and the d-pad left and right. The wheel switches only when **Switch On Scroll** is on. Device reads are already this frame's state and are not multiplied by `Time.deltaTime`. The fire interval is what consumes time.
+The keyboard is the number keys, R, and the left mouse button. A gamepad uses the right trigger, the north face button, and the d-pad left and right. The wheel switches only when **Switch On Scroll** is on. Device reads are already this frame's state and are not multiplied by `Time.deltaTime`. The fire interval is what consumes time. A hotbar that selects by the same index calls `Equip` from [Slots and hotbar](../systems/inventory/slots.md).
 
 === "Input System"
 

@@ -9,7 +9,7 @@ Planned topics:
 - Physics queries: ray, sphere, and shape casts, layer masks, and triggers.
 - Cameras. Written: [Third-person orbit camera](orbit-camera.md), as a plain script and as Cinemachine 3.
 - Character mechanics. Written: the [controllers](mechanics/controllers/index.md) (CharacterController, Rigidbody, top-down, 2D platformer) and [interaction](mechanics/interaction.md).
-- Shared systems. Written: [Health, damage, and stats](systems/health.md). Anything not written yet is on the [roadmap](../roadmap.md).
+- Shared systems. Written: [Health, damage, and stats](systems/health.md) and [Inventory](systems/inventory/index.md). Anything not written yet is on the [roadmap](../roadmap.md).
 - Architecture. Written: [Event systems](architecture/events.md) and [shared variables](architecture/variables.md). State machines and object pooling will join this group.
 - Combat. Written: [Weapons](combat/weapons.md). Attack combos will join this group.
 - Rendering. Written: [Highlight and outline](rendering/highlight-outline.md).
