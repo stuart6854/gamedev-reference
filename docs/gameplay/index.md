@@ -7,5 +7,5 @@ Planned topics:
 - Steering and movement intent, separate from the integrator that carries the body.
 - Behaviour trees, utility scoring, and when a state machine is the clearer model.
 - Animation graphs as gameplay state, not as an art tool.
-- Game feel: buffering, coyote time, acceleration curves, and hit-stop. Easing curves used for this are under [interpolation and easing](../maths/interpolation.md).
+- Game feel: buffering, coyote time, acceleration curves, and hit-stop. Easing curves used for this are under [interpolation and easing](../maths/interpolation.md). A Unity 6 implementation of coyote time and jump buffering is [character movement](../unity/mechanics/character-movement.md).
 - Cameras as a gameplay tool. A concrete third-person rig is the [orbit camera](../unity/orbit-camera.md).

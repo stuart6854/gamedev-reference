@@ -8,6 +8,7 @@ Planned topics:
 - The legacy Input Manager and the Input System, including projects that have both enabled.
 - Physics queries: ray, sphere, and shape casts, layer masks, and triggers.
 - Cameras and Cinemachine-shaped problems written as plain scripts. Written: [Third-person orbit camera](orbit-camera.md).
+- Character mechanics. Written: [Character movement](mechanics/character-movement.md). Later, one page at a time: a Rigidbody controller, interaction, health and damage, inventory, and save/load.
 - Data and loading: `ScriptableObject`, addressables, and what belongs out of the scene.
 
 The orbit camera is also the worked example for [exponential damping](../maths/interpolation.md#frame-rate-independent-damping).

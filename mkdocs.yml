@@ -22,6 +22,9 @@ nav:
   - Unity:
       - unity/index.md
       - Third-person orbit camera: unity/orbit-camera.md
+      - Mechanics:
+          - unity/mechanics/index.md
+          - Character movement: unity/mechanics/character-movement.md
   - Engine architecture:
       - engine/index.md
   - Optimisation:
@@ -93,9 +96,15 @@ markdown_extensions:
         kwds:
           case: lower
 
+extra_css:
+  - stylesheets/extra.css
+
 extra_javascript:
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3.2.2/es5/tex-mml-chtml.js
+
+hooks:
+  - hooks/version_pills.py
 
 extra:
   social:
