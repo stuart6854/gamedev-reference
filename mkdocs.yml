@@ -46,6 +46,9 @@ nav:
           - unity/architecture/index.md
           - Event systems: unity/architecture/events.md
           - Shared variables: unity/architecture/variables.md
+          - State machines: unity/architecture/state-machines.md
+      - AI:
+          - Enemy behaviour: unity/ai/enemy.md
       - Combat:
           - unity/combat/index.md
           - Weapons: unity/combat/weapons.md
