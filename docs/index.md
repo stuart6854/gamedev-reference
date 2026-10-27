@@ -29,6 +29,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 - [Health, damage, and stats](unity/systems/health.md) — a Unity 6 health pool, hitbox pipeline, and stat modifiers.
 - [Weapons](unity/combat/weapons.md) — a Unity 6 firearm: fire modes, hitscan and pooled projectiles, ammo, and recoil.
 - [Event systems](unity/architecture/events.md) — C# events, UnityEvent, a typed bus, and ScriptableObject channels.
+- [Shared variables](unity/architecture/variables.md) — ScriptableObject floats, a constant-or-variable reference, and a runtime set.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — a Unity 6 URP outline, from an inverted hull to a fresnel highlight.
 
 ## Reserved sections

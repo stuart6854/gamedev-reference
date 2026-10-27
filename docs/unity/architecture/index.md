@@ -5,5 +5,6 @@ How Unity objects talk, and, later, the assets and machines they share. This is 
 Written:
 
 - [Event systems](events.md) — C# events, `UnityEvent`, a typed static bus, and ScriptableObject channels.
+- [Shared variables](variables.md) — a `ScriptableObject` value, a constant-or-variable reference, and a runtime set.
 
-Shared variables (`ScriptableObject`) and object pooling are still on the [roadmap](../../roadmap.md#architecture). State machines will join this group too. Until that page exists they stay under [AI](../../roadmap.md#ai).
+Object pooling is still on the [roadmap](../../roadmap.md#architecture). State machines will join this group too. Until that page exists they stay under [AI](../../roadmap.md#ai).
