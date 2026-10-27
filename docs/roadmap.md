@@ -44,7 +44,6 @@ Pages that already exist are not listed here.
 
 ### Architecture
 
-- Event systems
 - Shared variables (`ScriptableObject`)
 - Object pooling
 
