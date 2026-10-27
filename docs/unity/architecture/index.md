@@ -6,5 +6,6 @@ Written:
 
 - [Event systems](events.md) — C# events, `UnityEvent`, a typed static bus, and ScriptableObject channels.
 - [Shared variables](variables.md) — a `ScriptableObject` value, a constant-or-variable reference, and a runtime set.
+- [State machines](state-machines.md) — enum, class states, predicate transitions, a nested machine, and a pause stack.
 
-Object pooling is still on the [roadmap](../../roadmap.md#architecture). State machines will join this group too. Until that page exists they stay under [AI](../../roadmap.md#ai).
+Object pooling is still on the [roadmap](../../roadmap.md#architecture).
