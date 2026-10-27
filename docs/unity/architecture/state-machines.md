@@ -406,7 +406,7 @@ public abstract class StateMachineHost : MonoBehaviour
 
 Air is a nested machine. Its `Enter` picks jump or fall from the vertical speed, so a walk off a ledge does not flash the jump state. Landing transitions outrank the any-state rule that enters air. Ground speed transitions sit at priority `0`, so they never steal an airborne frame.
 
-These states do not move the capsule. A combo state, when that page exists, would be a sibling of locomotion and would tick its own window. It should not grow another switch inside `CharacterMovement`.
+These states do not move the capsule. A combo state, when that page exists, would be a sibling of locomotion and would tick its own window. It should not grow another switch inside `CharacterMovement`. Off, placing, and demolish on a ghost are a small enum on the [building](../systems/building.md#build-mode) page. A wheel of pieces belongs on this machine.
 
 ```csharp
 using UnityEngine;

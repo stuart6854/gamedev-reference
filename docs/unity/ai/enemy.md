@@ -659,7 +659,7 @@ public class NavMeshRebuild : MonoBehaviour
 
     The agent's `velocity` is not `linearVelocity`. That rename is the Rigidbody.
 
-    `BuildNavMesh` stalls the frame. Bake in the editor, or call it when the level actually changes.
+    `BuildNavMesh` stalls the frame. Bake in the editor, or call it when the level actually changes. A wall placed at runtime is [building](../systems/building.md#navigation-mesh). Prefer a `NavMeshObstacle` that carves. `UpdateNavMesh` is the other option, and it is not a per-frame call.
 
     The sight component is one ray and a cone. It will see through a gap the size of the ray, and it has no hearing. Replace the component when the [perception](../../roadmap.md#ai) page exists. Do not add those rules here.
 

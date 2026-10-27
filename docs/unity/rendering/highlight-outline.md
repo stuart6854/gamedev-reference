@@ -6,7 +6,7 @@ package: URP 17.x
 
 # Highlight and outline
 
-A stroke around a focused prop, and a cheaper fresnel glow when a stroke is more than the moment needs. The focus callbacks live on the [interaction](../mechanics/interaction.md) page. This page is the drawing.
+A stroke around a focused prop, and a cheaper fresnel glow when a stroke is more than the moment needs. The focus callbacks live on the [interaction](../mechanics/interaction.md) page. This page is the drawing. A placement ghost uses a transparent tint instead of this stroke. That preview is [building](../systems/building.md#ghost).
 
 URP has no outline package. The selective stroke is two built-in **Render Objects** features and an inverted-hull shader. The scene-wide edge is a built-in **Full Screen Pass Renderer Feature**. Both already record their work through URP 17's Render Graph. This page does not add a `ScriptableRendererFeature`. A pass of your own has to override `RecordRenderGraph`. The older `Execute` method is the compatibility path, and it is not the one to write.
 
