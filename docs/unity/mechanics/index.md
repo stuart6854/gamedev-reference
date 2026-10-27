@@ -4,7 +4,7 @@ Gameplay controllers written against the current engine version. Each page is on
 
 Written:
 
-- [Character movement](character-movement.md) — CharacterController walk, run, jump, coyote time, jump buffering, slopes, and camera-relative motion.
+- [Controllers](controllers/index.md) — which body to use. [Character movement](character-movement.md) is the kinematic capsule. [Rigidbody movement](rigidbody-movement.md), [top-down movement](top-down.md), and the [2D platformer](platformer-2d.md) are the physics bodies.
 - [Interaction](interaction.md) — an `IInteractable` contract, a camera cast and a proximity query, focus callbacks, a prompt, and hold-to-interact.
 
 What is not written yet is on the [roadmap](../../roadmap.md). A topic comes off that list when its page exists.
