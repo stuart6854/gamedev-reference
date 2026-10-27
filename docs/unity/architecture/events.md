@@ -7,7 +7,7 @@ version: 6+
 
 How a health pool tells a game-over screen that the player died, and how a gun tells a counter that the magazine changed, without either side polling. The [health](../systems/health.md#health) component already raises `Died`. The [weapon](../combat/weapons.md#weapon) already raises `AmmoChanged`. This page is the choice of pipe, and the rules for subscribing.
 
-A channel asset carries a moment. A value you can read at any time is a different asset. That one is still [shared variables (`ScriptableObject`)](../../roadmap.md#architecture) on the roadmap. State machines and object pooling will join this Architecture group later.
+A channel asset carries a moment. A value you can read at any time is a [shared variable](variables.md). State machines and object pooling will join this Architecture group later.
 
 ## Which one to use
 

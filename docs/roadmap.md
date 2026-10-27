@@ -44,7 +44,6 @@ Pages that already exist are not listed here.
 
 ### Architecture
 
-- Shared variables (`ScriptableObject`)
 - Object pooling
 
 ### AI
