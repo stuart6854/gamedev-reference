@@ -8,9 +8,6 @@ Pages that already exist are not listed here.
 
 ### Movement
 
-- Top-down controller
-- 2D platformer controller
-- Rigidbody character controller
 - Dash
 - Wall run
 - Ledge climb

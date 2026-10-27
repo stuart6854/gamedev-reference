@@ -7,6 +7,8 @@ version: 6+
 
 Walk, run, and jump on a `CharacterController`, usable whether the camera is first person or third person. Movement is relative to the camera's yaw. The body can turn to face the move, or a parented camera can own the yaw and the mesh can turn on its own.
 
+Which body to use is on the [controllers](controllers/index.md) index. This page is the kinematic capsule. The physics capsule is [Rigidbody movement](rigidbody-movement.md).
+
 `Move` takes a displacement for this frame and is called from `Update`. This is not a Rigidbody controller, so the Unity 6 rename of `Rigidbody.velocity` to `linearVelocity` does not apply. `CharacterController.velocity` is unchanged, and this script does not read it.
 
 Coyote time and jump buffering are noted under [Gameplay and AI](../../gameplay/index.md). Turning uses the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping) from the maths notes. A matching third-person view is the [orbit camera](../orbit-camera.md).
