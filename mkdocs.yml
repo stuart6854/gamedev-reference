@@ -30,6 +30,9 @@ nav:
       - Systems:
           - unity/systems/index.md
           - Health, damage, and stats: unity/systems/health.md
+      - Rendering:
+          - unity/rendering/index.md
+          - Highlight and outline: unity/rendering/highlight-outline.md
   - Engine architecture:
       - engine/index.md
   - Optimisation:

@@ -37,7 +37,6 @@ Pages that already exist are not listed here.
 
 ### Presentation
 
-- Highlight and outline material
 - Shaders and materials
 - Water shaders
 - URP renderer features
