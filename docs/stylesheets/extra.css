@@ -1,0 +1,29 @@
+/* Engine and version pills, injected from page frontmatter. */
+.md-typeset .version-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.15rem 0 1.15rem;
+}
+
+.md-typeset .version-pill {
+  display: inline-block;
+  margin: 0;
+  padding: 0.12rem 0.62rem 0.16rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 0.03em;
+}
+
+.md-typeset .version-pill--engine {
+  background-color: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+.md-typeset .version-pill--version {
+  background-color: var(--md-accent-fg-color--transparent);
+  color: var(--md-accent-fg-color);
+  box-shadow: inset 0 0 0 1px var(--md-accent-fg-color);
+}
