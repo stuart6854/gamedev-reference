@@ -25,7 +25,12 @@ nav:
       - Third-person orbit camera: unity/orbit-camera.md
       - Mechanics:
           - unity/mechanics/index.md
-          - Character movement: unity/mechanics/character-movement.md
+          - Controllers:
+              - unity/mechanics/controllers/index.md
+              - Character movement: unity/mechanics/character-movement.md
+              - Rigidbody movement: unity/mechanics/rigidbody-movement.md
+              - Top-down movement: unity/mechanics/top-down.md
+              - 2D platformer: unity/mechanics/platformer-2d.md
           - Interaction: unity/mechanics/interaction.md
       - Systems:
           - unity/systems/index.md
