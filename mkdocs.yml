@@ -7,6 +7,26 @@ repo_name: stuart6854/gamedev-reference
 edit_uri: edit/main/docs/
 copyright: Copyright &copy; 2026 Stuart
 
+nav:
+  - Home: index.md
+  - Maths:
+      - maths/index.md
+      - Interpolation and easing: maths/interpolation.md
+  - Graphics:
+      - graphics/index.md
+      - Coordinate spaces: graphics/coordinate-spaces.md
+  - Physics:
+      - physics/index.md
+  - Gameplay & AI:
+      - gameplay/index.md
+  - Unity:
+      - unity/index.md
+      - Third-person orbit camera: unity/orbit-camera.md
+  - Engine architecture:
+      - engine/index.md
+  - Optimisation:
+      - optimisation/index.md
+
 theme:
   name: material
   language: en
