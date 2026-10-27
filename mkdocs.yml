@@ -9,6 +9,7 @@ copyright: Copyright &copy; 2026 Stuart
 
 nav:
   - Home: index.md
+  - Roadmap: roadmap.md
   - Maths:
       - maths/index.md
       - Interpolation and easing: maths/interpolation.md
@@ -25,6 +26,7 @@ nav:
       - Mechanics:
           - unity/mechanics/index.md
           - Character movement: unity/mechanics/character-movement.md
+          - Interaction: unity/mechanics/interaction.md
   - Engine architecture:
       - engine/index.md
   - Optimisation:

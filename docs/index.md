@@ -2,13 +2,13 @@
 
 Personal notes for looking something up in the middle of a task. Pages are short on purpose. A formula is written out when it is easy to misremember, and a code sample keeps the assumptions next to the lines you would copy.
 
-This repository is the foundation: theme, navigation, search, maths, diagrams, and deployment. A handful of pages are filled in so the tone and layout can be judged. The other sections are reserved, with a short index saying what will go there, and nothing else.
+This repository is the foundation: theme, navigation, search, maths, diagrams, and deployment. A handful of pages are filled in so the tone and layout can be judged. The other sections are reserved, with a short index saying what will go there. Topics that still need a page are on the [roadmap](roadmap.md).
 
 ## How a page is laid out
 
 The top bar is the subject list. Choosing one opens that subject in the sidebar. Search covers every page, and the icon at the top switches between light and dark. Code blocks have a copy button. Where the same idea exists in two forms, tabs sit on one block so only one form is on screen — C# and HLSL, or the legacy Input Manager and the new Input System.
 
-Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a sentence in a paragraph. Display maths is LaTeX. Diagrams are Mermaid. An engine page names the versions it targets as pills under the title, from `engine` and `version` in the frontmatter.
+Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a sentence in a paragraph. Display maths is LaTeX. Diagrams are Mermaid. An engine page names the versions it targets as pills under the title, from `engine`, `version`, and `package` in the frontmatter. A Unity page is plain C#, and adds an official-package variant when one shortens the setup.
 
 ## Conventions
 
@@ -20,8 +20,9 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 
 - [Interpolation and easing](maths/interpolation.md) — lerp, remap, smoothstep, easing polynomials, and frame-rate-independent damping.
 - [Coordinate spaces](graphics/coordinate-spaces.md) — object space through to the screen, with the matrices that get you there.
-- [Third-person orbit camera](unity/orbit-camera.md) — a complete Unity 6 camera, including collision pull-in and both input backends.
+- [Third-person orbit camera](unity/orbit-camera.md) — a Unity 6 camera as a plain script and as Cinemachine 3, including collision pull-in.
 - [Character movement](unity/mechanics/character-movement.md) — a Unity 6 CharacterController with walk, run, jump, coyote time, and slopes.
+- [Interaction](unity/mechanics/interaction.md) — focus, prompt, and hold-to-interact for a first-person cast or a third-person overlap.
 
 ## Reserved sections
 
