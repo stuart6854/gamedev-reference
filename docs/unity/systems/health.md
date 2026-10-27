@@ -9,7 +9,7 @@ A health pool, a short damage pipeline, and a stat sheet with modifiers. UI and 
 
 Unity has no general combat package, so this page is the plain implementation. Timed buffs and debuffs are a later page. Add a modifier with the buff component as its source, and call `RemoveFromSource` when it ends. That page is [stat modifiers (buffs and debuffs)](../../roadmap.md#game-systems) on the roadmap.
 
-The body that carries this health is often the [character movement](../mechanics/character-movement.md) object.
+The body that carries this health is often the [character movement](../mechanics/character-movement.md) object. A gun that spends this pool is [Weapons](../combat/weapons.md). It fills a `DamageInfo` and calls `Hurtbox.Receive`.
 
 ## Setup
 
@@ -668,7 +668,7 @@ public class HealthBar : MonoBehaviour
 
     `OnTriggerStay` without an interval applies damage every physics step. **Repeat While Overlapping** waits for **Repeat Interval**. A one-shot hitbox suppresses further hits from that hurtbox until the overlap ends, so two colliders on one hurtbox in the same enter still count as one hit only after the first has been recorded.
 
-    The hitbox ignores hurtboxes parented under **Owner**. A melee weapon parented to the character will not hit that character. An unparented projectile must assign **Owner** to the shooter, or it can hit them.
+    The hitbox ignores hurtboxes parented under **Owner**. A melee weapon parented to the character will not hit that character. An unparented projectile must assign **Owner** to the shooter, or it can hit them. [Weapons](../combat/weapons.md) passes that owner into each shot.
 
     Invulnerability blocks `ApplyDamage` and does not block `Heal`. It starts after a hit that actually removed health. A fully resisted hit never starts it, because the hurtbox does not call `ApplyDamage` when the scaled amount is zero.
 
