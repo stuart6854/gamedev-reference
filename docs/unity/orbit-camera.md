@@ -1,17 +1,22 @@
 ---
 engine: Unity
 version: 6+
+package: Cinemachine 3.x
 ---
 
 # Third-person orbit camera
 
-A camera that orbits a pivot on the character, zooms with the scroll wheel, and moves closer when a wall is in the way. It is one script, attached to the camera, and it runs in `LateUpdate` so the character has already moved.
+A camera that orbits a pivot on the character, zooms with the scroll wheel, and moves closer when a wall is in the way. Two implementations are on this page.
+
+The [plain script](#plain-script) is one component on the Unity camera. It runs in `LateUpdate` so the character has already moved. The [Cinemachine 3](#cinemachine-3) section builds the same orbit from the package, and adds a short script only for mouse look and the scroll wheel. Cinemachine 3 lives in `Unity.Cinemachine`. It is not the 2.x API: `CinemachineVirtualCamera`, `CinemachineFreeLook`, and `CinemachineCollider` are the old types.
+
+## Plain script
 
 Yaw, pitch, and zoom use the [exponential damping](../maths/interpolation.md#frame-rate-independent-damping) step \(1 - e^{-k\Delta t}\). Collision does not. The boom shortens on the frame the sphere hits, and it eases back out only after the hit has cleared, so smoothing cannot carry the camera through a wall. The pivot itself is not damped. Damping the pivot lets the character drift off the point the camera is looking at.
 
 Positive pitch raises the camera and tilts it down toward the pivot. Dragging the mouse up increases pitch. That is the orbit convention, the one used by a character viewer. An aim camera, where dragging up looks up, is the same script with the pitch sign flipped.
 
-## Setup
+### Setup
 
 1. Add the script to the camera. Copy one of the two listings below, not both: they declare the same class. A new Unity 6 project uses the Input System, so that is the listing to copy. The legacy listing is only for a project whose Active Input Handling is still the Input Manager.
 2. Assign **Target**. **Pivot Offset** is in world space, `(0, 1.5, 0)` by default, so a character that banks does not tilt the pivot with it.
@@ -31,20 +36,20 @@ If the character also moves in `LateUpdate`, this script has to run after it. `T
 
     A sphere cast cannot see a collider it already overlaps, and the nearest hit is useless if that hit is the character. Exclude the character’s layer. The script also ignores colliders under the target, which covers the common case of a capsule on the same object, and it ignores triggers.
 
-## What the collision step is doing
+### What the collision step is doing
 
 The cast starts at the pivot, pushed forward along the boom by the sphere radius, and travels the rest of the way to the desired camera position. `SphereCast` reports how far the sphere’s centre travelled, so the boom that just touches the surface is `inset + hit.distance`. **Collision Buffer** is subtracted so the sphere does not sit exactly on the contact.
 
 While the cast hits something closer than the requested zoom, the rendered boom becomes that shorter length on the same frame. When the cast is clear again, the boom eases toward the requested zoom instead of popping. Zoom while the view is clear follows the damped zoom directly, with no second smoothing pass.
 
-## Limits
+### Limits
 
 - Nothing is done about a collider the sphere already overlaps at the start of the cast. Keep the pivot out of solid geometry.
 - There is no shoulder offset, no soft push, and no recentring when the mouse is released.
 - Look and zoom are not suppressed while the pointer is over UI.
 - The fallback path allocates if one cast returns as many hits as the buffer can hold. That is rare; the buffer exists so the common frame does not allocate.
 
-## Scripts
+### Scripts
 
 The two listings share the orbit, damping, and collision code. Each tab is a complete script. The Input System tab is first because that is the default backend in a new Unity 6 project. Copy one of them, not both.
 
@@ -580,3 +585,269 @@ The two listings share the orbit, damping, and collision code. Each tab is a com
     }
     ```
 
+## Cinemachine 3
+
+The same orbit, built from the package instead of a bespoke camera script. Install **Cinemachine** 3.1.x (`com.unity.cinemachine`) from the Package Manager. Do not install 2.x. The namespace is `Unity.Cinemachine`, and the components below do not exist under the old names.
+
+This variant does not replace the Unity camera. A `CinemachineBrain` on the camera copies the live `CinemachineCamera` onto it. The plain script and this rig should not both be driving that camera.
+
+### Setup
+
+1. On the Unity camera, add a **Cinemachine Brain** if adding a Cinemachine Camera did not add one for you. Leave **Update Method** on **Smart Update** and **Blend Update Method** on **Late Update**, so the rig runs after the character has moved. **Fixed Update** judders against a controller that moves in `Update`.
+2. Create an empty child on the character called `CameraPivot`, at about `(0, 1.5, 0)`. The orbit and the aim both use this transform, so the camera looks at the chest rather than the feet.
+3. Add a **Cinemachine Camera** (GameObject → Cinemachine → Cinemachine Camera). Leave it unparented. Set **Tracking Target** to `CameraPivot`. Leave the separate Look At target off, so aim uses the same pivot.
+4. Set **Position Control** to **Orbital Follow**. That adds `CinemachineOrbitalFollow`.
+5. Set **Rotation Control** to **Rotation Composer**. That adds `CinemachineRotationComposer`.
+6. **Add Extension → Deoccluder**. That adds `CinemachineDeoccluder`.
+7. Add `OrbitalFollowInput` from the listing below to the Cinemachine Camera, next to the orbital follow. It is the scroll-wheel and right-drag driver. A **Cinemachine Input Axis Controller** can drive the same three axes from input actions instead; use that or this script, not both.
+
+### Settings that matter
+
+| Component | Setting | Value |
+| --- | --- | --- |
+| Orbital Follow | Binding Mode | **World Space**, so the character's yaw does not swing the camera. |
+| Orbital Follow | Target Offset | `(0, 0, 0)`. The pivot child already holds the height. |
+| Orbital Follow | Orbit Style | **Sphere**. |
+| Orbital Follow | Radius | `4.5`. This is the distance when Orbit Scale is `1`. |
+| Orbital Follow | Position Damping | `0`. Damping here lags the pivot, which lets the character drift off the point the camera is looking at. |
+| Orbital Follow | Horizontal Axis | Default `-180` to `180`, wrapped. Recentering stays off. |
+| Orbital Follow | Vertical Axis | The pitch limits, in degrees. The default is `-10` to `45` with the value at `17.5`, which starts slightly above the pivot. Widen it toward `-35` to `70` to match the plain script. Positive raises the camera. |
+| Orbital Follow | Radial Axis | **Range** `(0.25, 2.5)`, **Value** `1`. The default range is `1` to `1`, and a zoom written into that range is clamped away. Value is a multiplier on Radius, not the distance. |
+| Rotation Composer | Damping | Low, or zero if the aim should stick to the pivot the way the plain script does. The composer only rotates; it does not move the camera. |
+| Deoccluder | Collide Against | Environment layers. Leave the character out. |
+| Deoccluder | Ignore Tag | The character's tag. |
+| Deoccluder | Minimum Distance From Target | About `0.5`, so the pivot's own overlap is not an obstacle. |
+| Deoccluder | Strategy | **Pull Camera Forward**. This shortens the boom, which is what the plain script does. |
+| Deoccluder | Camera Radius | `0.2`, and keep the Unity camera's near clip smaller than that. |
+| Deoccluder | Damping When Occluded | `0`, so a wall cuts the boom on the frame it is hit. **Damping** is only the ease back out. |
+
+Hold the right mouse button to orbit. The scroll wheel zooms whether or not the button is held; wheel up moves closer. `CinemachineOrbitalFollow` places the camera with `Quaternion.Euler(vertical, horizontal, 0)` times `(0, 0, -Radius * scale)`, which is the same placement as the plain script.
+
+### Script
+
+Each tab is a complete script. Copy one. The Input System tab is first because that is the default backend in a new Unity 6 project. The script writes the three `InputAxis` values in `Update`, before the brain's late update reads them. `InputAxis` is a struct, so the axis is copied, changed, and assigned back.
+
+=== "Input System"
+
+    `Mouse.current.delta` is in pixels and is not multiplied by `Time.deltaTime`. `Mouse.current.scroll` keeps the platform's own scale unless **Scroll Delta Behavior** is **Uniform Across All Platforms**. One Windows notch is `120`.
+
+    ```csharp
+    using UnityEngine;
+    using UnityEngine.InputSystem;
+    using Unity.Cinemachine;
+
+    /// <summary>
+    /// Drives a Cinemachine 3 orbital follow from the mouse.
+    /// Right-drag yaws and pitches. The scroll wheel changes Orbit Scale.
+    /// </summary>
+    /// <remarks>
+    /// Input System, the default backend in a new Unity 6 project.
+    /// Requires Cinemachine 3.x. Do not also add a Cinemachine Input Axis
+    /// Controller on this object: both would write the orbital axes.
+    /// </remarks>
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(CinemachineOrbitalFollow))]
+    public class OrbitalFollowInput : MonoBehaviour
+    {
+        [Tooltip("Degrees added per pixel of mouse delta. The delta is already this frame's movement.")]
+        [SerializeField] float degreesPerPixel = 0.2f;
+
+        [Tooltip("Platform units that make one notch. 120 is the default Windows WHEEL_DELTA.")]
+        [SerializeField] float scrollUnitsPerNotch = 120f;
+
+        [Tooltip("How much Orbit Scale changes per scroll-wheel notch. Wheel up zooms in.")]
+        [SerializeField] float zoomPerNotch = 0.15f;
+
+        [Tooltip("Orbit Scale at the near and far ends. Used only when Radial Axis is still the default 1 to 1 range.")]
+        [SerializeField] float minScale = 0.25f;
+        [SerializeField] float maxScale = 2.5f;
+
+        CinemachineOrbitalFollow _orbit;
+
+        void Awake()
+        {
+            _orbit = GetComponent<CinemachineOrbitalFollow>();
+            EnsureRadialRange();
+        }
+
+        void ReadInput(out Vector2 lookDegrees, out float notches)
+        {
+            lookDegrees = Vector2.zero;
+            notches = 0f;
+
+            Mouse mouse = Mouse.current;
+            if (mouse == null)
+                return;
+
+            float units = scrollUnitsPerNotch > 0f ? scrollUnitsPerNotch : 1f;
+            notches = mouse.scroll.ReadValue().y / units;
+            if (!mouse.rightButton.isPressed)
+                return;
+
+            Vector2 delta = mouse.delta.ReadValue();
+            lookDegrees = delta * degreesPerPixel;
+        }
+
+        void Update()
+        {
+            ReadInput(out Vector2 lookDegrees, out float notches);
+
+            if (lookDegrees.sqrMagnitude > 0.0001f)
+            {
+                InputAxis yaw = _orbit.HorizontalAxis;
+                yaw.Value = yaw.ClampValue(yaw.Value + lookDegrees.x);
+                yaw.CancelRecentering();
+                _orbit.HorizontalAxis = yaw;
+
+                // Positive vertical axis raises the camera. Mouse up is positive.
+                InputAxis pitch = _orbit.VerticalAxis;
+                pitch.Value = pitch.ClampValue(pitch.Value + lookDegrees.y);
+                pitch.CancelRecentering();
+                _orbit.VerticalAxis = pitch;
+            }
+
+            if (Mathf.Abs(notches) > 0f)
+            {
+                InputAxis radial = _orbit.RadialAxis;
+                radial.Value = radial.ClampValue(radial.Value - notches * zoomPerNotch);
+                radial.CancelRecentering();
+                _orbit.RadialAxis = radial;
+            }
+        }
+
+        void EnsureRadialRange()
+        {
+            InputAxis radial = _orbit.RadialAxis;
+            if (radial.Range.y - radial.Range.x >= 0.01f)
+                return;
+
+            float near = Mathf.Max(0.01f, minScale);
+            float far = Mathf.Max(near, maxScale);
+            radial.Range = new Vector2(near, far);
+            radial.Center = Mathf.Clamp(radial.Center, near, far);
+            radial.Value = Mathf.Clamp(radial.Value <= 0f ? 1f : radial.Value, near, far);
+            _orbit.RadialAxis = radial;
+        }
+
+        void OnValidate()
+        {
+            degreesPerPixel = Mathf.Max(0f, degreesPerPixel);
+            zoomPerNotch = Mathf.Max(0f, zoomPerNotch);
+            scrollUnitsPerNotch = Mathf.Max(0.01f, scrollUnitsPerNotch);
+            minScale = Mathf.Max(0.01f, minScale);
+            maxScale = Mathf.Max(minScale, maxScale);
+        }
+    }
+    ```
+
+=== "Legacy Input Manager"
+
+    `Input.GetAxis("Mouse X")` and `"Mouse Y"` are already this frame's movement. `Input.mouseScrollDelta.y` is about one unit per notch, so this listing has no notch divisor.
+
+    ```csharp
+    using UnityEngine;
+    using Unity.Cinemachine;
+
+    /// <summary>
+    /// Drives a Cinemachine 3 orbital follow from the mouse.
+    /// Right-drag yaws and pitches. The scroll wheel changes Orbit Scale.
+    /// </summary>
+    /// <remarks>
+    /// Legacy Input Manager. Active Input Handling must be
+    /// "Input Manager (Old)" or "Both". Requires Cinemachine 3.x.
+    /// Do not also add a Cinemachine Input Axis Controller on this object.
+    /// </remarks>
+    [DisallowMultipleComponent]
+    [RequireComponent(typeof(CinemachineOrbitalFollow))]
+    public class OrbitalFollowInput : MonoBehaviour
+    {
+        [Tooltip("Degrees per unit of the Mouse X/Y axes. Those axes are already a per-frame delta.")]
+        [SerializeField] float lookSensitivity = 4f;
+
+        [Tooltip("How much Orbit Scale changes per scroll-wheel notch. Wheel up zooms in.")]
+        [SerializeField] float zoomPerNotch = 0.15f;
+
+        [Tooltip("Orbit Scale at the near and far ends. Used only when Radial Axis is still the default 1 to 1 range.")]
+        [SerializeField] float minScale = 0.25f;
+        [SerializeField] float maxScale = 2.5f;
+
+        CinemachineOrbitalFollow _orbit;
+
+        void Awake()
+        {
+            _orbit = GetComponent<CinemachineOrbitalFollow>();
+            EnsureRadialRange();
+        }
+
+        void ReadInput(out Vector2 lookDegrees, out float notches)
+        {
+            lookDegrees = Vector2.zero;
+            // mouseScrollDelta.y is about one unit per notch.
+            notches = Input.mouseScrollDelta.y;
+            if (!Input.GetMouseButton(1))
+                return;
+
+            lookDegrees.x = Input.GetAxis("Mouse X") * lookSensitivity;
+            lookDegrees.y = Input.GetAxis("Mouse Y") * lookSensitivity;
+        }
+
+        void Update()
+        {
+            ReadInput(out Vector2 lookDegrees, out float notches);
+
+            if (lookDegrees.sqrMagnitude > 0.0001f)
+            {
+                InputAxis yaw = _orbit.HorizontalAxis;
+                yaw.Value = yaw.ClampValue(yaw.Value + lookDegrees.x);
+                yaw.CancelRecentering();
+                _orbit.HorizontalAxis = yaw;
+
+                // Positive vertical axis raises the camera. Mouse up is positive.
+                InputAxis pitch = _orbit.VerticalAxis;
+                pitch.Value = pitch.ClampValue(pitch.Value + lookDegrees.y);
+                pitch.CancelRecentering();
+                _orbit.VerticalAxis = pitch;
+            }
+
+            if (Mathf.Abs(notches) > 0f)
+            {
+                InputAxis radial = _orbit.RadialAxis;
+                radial.Value = radial.ClampValue(radial.Value - notches * zoomPerNotch);
+                radial.CancelRecentering();
+                _orbit.RadialAxis = radial;
+            }
+        }
+
+        void EnsureRadialRange()
+        {
+            InputAxis radial = _orbit.RadialAxis;
+            if (radial.Range.y - radial.Range.x >= 0.01f)
+                return;
+
+            float near = Mathf.Max(0.01f, minScale);
+            float far = Mathf.Max(near, maxScale);
+            radial.Range = new Vector2(near, far);
+            radial.Center = Mathf.Clamp(radial.Center, near, far);
+            radial.Value = Mathf.Clamp(radial.Value <= 0f ? 1f : radial.Value, near, far);
+            _orbit.RadialAxis = radial;
+        }
+
+        void OnValidate()
+        {
+            lookSensitivity = Mathf.Max(0f, lookSensitivity);
+            zoomPerNotch = Mathf.Max(0f, zoomPerNotch);
+            minScale = Mathf.Max(0.01f, minScale);
+            maxScale = Mathf.Max(minScale, maxScale);
+        }
+    }
+    ```
+
+!!! warning "Cinemachine 3, and one writer for the axes"
+
+    A project still on Cinemachine 2.x will not compile this script. `using Cinemachine` and `CinemachineVirtualCamera` are the old API. The package to install is `com.unity.cinemachine` 3.1.x, and the namespace is `Unity.Cinemachine`.
+
+    `CinemachineInputAxisController` and `OrbitalFollowInput` both write Look Orbit X, Look Orbit Y, and Orbit Scale. Keep one of them. The controller is the right choice when the game already has input actions; this script is the choice when it should behave like the plain camera without an actions asset.
+
+    Radial Axis does nothing while its range is the default `1` to `1`. Set the range in the inspector, or leave it and let the script open the range from **Min Scale** and **Max Scale** on the first run.
+
+    Deoccluder cannot see a collider it starts inside, and the character is the usual culprit. The same exclusion as the plain script applies: take the character's layer out of **Collide Against**, and set **Ignore Tag**.

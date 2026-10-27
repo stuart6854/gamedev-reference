@@ -1,4 +1,4 @@
-"""Render engine/version frontmatter as pills under the page title."""
+"""Render engine, version, and package frontmatter as pills under the page title."""
 
 from html import escape
 import re
@@ -19,7 +19,8 @@ def _pills(page):
     meta = page.meta or {}
     engines = _labels(meta.get("engine"))
     versions = _labels(meta.get("version"))
-    if not engines and not versions:
+    packages = _labels(meta.get("package"))
+    if not engines and not versions and not packages:
         return ""
 
     parts = ['<p class="version-pills">']
@@ -30,6 +31,10 @@ def _pills(page):
     for label in versions:
         parts.append(
             f'<span class="version-pill version-pill--version">{escape(label)}</span>'
+        )
+    for label in packages:
+        parts.append(
+            f'<span class="version-pill version-pill--package">{escape(label)}</span>'
         )
     parts.append("</p>")
     return "".join(parts)

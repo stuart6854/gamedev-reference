@@ -5,5 +5,6 @@ Gameplay controllers written against the current engine version. Each page is on
 Written:
 
 - [Character movement](character-movement.md) — CharacterController walk, run, jump, coyote time, jump buffering, slopes, and camera-relative motion.
+- [Interaction](interaction.md) — an `IInteractable` contract, a camera cast and a proximity query, focus callbacks, a prompt, and hold-to-interact.
 
-Later pages will be added one at a time. Not written yet: a Rigidbody controller, interaction, health and damage, inventory, and save/load.
+What is not written yet is on the [roadmap](../../roadmap.md). A topic comes off that list when its page exists.

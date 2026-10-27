@@ -1,0 +1,161 @@
+# Roadmap
+
+Topics that do not have a page yet. When a page is written, its topic is deleted from this list. Finished work is not ticked and not struck through.
+
+Pages that already exist are not listed here.
+
+## Planned
+
+### Movement
+
+- Top-down controller
+- 2D platformer controller
+- Rigidbody character controller
+- Dash
+- Wall run
+- Ledge climb
+- Grappling hook
+
+### Combat
+
+- Health, damage, and stat system
+- Weapon systems and firing logic
+- Hit flash
+- Damage numbers
+
+### Game systems
+
+- Gameplay abilities with cooldowns
+- Stat modifiers (buffs and debuffs)
+- Equipment system
+- List-based inventory
+- Grid inventory (Tetris-style)
+- Slot-based inventory and hotbar
+- Weight-based inventory
+- Enemy wave spawning
+- Fog of war
+
+### Presentation
+
+- Highlight and outline material
+- Shaders and materials
+- Water shaders
+- URP renderer features
+- Post-processing
+
+### Animation
+
+- Ragdolls
+
+### Architecture
+
+- Event systems
+- Shared variables (`ScriptableObject`)
+- Object pooling
+
+### AI
+
+- State machines and other common AI setups
+- Utility AI
+- Line of sight and hearing perception
+- Steering behaviours
+
+### Networking
+
+- Networking concepts: authority models, tick rate, client-side prediction and reconciliation, entity interpolation, and lag compensation
+- Unity Netcode for GameObjects
+
+### Space and curves
+
+- Bézier curves and splines (Unity Splines package)
+- Spatial partitioning (grids, quadtrees)
+
+### Editor
+
+- Custom inspectors
+- Property drawers
+- Other editor extensions
+
+### Interface
+
+- UI topics: UI Toolkit, drag and drop, and the surrounding UI
+
+### World
+
+- Noise for procedural generation
+- Day and night cycle
+
+## Ideas / maybe later
+
+Not committed. These stay here until one of them is promoted into Planned, or written and then removed.
+
+### Game systems
+
+- Checkpoints and respawn
+- Minimap
+
+### Animation
+
+- Animation Rigging foot IK and look-at
+- Root motion
+
+### AI
+
+- Behaviour trees
+
+### Narrative
+
+- Dialogue trees
+- Quests and objectives
+- Timeline cutscenes
+
+### World generation
+
+- Dungeon generation
+- Wave function collapse
+- Marching cubes
+
+### Simulation
+
+- Vehicles (`WheelCollider`)
+- Buoyancy
+- Verlet ropes and cloth
+
+### Rendering
+
+- Decals
+- VFX Graph primer
+- LOD
+- Terrain basics
+
+### Game flow
+
+- Input rebinding UI
+- Localisation
+- Addressables
+- Async scene loading and a loading screen
+- Save and load (JSON)
+- Audio manager
+
+### Performance
+
+- Profiler walkthrough
+- Jobs and Burst
+- GPU instancing
+- ECS intro
+
+### Tools
+
+- Debug drawing
+- In-game console
+- Unity Test Framework
+
+### Navigation
+
+- A* pathfinding
+
+### Game feel
+
+- Screen shake
+- Hit stop
+- Knockback
