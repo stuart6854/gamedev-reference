@@ -39,10 +39,6 @@ Pages that already exist are not listed here.
 
 - Ragdolls
 
-### Architecture
-
-- Object pooling
-
 ### AI
 
 - Utility AI

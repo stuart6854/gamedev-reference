@@ -31,6 +31,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 - [Event systems](unity/architecture/events.md) — C# events, UnityEvent, a typed bus, and ScriptableObject channels.
 - [Shared variables](unity/architecture/variables.md) — ScriptableObject floats, a constant-or-variable reference, and a runtime set.
 - [State machines](unity/architecture/state-machines.md) — idle, move, jump, and fall as predicate transitions, plus a pause stack.
+- [Object pooling](unity/architecture/pooling.md) — a Unity 6 `ObjectPool`, a prefab registry, and effects that return themselves.
 - [Enemy behaviour](unity/ai/enemy.md) — a Unity 6 NavMeshAgent loop: patrol, chase, attack, search, and flee.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — a Unity 6 URP outline, from an inverted hull to a fresnel highlight.
 - [Inventory](unity/systems/inventory/index.md) — a Unity 6 item model, list, grid, slots and hotbar, weight, and equipment.

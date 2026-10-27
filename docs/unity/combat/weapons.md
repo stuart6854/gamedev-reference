@@ -69,7 +69,7 @@ The ray ignores the shooter's colliders, uses **Hit Mask**, and hits triggers (`
 
 ## Projectiles
 
-`UnityEngine.Pool.ObjectPool<Projectile>` creates, reactivates, and disables shots. The pool lives on the weapon. Instances are not parented to it, so holstering the gun does not freeze a shot already in the air. Do not `Destroy` a pooled shot. `Release` returns it. The weapon disposes the pool in `OnDestroy`.
+`UnityEngine.Pool.ObjectPool<Projectile>` creates, reactivates, and disables shots. The pool lives on the weapon. Instances are not parented to it, so holstering the gun does not freeze a shot already in the air. Do not `Destroy` a pooled shot. `Release` returns it. The weapon disposes the pool in `OnDestroy`. A prefab registry, prewarm, and effects that return themselves are [object pooling](../architecture/pooling.md). This gun keeps its own pool so a disabled weapon does not own the shot.
 
 The prefab decides the motion.
 
@@ -98,7 +98,7 @@ The holder reads fire, reload, the wheel, and the number keys, then calls `Weapo
 
 C# events carry the payload. `Fired` is the muzzle. `Impact` is the point and normal. `AmmoChanged` is the magazine and the reserve. `ReloadStarted` is the duration. Inspector `UnityEvent`s are the no-code hooks. `AmmoChanged` is also a `UnityEvent<int, int>`. The readout and the impact spawner listen to the C# events, the same way the [health bar](../systems/health.md#health-bar) listens to `HealthChanged`. Subscription rules, a typed bus, and a ScriptableObject channel for the same signals are [Event systems](../architecture/events.md). A counter that should not hold this weapon can mirror the magazine into a [shared variable](../architecture/variables.md).
 
-`MuzzleFlash` sits on the weapon, so a holstered gun does not flash or play its shot sound. `ImpactEffect` and `AmmoReadout` sit on objects that stay active. The impact listener subscribes to every weapon in the holder, including a gun you have just put away, because a projectile from that gun can still land.
+`MuzzleFlash` sits on the weapon, so a holstered gun does not flash or play its shot sound. `ImpactEffect` and `AmmoReadout` sit on objects that stay active. The impact listener subscribes to every weapon in the holder, including a gun you have just put away, because a projectile from that gun can still land. `ImpactEffect` still uses `Instantiate` and `Destroy`. A rare hit can stay that way. A busy gun should use [`PooledImpact`](../architecture/pooling.md#hit-effects).
 
 ## Parameters
 
@@ -1477,6 +1477,8 @@ using UnityEngine;
 
 /// <summary>
 /// Spawns a hit prefab for every weapon on the holder, including one just holstered.
+/// Instantiate is enough for a rare hit. A busy gun should use PooledImpact
+/// from the object pooling page.
 /// </summary>
 [DisallowMultipleComponent]
 public class ImpactEffect : MonoBehaviour
@@ -1542,7 +1544,7 @@ public class ImpactEffect : MonoBehaviour
 
     `Hurtbox.Receive` multiplies the amount. Passing an amount you already multiplied doubles the resistance. Skipping the hurtbox and calling `Health.ApplyDamage` drops the head and body multipliers. Use the hurtbox when there is one.
 
-    Pooled shots are not children of the gun, and they are released rather than destroyed. `Release` from `OnDisable` recurses: the pool disables the object, and `OnDisable` releases it again. Zero a dynamic body's `linearVelocity` before deactivating it. `velocity` is the obsolete name in Unity 6. `ContinuousDynamic` is not a substitute for the segment cast.
+    Pooled shots are not children of the gun, and they are released rather than destroyed. `Release` from `OnDisable` recurses: the pool disables the object, and `OnDisable` releases it again. Zero a dynamic body's `linearVelocity` before deactivating it. `velocity` is the obsolete name in Unity 6. `ContinuousDynamic` is not a substitute for the segment cast. Trails, scene unload, and a shared registry are [object pooling](../architecture/pooling.md#pitfalls).
 
     A tactical reload can be cancelled because a round remains, and the time already spent is thrown away. An empty reload cannot. Holstering uses the clock, so the reload finishes while the gun is away. Bloom does the same on the next tick.
 

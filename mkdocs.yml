@@ -48,6 +48,7 @@ nav:
           - Event systems: unity/architecture/events.md
           - Shared variables: unity/architecture/variables.md
           - State machines: unity/architecture/state-machines.md
+          - Object pooling: unity/architecture/pooling.md
       - AI:
           - Enemy behaviour: unity/ai/enemy.md
       - Combat:
