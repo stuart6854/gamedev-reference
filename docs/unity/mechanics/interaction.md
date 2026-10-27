@@ -7,7 +7,7 @@ version: 6+
 
 Focus an object, show its prompt, and use it with a press or a hold. The contract is `IInteractable`. The player side is one `Interactor`, which either casts from the camera or overlaps a sphere and picks the best target.
 
-Unity does not ship a general interaction package, so this page is the plain implementation. The XR Interaction Toolkit solves a different problem and is not a stand-in here. A highlight or outline is a later page; `OnFocusEnter` and `OnFocusExit` are the hook it will use.
+Unity does not ship a general interaction package, so this page is the plain implementation. The XR Interaction Toolkit solves a different problem and is not a stand-in here. Focus feedback is the [highlight and outline](../rendering/highlight-outline.md) page; `OnFocusEnter` and `OnFocusExit` are the hook it uses.
 
 The interactor pairs with [character movement](character-movement.md). First person uses **From Camera**, with **Rotate Towards Move** off so a parented camera owns the yaw. Third person uses **Proximity**, aimed with the [orbit camera](../orbit-camera.md).
 
@@ -64,7 +64,7 @@ using UnityEngine;
 /// </summary>
 /// <remarks>
 /// OnFocusEnter and OnFocusExit are the hook for a highlight or outline.
-/// That presentation is a later page; these methods are the place it will attach.
+/// The highlight and outline page calls Outline.SetFocused from these two methods.
 /// HoldDuration of zero means a press. A positive value is seconds of hold.
 /// </remarks>
 public interface IInteractable
@@ -756,7 +756,7 @@ public class DoorInteractable : MonoBehaviour, IInteractable
 
     public void OnFocusEnter(Interactor interactor)
     {
-        // Highlight and outline attach here later.
+        // Outline.SetFocused(true), on the highlight and outline page.
     }
 
     public void OnFocusExit(Interactor interactor)
@@ -828,7 +828,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable
 
     public void OnFocusEnter(Interactor interactor)
     {
-        // Highlight and outline attach here later.
+        // Outline.SetFocused(true), on the highlight and outline page.
     }
 
     public void OnFocusExit(Interactor interactor)
@@ -859,7 +859,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable
 
     Line of sight is a ray from the camera. **Sight Mask** has to include the wall and the interactable's solid collider, and it has to exclude the player, or the player's own capsule is the thing "in the way".
 
-    `OnFocusEnter` and `OnFocusExit` are called when the focused instance changes, not every frame. A highlight that lerps belongs in the highlight's own `Update`, started from enter and stopped from exit.
+    `OnFocusEnter` and `OnFocusExit` are called when the focused instance changes, not every frame. A highlight that lerps belongs in the highlight's own `Update`, started from enter and stopped from exit. The call is `Outline.SetFocused` on the [highlight and outline](../rendering/highlight-outline.md#focus) page.
 
     `HoldDuration` is read from the target each frame. Changing it on the asset while a hold is in progress changes the bar, because progress is `hold time / duration`.
 

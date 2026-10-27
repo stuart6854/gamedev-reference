@@ -24,6 +24,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 - [Character movement](unity/mechanics/character-movement.md) — a Unity 6 CharacterController with walk, run, jump, coyote time, and slopes.
 - [Interaction](unity/mechanics/interaction.md) — focus, prompt, and hold-to-interact for a first-person cast or a third-person overlap.
 - [Health, damage, and stats](unity/systems/health.md) — a Unity 6 health pool, hitbox pipeline, and stat modifiers.
+- [Highlight and outline](unity/rendering/highlight-outline.md) — a Unity 6 URP outline, from an inverted hull to a fresnel highlight.
 
 ## Reserved sections
 
