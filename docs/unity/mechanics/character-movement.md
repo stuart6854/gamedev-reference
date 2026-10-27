@@ -83,287 +83,287 @@ The two listings share the movement code. Each tab is a complete script. The Inp
     [RequireComponent(typeof(CharacterController))]
     public class CharacterMovement : MonoBehaviour
     {
-            void ReadInput(out Vector2 move, out bool jumpPressed, out bool run)
+        void ReadInput(out Vector2 move, out bool jumpPressed, out bool run)
+        {
+            move = Vector2.zero;
+            jumpPressed = false;
+            run = false;
+
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null)
             {
-                move = Vector2.zero;
-                jumpPressed = false;
-                run = false;
-
-                Keyboard keyboard = Keyboard.current;
-                if (keyboard != null)
-                {
-                    if (keyboard.dKey.isPressed) move.x += 1f;
-                    if (keyboard.aKey.isPressed) move.x -= 1f;
-                    if (keyboard.wKey.isPressed) move.y += 1f;
-                    if (keyboard.sKey.isPressed) move.y -= 1f;
-                    jumpPressed |= keyboard.spaceKey.wasPressedThisFrame;
-                    run |= keyboard.leftShiftKey.isPressed;
-                }
-
-                Gamepad gamepad = Gamepad.current;
-                if (gamepad != null)
-                {
-                    Vector2 stick = gamepad.leftStick.ReadValue();
-                    if (stick.sqrMagnitude > move.sqrMagnitude)
-                        move = stick;
-                    jumpPressed |= gamepad.buttonSouth.wasPressedThisFrame;
-                    run |= gamepad.leftShoulder.isPressed;
-                }
+                if (keyboard.dKey.isPressed) move.x += 1f;
+                if (keyboard.aKey.isPressed) move.x -= 1f;
+                if (keyboard.wKey.isPressed) move.y += 1f;
+                if (keyboard.sKey.isPressed) move.y -= 1f;
+                jumpPressed |= keyboard.spaceKey.wasPressedThisFrame;
+                run |= keyboard.leftShiftKey.isPressed;
             }
 
-            [Header("Motion")]
-            [SerializeField] float walkSpeed = 4.5f;
-            [SerializeField] float runSpeed = 7.5f;
-
-            [Tooltip("Metres per second squared. Keep this negative.")]
-            [SerializeField] float gravity = -25f;
-
-            [Tooltip("Peak height of a jump, in metres, reached with the gravity above.")]
-            [SerializeField] float jumpHeight = 1.4f;
-
-            [Tooltip("Most negative vertical speed, in metres per second.")]
-            [SerializeField] float maxFallSpeed = -40f;
-
-            [Tooltip("Downward speed applied while grounded so steps and slopes stay in contact.")]
-            [SerializeField] float stickToGround = 2f;
-
-            [Header("Ground")]
-            [Tooltip("Extra reach below the capsule when testing for ground.")]
-            [SerializeField] float groundCheckDistance = 0.2f;
-
-            [Tooltip("A drop no deeper than this, in metres, is stepped down instead of becoming a fall.")]
-            [SerializeField] float snapDistance = 0.4f;
-
-            [Tooltip("Surfaces the ground cast may land on. Exclude the character.")]
-            [SerializeField] LayerMask groundMask = ~0;
-
-            [Header("Jump feel")]
-            [Tooltip("Seconds after leaving the ground during which a jump is still accepted.")]
-            [SerializeField] float coyoteTime = 0.12f;
-
-            [Tooltip("Seconds a jump press is remembered while the body is still in the air.")]
-            [SerializeField] float jumpBufferTime = 0.12f;
-
-            [Header("Facing")]
-            [Tooltip("Camera the movement is relative to. Empty uses Camera.main.")]
-            [SerializeField] Transform view;
-
-            [Tooltip("Yawed toward the move. Assign a child mesh if a camera is parented to this object.")]
-            [SerializeField] Transform facingRoot;
-
-            [SerializeField] bool rotateTowardsMove = true;
-
-            [Tooltip("Exponential rate for turning. Half-life in seconds is ln(2) / rate. Zero snaps.")]
-            [SerializeField] float turnSharpness = 12f;
-
-            [Tooltip("Stick or key magnitude below this is dropped, then the remainder is scaled back to full.")]
-            [SerializeField] float inputDeadzone = 0.15f;
-
-            const float GroundedSlack = 0.05f;
-
-            CharacterController _controller;
-            Transform _mainCamera;
-            Vector3 _groundNormal = Vector3.up;
-            float _verticalSpeed;
-            float _coyote;
-            float _jumpBuffer;
-            bool _grounded;
-
-            void Awake()
+            Gamepad gamepad = Gamepad.current;
+            if (gamepad != null)
             {
-                _controller = GetComponent<CharacterController>();
-                if (facingRoot == null)
-                    facingRoot = transform;
+                Vector2 stick = gamepad.leftStick.ReadValue();
+                if (stick.sqrMagnitude > move.sqrMagnitude)
+                    move = stick;
+                jumpPressed |= gamepad.buttonSouth.wasPressedThisFrame;
+                run |= gamepad.leftShoulder.isPressed;
+            }
+        }
+
+        [Header("Motion")]
+        [SerializeField] float walkSpeed = 4.5f;
+        [SerializeField] float runSpeed = 7.5f;
+
+        [Tooltip("Metres per second squared. Keep this negative.")]
+        [SerializeField] float gravity = -25f;
+
+        [Tooltip("Peak height of a jump, in metres, reached with the gravity above.")]
+        [SerializeField] float jumpHeight = 1.4f;
+
+        [Tooltip("Most negative vertical speed, in metres per second.")]
+        [SerializeField] float maxFallSpeed = -40f;
+
+        [Tooltip("Downward speed applied while grounded so steps and slopes stay in contact.")]
+        [SerializeField] float stickToGround = 2f;
+
+        [Header("Ground")]
+        [Tooltip("Extra reach below the capsule when testing for ground.")]
+        [SerializeField] float groundCheckDistance = 0.2f;
+
+        [Tooltip("A drop no deeper than this, in metres, is stepped down instead of becoming a fall.")]
+        [SerializeField] float snapDistance = 0.4f;
+
+        [Tooltip("Surfaces the ground cast may land on. Exclude the character.")]
+        [SerializeField] LayerMask groundMask = ~0;
+
+        [Header("Jump feel")]
+        [Tooltip("Seconds after leaving the ground during which a jump is still accepted.")]
+        [SerializeField] float coyoteTime = 0.12f;
+
+        [Tooltip("Seconds a jump press is remembered while the body is still in the air.")]
+        [SerializeField] float jumpBufferTime = 0.12f;
+
+        [Header("Facing")]
+        [Tooltip("Camera the movement is relative to. Empty uses Camera.main.")]
+        [SerializeField] Transform view;
+
+        [Tooltip("Yawed toward the move. Assign a child mesh if a camera is parented to this object.")]
+        [SerializeField] Transform facingRoot;
+
+        [SerializeField] bool rotateTowardsMove = true;
+
+        [Tooltip("Exponential rate for turning. Half-life in seconds is ln(2) / rate. Zero snaps.")]
+        [SerializeField] float turnSharpness = 12f;
+
+        [Tooltip("Stick or key magnitude below this is dropped, then the remainder is scaled back to full.")]
+        [SerializeField] float inputDeadzone = 0.15f;
+
+        const float GroundedSlack = 0.05f;
+
+        CharacterController _controller;
+        Transform _mainCamera;
+        Vector3 _groundNormal = Vector3.up;
+        float _verticalSpeed;
+        float _coyote;
+        float _jumpBuffer;
+        bool _grounded;
+
+        void Awake()
+        {
+            _controller = GetComponent<CharacterController>();
+            if (facingRoot == null)
+                facingRoot = transform;
+        }
+
+        void Update()
+        {
+            float dt = Time.deltaTime;
+            ReadInput(out Vector2 move, out bool jumpPressed, out bool run);
+
+            if (jumpPressed)
+                _jumpBuffer = jumpBufferTime;
+            else
+                _jumpBuffer -= dt;
+
+            ProbeGround();
+
+            if (_grounded)
+            {
+                _coyote = coyoteTime;
+                _verticalSpeed = -stickToGround;
+            }
+            else
+            {
+                _coyote -= dt;
+                _verticalSpeed += gravity * dt;
+                if (_verticalSpeed < maxFallSpeed)
+                    _verticalSpeed = maxFallSpeed;
             }
 
-            void Update()
+            bool jumped = TryJump();
+            Vector3 wish = WishDirection(move, out float magnitude);
+            float speed = (run ? runSpeed : walkSpeed) * magnitude;
+            Vector3 horizontal = wish * speed;
+
+            if (_grounded && horizontal.sqrMagnitude > 0.0001f)
             {
-                float dt = Time.deltaTime;
-                ReadInput(out Vector2 move, out bool jumpPressed, out bool run);
+                Vector3 along = Vector3.ProjectOnPlane(horizontal, _groundNormal);
+                if (along.sqrMagnitude > 0.0001f)
+                    horizontal = along.normalized * speed;
+            }
 
-                if (jumpPressed)
-                    _jumpBuffer = jumpBufferTime;
-                else
-                    _jumpBuffer -= dt;
+            Vector3 displacement = (horizontal + Vector3.up * _verticalSpeed) * dt;
+            CollisionFlags flags = _controller.Move(displacement);
+            if ((flags & CollisionFlags.Above) != 0 && _verticalSpeed > 0f)
+                _verticalSpeed = 0f;
 
-                ProbeGround();
-
-                if (_grounded)
-                {
-                    _coyote = coyoteTime;
+            if (!jumped && !_grounded && SnapToGround())
+            {
+                _grounded = true;
+                _coyote = coyoteTime;
+                if (_verticalSpeed < 0f)
                     _verticalSpeed = -stickToGround;
-                }
-                else
-                {
-                    _coyote -= dt;
-                    _verticalSpeed += gravity * dt;
-                    if (_verticalSpeed < maxFallSpeed)
-                        _verticalSpeed = maxFallSpeed;
-                }
-
-                bool jumped = TryJump();
-                Vector3 wish = WishDirection(move, out float magnitude);
-                float speed = (run ? runSpeed : walkSpeed) * magnitude;
-                Vector3 horizontal = wish * speed;
-
-                if (_grounded && horizontal.sqrMagnitude > 0.0001f)
-                {
-                    Vector3 along = Vector3.ProjectOnPlane(horizontal, _groundNormal);
-                    if (along.sqrMagnitude > 0.0001f)
-                        horizontal = along.normalized * speed;
-                }
-
-                Vector3 displacement = (horizontal + Vector3.up * _verticalSpeed) * dt;
-                CollisionFlags flags = _controller.Move(displacement);
-                if ((flags & CollisionFlags.Above) != 0 && _verticalSpeed > 0f)
-                    _verticalSpeed = 0f;
-
-                if (!jumped && !_grounded && SnapToGround())
-                {
-                    _grounded = true;
-                    _coyote = coyoteTime;
-                    if (_verticalSpeed < 0f)
-                        _verticalSpeed = -stickToGround;
-                }
-
-                if (rotateTowardsMove)
-                    Face(wish, dt);
             }
 
-            bool TryJump()
+            if (rotateTowardsMove)
+                Face(wish, dt);
+        }
+
+        bool TryJump()
+        {
+            if (_jumpBuffer <= 0f || _coyote <= 0f || gravity >= 0f)
+                return false;
+
+            _verticalSpeed = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            _jumpBuffer = 0f;
+            _coyote = 0f;
+            _grounded = false;
+            return true;
+        }
+
+        void ProbeGround()
+        {
+            _grounded = false;
+            _groundNormal = Vector3.up;
+
+            // Rising frames ignore the ground just left, so the jump is not cancelled.
+            if (_verticalSpeed > 0.05f)
+                return;
+
+            if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit))
+                return;
+
+            _groundNormal = hit.normal;
+            float gap = hit.distance - _controller.height * 0.5f;
+            _grounded = gap <= _controller.skinWidth + GroundedSlack;
+        }
+
+        bool SnapToGround()
+        {
+            if (_verticalSpeed > 0f)
+                return false;
+            if (!TryWalkableHit(snapDistance, out RaycastHit hit))
+                return false;
+
+            float gap = hit.distance - _controller.height * 0.5f;
+            if (gap > snapDistance)
+                return false;
+            if (gap > 0.001f)
+                _controller.Move(Vector3.down * gap);
+
+            _groundNormal = hit.normal;
+            return true;
+        }
+
+        bool TryWalkableHit(float extraReach, out RaycastHit hit)
+        {
+            Vector3 origin = transform.TransformPoint(_controller.center);
+            float reach = _controller.height * 0.5f + Mathf.Max(0f, extraReach);
+            if (!Physics.Raycast(origin, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
+                return false;
+
+            return Vector3.Angle(hit.normal, Vector3.up) <= _controller.slopeLimit + 0.01f;
+        }
+
+        Vector3 WishDirection(Vector2 move, out float magnitude)
+        {
+            magnitude = move.magnitude;
+            if (magnitude > 1f)
+                magnitude = 1f;
+            if (magnitude < inputDeadzone || inputDeadzone >= 1f)
             {
-                if (_jumpBuffer <= 0f || _coyote <= 0f || gravity >= 0f)
-                    return false;
-
-                _verticalSpeed = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                _jumpBuffer = 0f;
-                _coyote = 0f;
-                _grounded = false;
-                return true;
+                magnitude = 0f;
+                return Vector3.zero;
             }
 
-            void ProbeGround()
+            magnitude = (magnitude - inputDeadzone) / (1f - inputDeadzone);
+            Vector2 direction = move.normalized;
+            Vector3 forward = PlanarForward();
+            Vector3 right = Vector3.Cross(Vector3.up, forward);
+            return right * direction.x + forward * direction.y;
+        }
+
+        Vector3 PlanarForward()
+        {
+            Transform eyes = ViewTransform();
+            if (eyes == null)
+                return Vector3.forward;
+
+            Vector3 forward = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
+            if (forward.sqrMagnitude < 0.0001f)
+                forward = Vector3.ProjectOnPlane(eyes.up, Vector3.up);
+            if (forward.sqrMagnitude < 0.0001f)
+                return Vector3.forward;
+            return forward.normalized;
+        }
+
+        Transform ViewTransform()
+        {
+            if (view != null)
+                return view;
+            if (_mainCamera == null)
             {
-                _grounded = false;
-                _groundNormal = Vector3.up;
-
-                // Rising frames ignore the ground just left, so the jump is not cancelled.
-                if (_verticalSpeed > 0.05f)
-                    return;
-
-                if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit))
-                    return;
-
-                _groundNormal = hit.normal;
-                float gap = hit.distance - _controller.height * 0.5f;
-                _grounded = gap <= _controller.skinWidth + GroundedSlack;
+                Camera main = Camera.main;
+                if (main != null)
+                    _mainCamera = main.transform;
             }
 
-            bool SnapToGround()
-            {
-                if (_verticalSpeed > 0f)
-                    return false;
-                if (!TryWalkableHit(snapDistance, out RaycastHit hit))
-                    return false;
+            return _mainCamera;
+        }
 
-                float gap = hit.distance - _controller.height * 0.5f;
-                if (gap > snapDistance)
-                    return false;
-                if (gap > 0.001f)
-                    _controller.Move(Vector3.down * gap);
+        void Face(Vector3 wish, float dt)
+        {
+            if (facingRoot == null)
+                return;
 
-                _groundNormal = hit.normal;
-                return true;
-            }
+            Vector3 flat = wish;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < 0.0001f)
+                return;
 
-            bool TryWalkableHit(float extraReach, out RaycastHit hit)
-            {
-                Vector3 origin = transform.TransformPoint(_controller.center);
-                float reach = _controller.height * 0.5f + Mathf.Max(0f, extraReach);
-                if (!Physics.Raycast(origin, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
-                    return false;
+            Quaternion target = Quaternion.LookRotation(flat.normalized, Vector3.up);
+            float blend = turnSharpness <= 0f || dt <= 0f ? 1f : 1f - Mathf.Exp(-turnSharpness * dt);
+            facingRoot.rotation = Quaternion.Slerp(facingRoot.rotation, target, blend);
+        }
 
-                return Vector3.Angle(hit.normal, Vector3.up) <= _controller.slopeLimit + 0.01f;
-            }
-
-            Vector3 WishDirection(Vector2 move, out float magnitude)
-            {
-                magnitude = move.magnitude;
-                if (magnitude > 1f)
-                    magnitude = 1f;
-                if (magnitude < inputDeadzone || inputDeadzone >= 1f)
-                {
-                    magnitude = 0f;
-                    return Vector3.zero;
-                }
-
-                magnitude = (magnitude - inputDeadzone) / (1f - inputDeadzone);
-                Vector2 direction = move.normalized;
-                Vector3 forward = PlanarForward();
-                Vector3 right = Vector3.Cross(Vector3.up, forward);
-                return right * direction.x + forward * direction.y;
-            }
-
-            Vector3 PlanarForward()
-            {
-                Transform eyes = ViewTransform();
-                if (eyes == null)
-                    return Vector3.forward;
-
-                Vector3 forward = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
-                if (forward.sqrMagnitude < 0.0001f)
-                    forward = Vector3.ProjectOnPlane(eyes.up, Vector3.up);
-                if (forward.sqrMagnitude < 0.0001f)
-                    return Vector3.forward;
-                return forward.normalized;
-            }
-
-            Transform ViewTransform()
-            {
-                if (view != null)
-                    return view;
-                if (_mainCamera == null)
-                {
-                    Camera main = Camera.main;
-                    if (main != null)
-                        _mainCamera = main.transform;
-                }
-
-                return _mainCamera;
-            }
-
-            void Face(Vector3 wish, float dt)
-            {
-                if (facingRoot == null)
-                    return;
-
-                Vector3 flat = wish;
-                flat.y = 0f;
-                if (flat.sqrMagnitude < 0.0001f)
-                    return;
-
-                Quaternion target = Quaternion.LookRotation(flat.normalized, Vector3.up);
-                float blend = turnSharpness <= 0f || dt <= 0f ? 1f : 1f - Mathf.Exp(-turnSharpness * dt);
-                facingRoot.rotation = Quaternion.Slerp(facingRoot.rotation, target, blend);
-            }
-
-            void OnValidate()
-            {
-                walkSpeed = Mathf.Max(0f, walkSpeed);
-                runSpeed = Mathf.Max(walkSpeed, runSpeed);
-                jumpHeight = Mathf.Max(0f, jumpHeight);
-                if (gravity >= 0f)
-                    gravity = gravity == 0f ? -25f : -Mathf.Abs(gravity);
-                if (maxFallSpeed >= 0f)
-                    maxFallSpeed = maxFallSpeed == 0f ? -40f : -Mathf.Abs(maxFallSpeed);
-                stickToGround = Mathf.Max(0f, stickToGround);
-                groundCheckDistance = Mathf.Max(0.02f, groundCheckDistance);
-                snapDistance = Mathf.Max(groundCheckDistance, snapDistance);
-                coyoteTime = Mathf.Max(0f, coyoteTime);
-                jumpBufferTime = Mathf.Max(0f, jumpBufferTime);
-                turnSharpness = Mathf.Max(0f, turnSharpness);
-                inputDeadzone = Mathf.Clamp(inputDeadzone, 0f, 0.9f);
-            }
+        void OnValidate()
+        {
+            walkSpeed = Mathf.Max(0f, walkSpeed);
+            runSpeed = Mathf.Max(walkSpeed, runSpeed);
+            jumpHeight = Mathf.Max(0f, jumpHeight);
+            if (gravity >= 0f)
+                gravity = gravity == 0f ? -25f : -Mathf.Abs(gravity);
+            if (maxFallSpeed >= 0f)
+                maxFallSpeed = maxFallSpeed == 0f ? -40f : -Mathf.Abs(maxFallSpeed);
+            stickToGround = Mathf.Max(0f, stickToGround);
+            groundCheckDistance = Mathf.Max(0.02f, groundCheckDistance);
+            snapDistance = Mathf.Max(groundCheckDistance, snapDistance);
+            coyoteTime = Mathf.Max(0f, coyoteTime);
+            jumpBufferTime = Mathf.Max(0f, jumpBufferTime);
+            turnSharpness = Mathf.Max(0f, turnSharpness);
+            inputDeadzone = Mathf.Clamp(inputDeadzone, 0f, 0.9f);
+        }
     }
     ```
 
@@ -387,267 +387,267 @@ The two listings share the movement code. Each tab is a complete script. The Inp
     [RequireComponent(typeof(CharacterController))]
     public class CharacterMovement : MonoBehaviour
     {
-            void ReadInput(out Vector2 move, out bool jumpPressed, out bool run)
+        void ReadInput(out Vector2 move, out bool jumpPressed, out bool run)
+        {
+            move.x = Input.GetAxisRaw("Horizontal");
+            move.y = Input.GetAxisRaw("Vertical");
+            jumpPressed = Input.GetButtonDown("Jump");
+            run = Input.GetKey(KeyCode.LeftShift);
+        }
+
+        [Header("Motion")]
+        [SerializeField] float walkSpeed = 4.5f;
+        [SerializeField] float runSpeed = 7.5f;
+
+        [Tooltip("Metres per second squared. Keep this negative.")]
+        [SerializeField] float gravity = -25f;
+
+        [Tooltip("Peak height of a jump, in metres, reached with the gravity above.")]
+        [SerializeField] float jumpHeight = 1.4f;
+
+        [Tooltip("Most negative vertical speed, in metres per second.")]
+        [SerializeField] float maxFallSpeed = -40f;
+
+        [Tooltip("Downward speed applied while grounded so steps and slopes stay in contact.")]
+        [SerializeField] float stickToGround = 2f;
+
+        [Header("Ground")]
+        [Tooltip("Extra reach below the capsule when testing for ground.")]
+        [SerializeField] float groundCheckDistance = 0.2f;
+
+        [Tooltip("A drop no deeper than this, in metres, is stepped down instead of becoming a fall.")]
+        [SerializeField] float snapDistance = 0.4f;
+
+        [Tooltip("Surfaces the ground cast may land on. Exclude the character.")]
+        [SerializeField] LayerMask groundMask = ~0;
+
+        [Header("Jump feel")]
+        [Tooltip("Seconds after leaving the ground during which a jump is still accepted.")]
+        [SerializeField] float coyoteTime = 0.12f;
+
+        [Tooltip("Seconds a jump press is remembered while the body is still in the air.")]
+        [SerializeField] float jumpBufferTime = 0.12f;
+
+        [Header("Facing")]
+        [Tooltip("Camera the movement is relative to. Empty uses Camera.main.")]
+        [SerializeField] Transform view;
+
+        [Tooltip("Yawed toward the move. Assign a child mesh if a camera is parented to this object.")]
+        [SerializeField] Transform facingRoot;
+
+        [SerializeField] bool rotateTowardsMove = true;
+
+        [Tooltip("Exponential rate for turning. Half-life in seconds is ln(2) / rate. Zero snaps.")]
+        [SerializeField] float turnSharpness = 12f;
+
+        [Tooltip("Stick or key magnitude below this is dropped, then the remainder is scaled back to full.")]
+        [SerializeField] float inputDeadzone = 0.15f;
+
+        const float GroundedSlack = 0.05f;
+
+        CharacterController _controller;
+        Transform _mainCamera;
+        Vector3 _groundNormal = Vector3.up;
+        float _verticalSpeed;
+        float _coyote;
+        float _jumpBuffer;
+        bool _grounded;
+
+        void Awake()
+        {
+            _controller = GetComponent<CharacterController>();
+            if (facingRoot == null)
+                facingRoot = transform;
+        }
+
+        void Update()
+        {
+            float dt = Time.deltaTime;
+            ReadInput(out Vector2 move, out bool jumpPressed, out bool run);
+
+            if (jumpPressed)
+                _jumpBuffer = jumpBufferTime;
+            else
+                _jumpBuffer -= dt;
+
+            ProbeGround();
+
+            if (_grounded)
             {
-                move.x = Input.GetAxisRaw("Horizontal");
-                move.y = Input.GetAxisRaw("Vertical");
-                jumpPressed = Input.GetButtonDown("Jump");
-                run = Input.GetKey(KeyCode.LeftShift);
+                _coyote = coyoteTime;
+                _verticalSpeed = -stickToGround;
+            }
+            else
+            {
+                _coyote -= dt;
+                _verticalSpeed += gravity * dt;
+                if (_verticalSpeed < maxFallSpeed)
+                    _verticalSpeed = maxFallSpeed;
             }
 
-            [Header("Motion")]
-            [SerializeField] float walkSpeed = 4.5f;
-            [SerializeField] float runSpeed = 7.5f;
+            bool jumped = TryJump();
+            Vector3 wish = WishDirection(move, out float magnitude);
+            float speed = (run ? runSpeed : walkSpeed) * magnitude;
+            Vector3 horizontal = wish * speed;
 
-            [Tooltip("Metres per second squared. Keep this negative.")]
-            [SerializeField] float gravity = -25f;
-
-            [Tooltip("Peak height of a jump, in metres, reached with the gravity above.")]
-            [SerializeField] float jumpHeight = 1.4f;
-
-            [Tooltip("Most negative vertical speed, in metres per second.")]
-            [SerializeField] float maxFallSpeed = -40f;
-
-            [Tooltip("Downward speed applied while grounded so steps and slopes stay in contact.")]
-            [SerializeField] float stickToGround = 2f;
-
-            [Header("Ground")]
-            [Tooltip("Extra reach below the capsule when testing for ground.")]
-            [SerializeField] float groundCheckDistance = 0.2f;
-
-            [Tooltip("A drop no deeper than this, in metres, is stepped down instead of becoming a fall.")]
-            [SerializeField] float snapDistance = 0.4f;
-
-            [Tooltip("Surfaces the ground cast may land on. Exclude the character.")]
-            [SerializeField] LayerMask groundMask = ~0;
-
-            [Header("Jump feel")]
-            [Tooltip("Seconds after leaving the ground during which a jump is still accepted.")]
-            [SerializeField] float coyoteTime = 0.12f;
-
-            [Tooltip("Seconds a jump press is remembered while the body is still in the air.")]
-            [SerializeField] float jumpBufferTime = 0.12f;
-
-            [Header("Facing")]
-            [Tooltip("Camera the movement is relative to. Empty uses Camera.main.")]
-            [SerializeField] Transform view;
-
-            [Tooltip("Yawed toward the move. Assign a child mesh if a camera is parented to this object.")]
-            [SerializeField] Transform facingRoot;
-
-            [SerializeField] bool rotateTowardsMove = true;
-
-            [Tooltip("Exponential rate for turning. Half-life in seconds is ln(2) / rate. Zero snaps.")]
-            [SerializeField] float turnSharpness = 12f;
-
-            [Tooltip("Stick or key magnitude below this is dropped, then the remainder is scaled back to full.")]
-            [SerializeField] float inputDeadzone = 0.15f;
-
-            const float GroundedSlack = 0.05f;
-
-            CharacterController _controller;
-            Transform _mainCamera;
-            Vector3 _groundNormal = Vector3.up;
-            float _verticalSpeed;
-            float _coyote;
-            float _jumpBuffer;
-            bool _grounded;
-
-            void Awake()
+            if (_grounded && horizontal.sqrMagnitude > 0.0001f)
             {
-                _controller = GetComponent<CharacterController>();
-                if (facingRoot == null)
-                    facingRoot = transform;
+                Vector3 along = Vector3.ProjectOnPlane(horizontal, _groundNormal);
+                if (along.sqrMagnitude > 0.0001f)
+                    horizontal = along.normalized * speed;
             }
 
-            void Update()
+            Vector3 displacement = (horizontal + Vector3.up * _verticalSpeed) * dt;
+            CollisionFlags flags = _controller.Move(displacement);
+            if ((flags & CollisionFlags.Above) != 0 && _verticalSpeed > 0f)
+                _verticalSpeed = 0f;
+
+            if (!jumped && !_grounded && SnapToGround())
             {
-                float dt = Time.deltaTime;
-                ReadInput(out Vector2 move, out bool jumpPressed, out bool run);
-
-                if (jumpPressed)
-                    _jumpBuffer = jumpBufferTime;
-                else
-                    _jumpBuffer -= dt;
-
-                ProbeGround();
-
-                if (_grounded)
-                {
-                    _coyote = coyoteTime;
+                _grounded = true;
+                _coyote = coyoteTime;
+                if (_verticalSpeed < 0f)
                     _verticalSpeed = -stickToGround;
-                }
-                else
-                {
-                    _coyote -= dt;
-                    _verticalSpeed += gravity * dt;
-                    if (_verticalSpeed < maxFallSpeed)
-                        _verticalSpeed = maxFallSpeed;
-                }
-
-                bool jumped = TryJump();
-                Vector3 wish = WishDirection(move, out float magnitude);
-                float speed = (run ? runSpeed : walkSpeed) * magnitude;
-                Vector3 horizontal = wish * speed;
-
-                if (_grounded && horizontal.sqrMagnitude > 0.0001f)
-                {
-                    Vector3 along = Vector3.ProjectOnPlane(horizontal, _groundNormal);
-                    if (along.sqrMagnitude > 0.0001f)
-                        horizontal = along.normalized * speed;
-                }
-
-                Vector3 displacement = (horizontal + Vector3.up * _verticalSpeed) * dt;
-                CollisionFlags flags = _controller.Move(displacement);
-                if ((flags & CollisionFlags.Above) != 0 && _verticalSpeed > 0f)
-                    _verticalSpeed = 0f;
-
-                if (!jumped && !_grounded && SnapToGround())
-                {
-                    _grounded = true;
-                    _coyote = coyoteTime;
-                    if (_verticalSpeed < 0f)
-                        _verticalSpeed = -stickToGround;
-                }
-
-                if (rotateTowardsMove)
-                    Face(wish, dt);
             }
 
-            bool TryJump()
+            if (rotateTowardsMove)
+                Face(wish, dt);
+        }
+
+        bool TryJump()
+        {
+            if (_jumpBuffer <= 0f || _coyote <= 0f || gravity >= 0f)
+                return false;
+
+            _verticalSpeed = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            _jumpBuffer = 0f;
+            _coyote = 0f;
+            _grounded = false;
+            return true;
+        }
+
+        void ProbeGround()
+        {
+            _grounded = false;
+            _groundNormal = Vector3.up;
+
+            // Rising frames ignore the ground just left, so the jump is not cancelled.
+            if (_verticalSpeed > 0.05f)
+                return;
+
+            if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit))
+                return;
+
+            _groundNormal = hit.normal;
+            float gap = hit.distance - _controller.height * 0.5f;
+            _grounded = gap <= _controller.skinWidth + GroundedSlack;
+        }
+
+        bool SnapToGround()
+        {
+            if (_verticalSpeed > 0f)
+                return false;
+            if (!TryWalkableHit(snapDistance, out RaycastHit hit))
+                return false;
+
+            float gap = hit.distance - _controller.height * 0.5f;
+            if (gap > snapDistance)
+                return false;
+            if (gap > 0.001f)
+                _controller.Move(Vector3.down * gap);
+
+            _groundNormal = hit.normal;
+            return true;
+        }
+
+        bool TryWalkableHit(float extraReach, out RaycastHit hit)
+        {
+            Vector3 origin = transform.TransformPoint(_controller.center);
+            float reach = _controller.height * 0.5f + Mathf.Max(0f, extraReach);
+            if (!Physics.Raycast(origin, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
+                return false;
+
+            return Vector3.Angle(hit.normal, Vector3.up) <= _controller.slopeLimit + 0.01f;
+        }
+
+        Vector3 WishDirection(Vector2 move, out float magnitude)
+        {
+            magnitude = move.magnitude;
+            if (magnitude > 1f)
+                magnitude = 1f;
+            if (magnitude < inputDeadzone || inputDeadzone >= 1f)
             {
-                if (_jumpBuffer <= 0f || _coyote <= 0f || gravity >= 0f)
-                    return false;
-
-                _verticalSpeed = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                _jumpBuffer = 0f;
-                _coyote = 0f;
-                _grounded = false;
-                return true;
+                magnitude = 0f;
+                return Vector3.zero;
             }
 
-            void ProbeGround()
+            magnitude = (magnitude - inputDeadzone) / (1f - inputDeadzone);
+            Vector2 direction = move.normalized;
+            Vector3 forward = PlanarForward();
+            Vector3 right = Vector3.Cross(Vector3.up, forward);
+            return right * direction.x + forward * direction.y;
+        }
+
+        Vector3 PlanarForward()
+        {
+            Transform eyes = ViewTransform();
+            if (eyes == null)
+                return Vector3.forward;
+
+            Vector3 forward = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
+            if (forward.sqrMagnitude < 0.0001f)
+                forward = Vector3.ProjectOnPlane(eyes.up, Vector3.up);
+            if (forward.sqrMagnitude < 0.0001f)
+                return Vector3.forward;
+            return forward.normalized;
+        }
+
+        Transform ViewTransform()
+        {
+            if (view != null)
+                return view;
+            if (_mainCamera == null)
             {
-                _grounded = false;
-                _groundNormal = Vector3.up;
-
-                // Rising frames ignore the ground just left, so the jump is not cancelled.
-                if (_verticalSpeed > 0.05f)
-                    return;
-
-                if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit))
-                    return;
-
-                _groundNormal = hit.normal;
-                float gap = hit.distance - _controller.height * 0.5f;
-                _grounded = gap <= _controller.skinWidth + GroundedSlack;
+                Camera main = Camera.main;
+                if (main != null)
+                    _mainCamera = main.transform;
             }
 
-            bool SnapToGround()
-            {
-                if (_verticalSpeed > 0f)
-                    return false;
-                if (!TryWalkableHit(snapDistance, out RaycastHit hit))
-                    return false;
+            return _mainCamera;
+        }
 
-                float gap = hit.distance - _controller.height * 0.5f;
-                if (gap > snapDistance)
-                    return false;
-                if (gap > 0.001f)
-                    _controller.Move(Vector3.down * gap);
+        void Face(Vector3 wish, float dt)
+        {
+            if (facingRoot == null)
+                return;
 
-                _groundNormal = hit.normal;
-                return true;
-            }
+            Vector3 flat = wish;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < 0.0001f)
+                return;
 
-            bool TryWalkableHit(float extraReach, out RaycastHit hit)
-            {
-                Vector3 origin = transform.TransformPoint(_controller.center);
-                float reach = _controller.height * 0.5f + Mathf.Max(0f, extraReach);
-                if (!Physics.Raycast(origin, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
-                    return false;
+            Quaternion target = Quaternion.LookRotation(flat.normalized, Vector3.up);
+            float blend = turnSharpness <= 0f || dt <= 0f ? 1f : 1f - Mathf.Exp(-turnSharpness * dt);
+            facingRoot.rotation = Quaternion.Slerp(facingRoot.rotation, target, blend);
+        }
 
-                return Vector3.Angle(hit.normal, Vector3.up) <= _controller.slopeLimit + 0.01f;
-            }
-
-            Vector3 WishDirection(Vector2 move, out float magnitude)
-            {
-                magnitude = move.magnitude;
-                if (magnitude > 1f)
-                    magnitude = 1f;
-                if (magnitude < inputDeadzone || inputDeadzone >= 1f)
-                {
-                    magnitude = 0f;
-                    return Vector3.zero;
-                }
-
-                magnitude = (magnitude - inputDeadzone) / (1f - inputDeadzone);
-                Vector2 direction = move.normalized;
-                Vector3 forward = PlanarForward();
-                Vector3 right = Vector3.Cross(Vector3.up, forward);
-                return right * direction.x + forward * direction.y;
-            }
-
-            Vector3 PlanarForward()
-            {
-                Transform eyes = ViewTransform();
-                if (eyes == null)
-                    return Vector3.forward;
-
-                Vector3 forward = Vector3.ProjectOnPlane(eyes.forward, Vector3.up);
-                if (forward.sqrMagnitude < 0.0001f)
-                    forward = Vector3.ProjectOnPlane(eyes.up, Vector3.up);
-                if (forward.sqrMagnitude < 0.0001f)
-                    return Vector3.forward;
-                return forward.normalized;
-            }
-
-            Transform ViewTransform()
-            {
-                if (view != null)
-                    return view;
-                if (_mainCamera == null)
-                {
-                    Camera main = Camera.main;
-                    if (main != null)
-                        _mainCamera = main.transform;
-                }
-
-                return _mainCamera;
-            }
-
-            void Face(Vector3 wish, float dt)
-            {
-                if (facingRoot == null)
-                    return;
-
-                Vector3 flat = wish;
-                flat.y = 0f;
-                if (flat.sqrMagnitude < 0.0001f)
-                    return;
-
-                Quaternion target = Quaternion.LookRotation(flat.normalized, Vector3.up);
-                float blend = turnSharpness <= 0f || dt <= 0f ? 1f : 1f - Mathf.Exp(-turnSharpness * dt);
-                facingRoot.rotation = Quaternion.Slerp(facingRoot.rotation, target, blend);
-            }
-
-            void OnValidate()
-            {
-                walkSpeed = Mathf.Max(0f, walkSpeed);
-                runSpeed = Mathf.Max(walkSpeed, runSpeed);
-                jumpHeight = Mathf.Max(0f, jumpHeight);
-                if (gravity >= 0f)
-                    gravity = gravity == 0f ? -25f : -Mathf.Abs(gravity);
-                if (maxFallSpeed >= 0f)
-                    maxFallSpeed = maxFallSpeed == 0f ? -40f : -Mathf.Abs(maxFallSpeed);
-                stickToGround = Mathf.Max(0f, stickToGround);
-                groundCheckDistance = Mathf.Max(0.02f, groundCheckDistance);
-                snapDistance = Mathf.Max(groundCheckDistance, snapDistance);
-                coyoteTime = Mathf.Max(0f, coyoteTime);
-                jumpBufferTime = Mathf.Max(0f, jumpBufferTime);
-                turnSharpness = Mathf.Max(0f, turnSharpness);
-                inputDeadzone = Mathf.Clamp(inputDeadzone, 0f, 0.9f);
-            }
+        void OnValidate()
+        {
+            walkSpeed = Mathf.Max(0f, walkSpeed);
+            runSpeed = Mathf.Max(walkSpeed, runSpeed);
+            jumpHeight = Mathf.Max(0f, jumpHeight);
+            if (gravity >= 0f)
+                gravity = gravity == 0f ? -25f : -Mathf.Abs(gravity);
+            if (maxFallSpeed >= 0f)
+                maxFallSpeed = maxFallSpeed == 0f ? -40f : -Mathf.Abs(maxFallSpeed);
+            stickToGround = Mathf.Max(0f, stickToGround);
+            groundCheckDistance = Mathf.Max(0.02f, groundCheckDistance);
+            snapDistance = Mathf.Max(groundCheckDistance, snapDistance);
+            coyoteTime = Mathf.Max(0f, coyoteTime);
+            jumpBufferTime = Mathf.Max(0f, jumpBufferTime);
+            turnSharpness = Mathf.Max(0f, turnSharpness);
+            inputDeadzone = Mathf.Clamp(inputDeadzone, 0f, 0.9f);
+        }
     }
     ```
 
