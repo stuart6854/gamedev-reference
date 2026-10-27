@@ -27,6 +27,9 @@ nav:
           - unity/mechanics/index.md
           - Character movement: unity/mechanics/character-movement.md
           - Interaction: unity/mechanics/interaction.md
+      - Systems:
+          - unity/systems/index.md
+          - Health, damage, and stats: unity/systems/health.md
   - Engine architecture:
       - engine/index.md
   - Optimisation:

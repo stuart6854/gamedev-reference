@@ -18,8 +18,8 @@ Pages that already exist are not listed here.
 
 ### Combat
 
-- Health, damage, and stat system
 - Weapon systems and firing logic
+- Attack combos (melee combo chains, input buffering, animation-driven combo windows)
 - Hit flash
 - Damage numbers
 
