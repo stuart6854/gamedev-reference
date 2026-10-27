@@ -25,7 +25,6 @@ Pages that already exist are not listed here.
 - Gameplay abilities with cooldowns
 - Stat modifiers (buffs and debuffs)
 - Loot tables (weighted random drops, rarity tiers, nested tables, guaranteed/pity drops)
-- Building / placement systems (grid and free placement, snapping, ghost/preview material, validity checks and overlap tests, rotation, snap points/sockets Valheim-style, cost/resources)
 - Enemy wave spawning
 - Fog of war
 

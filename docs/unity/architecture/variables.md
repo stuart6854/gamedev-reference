@@ -7,7 +7,7 @@ version: 6+
 
 A `ScriptableObject` that holds one runtime value, or a list of live objects, so a HUD and a player can share a number without holding each other. The value you can read at any time is this page. A signal with no stored value is an [event channel](events.md#scriptableobject-channels).
 
-[Health](../systems/health.md#health) still owns the pool: death, invulnerability, and max. [Weapon](../combat/weapons.md#weapon) still owns the magazine. The assets here mirror those numbers for UI that should not reference the player or the gun. Writing the mirror does not heal or reload.
+[Health](../systems/health.md#health) still owns the pool: death, invulnerability, and max. [Weapon](../combat/weapons.md#weapon) still owns the magazine. The assets here mirror those numbers for UI that should not reference the player or the gun. Writing the mirror does not heal or reload. A placement cost that is one number spends a float the same way. That wallet is [building](../systems/building.md#data).
 
 ## Which store
 

@@ -6,6 +6,7 @@ Written:
 
 - [Health, damage, and stats](health.md) — health pool, damage types, hitboxes, and a stat sheet with modifiers.
 - [Inventory](inventory/index.md) — a shared item, then a list, a grid, slots and a hotbar, weight, and equipment.
+- [Building and placement](building.md) — grid and free placement, a ghost, sockets, and a cost paid from the inventory or a float variable.
 
 Firing that spends this health is [Weapons](../combat/weapons.md), under Combat.
 
