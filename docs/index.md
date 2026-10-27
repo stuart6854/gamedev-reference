@@ -23,6 +23,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 - [Third-person orbit camera](unity/orbit-camera.md) — a Unity 6 camera as a plain script and as Cinemachine 3, including collision pull-in.
 - [Character movement](unity/mechanics/character-movement.md) — a Unity 6 CharacterController with walk, run, jump, coyote time, and slopes.
 - [Interaction](unity/mechanics/interaction.md) — focus, prompt, and hold-to-interact for a first-person cast or a third-person overlap.
+- [Health, damage, and stats](unity/systems/health.md) — a Unity 6 health pool, hitbox pipeline, and stat modifiers.
 
 ## Reserved sections
 
