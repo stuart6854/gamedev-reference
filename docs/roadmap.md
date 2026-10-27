@@ -23,10 +23,23 @@ Pages that already exist are not listed here.
 - Hit flash
 - Damage numbers
 
+### Game systems
+
+- Gameplay abilities with cooldowns
+- Stat modifiers (buffs and debuffs)
+- Equipment system
+- List-based inventory
+- Grid inventory (Tetris-style)
+- Slot-based inventory and hotbar
+- Weight-based inventory
+- Enemy wave spawning
+- Fog of war
+
 ### Presentation
 
 - Highlight and outline material
 - Shaders and materials
+- Water shaders
 - URP renderer features
 - Post-processing
 
@@ -52,6 +65,11 @@ Pages that already exist are not listed here.
 - Networking concepts: authority models, tick rate, client-side prediction and reconciliation, entity interpolation, and lag compensation
 - Unity Netcode for GameObjects
 
+### Space and curves
+
+- Bézier curves and splines (Unity Splines package)
+- Spatial partitioning (grids, quadtrees)
+
 ### Editor
 
 - Custom inspectors
@@ -62,9 +80,10 @@ Pages that already exist are not listed here.
 
 - UI topics: UI Toolkit, drag and drop, and the surrounding UI
 
-### World generation
+### World
 
 - Noise for procedural generation
+- Day and night cycle
 
 ## Ideas / maybe later
 
@@ -72,13 +91,8 @@ Not committed. These stay here until one of them is promoted into Planned, or wr
 
 ### Game systems
 
-- Ability system with cooldowns
-- Stat modifiers (buffs and debuffs)
-- Enemy wave spawning
 - Checkpoints and respawn
-- Day and night cycle
 - Minimap
-- Fog of war
 
 ### Animation
 
@@ -107,16 +121,10 @@ Not committed. These stay here until one of them is promoted into Planned, or wr
 - Buoyancy
 - Verlet ropes and cloth
 
-### Curves and space
-
-- Bézier curves and splines (Unity Splines package)
-- Spatial partitioning (grids, quadtrees)
-
 ### Rendering
 
 - Decals
 - VFX Graph primer
-- Water shader
 - LOD
 - Terrain basics
 
@@ -127,7 +135,6 @@ Not committed. These stay here until one of them is promoted into Planned, or wr
 - Addressables
 - Async scene loading and a loading screen
 - Save and load (JSON)
-- Inventory
 - Audio manager
 
 ### Performance
