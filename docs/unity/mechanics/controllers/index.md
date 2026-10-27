@@ -1,6 +1,6 @@
 # Controllers
 
-Four ways to move a body. Dash, wall run, ledge climb, and a grappling hook are not a fifth body. They stay on the [roadmap](../../../roadmap.md) as extras on top of one of these.
+Four ways to move a body. Dash, wall run, ledge climb, and a grappling hook are not a fifth body. They stay on the [roadmap](../../../roadmap.md#movement) as extras on top of one of these. Box selection for several units is on that list as well.
 
 ## Which controller
 

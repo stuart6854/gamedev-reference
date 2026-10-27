@@ -5,6 +5,7 @@ Shared runtime pieces: numbers other behaviours read, and the messages that chan
 Written:
 
 - [Health, damage, and stats](health.md) — health pool, damage types, hitboxes, and a stat sheet with modifiers.
+- [Inventory](inventory/index.md) — a shared item, then a list, a grid, slots and a hotbar, weight, and equipment.
 
 Firing that spends this health is [Weapons](../combat/weapons.md), under Combat.
 
