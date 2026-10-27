@@ -27,6 +27,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 - [2D platformer](unity/mechanics/platformer-2d.md) — a Rigidbody2D jump with coyote time, an apex, and optional walls.
 - [Interaction](unity/mechanics/interaction.md) — focus, prompt, and hold-to-interact for a first-person cast or a third-person overlap.
 - [Health, damage, and stats](unity/systems/health.md) — a Unity 6 health pool, hitbox pipeline, and stat modifiers.
+- [Weapons](unity/combat/weapons.md) — a Unity 6 firearm: fire modes, hitscan and pooled projectiles, ammo, and recoil.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — a Unity 6 URP outline, from an inverted hull to a fresnel highlight.
 
 ## Reserved sections
