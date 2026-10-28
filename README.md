@@ -44,7 +44,7 @@ For now, engine pages target only the current generation: Unity 6 and later. Unr
 
 ## Hidden sections
 
-A top-level section with no pages yet (Gameplay and AI, Engine architecture, Optimisation) keeps its outline in `docs/`, but is listed under `exclude_docs` in `zensical.toml`, so it is not built or shown. When its first page is written, remove it from `exclude_docs`, add it to `nav`, and add it to the section list on the home page.
+A top-level section with no pages yet (Gameplay and AI, Optimisation) keeps its outline in `docs/`, but is listed under `exclude_docs` in `zensical.toml`, so it is not built or shown. When its first page is written, remove it from `exclude_docs`, add it to `nav`, and add it to the section list on the home page.
 
 ## Roadmap
 
