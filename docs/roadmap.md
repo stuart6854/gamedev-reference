@@ -17,8 +17,6 @@ Pages that already exist are not listed here.
 ### Combat
 
 - Attack combos (melee combo chains, input buffering, animation-driven combo windows)
-- Hit flash
-- Damage numbers
 
 ### Game systems
 

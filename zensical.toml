@@ -79,6 +79,8 @@ nav = [
     { "Combat" = [
       "unity/combat/index.md",
       { "Weapons" = "unity/combat/weapons.md" },
+      { "Hit flash" = "unity/combat/hit-flash.md" },
+      { "Damage numbers" = "unity/combat/damage-numbers.md" },
     ] },
     { "Rendering" = [
       "unity/rendering/index.md",

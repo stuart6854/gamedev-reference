@@ -7,7 +7,7 @@ version: 6+
 
 `Instantiate` and `Destroy` allocate, and they can spike a frame. A pool creates the objects first and reuses them. The gun on the [weapons](../combat/weapons.md#projectiles) page already does this for its own shots. This page is the shared version: one registry for every prefab, reset hooks, and effects that return themselves.
 
-A damage number is the same timed return as a hit effect. The popup itself is still [damage numbers](../../roadmap.md#combat).
+A damage number is the same timed return as a hit effect. The popup itself is [damage numbers](../combat/damage-numbers.md).
 
 ## Why
 
@@ -502,7 +502,7 @@ public class PooledAgent : PooledBehaviour
 
 The projectile pool on the weapon is the worked shot. `BuildPool` there is `PoolFactory` without the registry: `OnGet` activates, `Launch` writes `linearVelocity`, and `Release` zeros it before the instance is disabled. Copy that class if the shot is the weapon's. Use the registry for the impact, the audio, and any second gun that should share those prefabs.
 
-A damage number would `Spawn` at the hit point and `Release` from a lifetime, which is `PooledEffect` with a different prefab. Drawing the digits is the roadmap item, not this one.
+A damage number would `Spawn` at the hit point and `Release` from a lifetime, which is `PooledEffect` with a different prefab. Drawing the digits, and merging rapid hits, is [damage numbers](../combat/damage-numbers.md).
 
 ```csharp
 using UnityEngine;

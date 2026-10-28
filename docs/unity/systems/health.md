@@ -20,7 +20,7 @@ The body that carries this health is often the [character movement](../mechanics
 5. For a spikes hazard, use a trigger collider and a kinematic `Rigidbody`. Add `Hitbox`, set the amount and the damage type, and enable **Repeat While Overlapping** with **Repeat Interval** `0.5`. A `CharacterController` does not wake a static trigger. The rigidbody on the hazard is what makes `OnTriggerEnter` run.
 6. In the physics layer matrix, let the hazard layer overlap the hurtbox layer, and stop the hazard overlapping itself.
 7. Add `HealthBar` to a UI `Image` set to **Image Type: Filled**, **Horizontal**, origin **Left**. Assign the image and the health. The project needs `com.unity.ugui`, which a Unity 6 game template already has.
-8. Death, a hit flash, or a sound can use the inspector events on `Health`. Anything that needs the hit point or the damage type subscribes to the C# event instead.
+8. Death, a [hit flash](../combat/hit-flash.md), or a sound can use the inspector events on `Health`. Anything that needs the hit point or the damage type subscribes to the C# event instead.
 
 ## What each step is doing
 
