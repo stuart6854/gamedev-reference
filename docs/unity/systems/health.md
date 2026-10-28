@@ -689,6 +689,6 @@ public class HealthBar : MonoBehaviour
 
     Changing a modifier's numbers in place does nothing to the cache. `StatModifier` has no setters. Remove it and add a new one, or remove by source. A null source cannot be withdrawn as a group.
 
-    The max stat is read when `Health` enables. Unity only promises that a script's `Awake` runs before its own `OnEnable`, not before another component's, so `StatSheet` builds its dictionary on the first `TryGet` as well as in `Awake`. A sheet assigned later is not picked up until `Health` is disabled and enabled again.
+    The max stat is read when `Health` enables. Unity only promises that a script's `Awake` runs before its own `OnEnable`, not before another component's ([lifecycle](../architecture/lifecycle.md)), so `StatSheet` builds its dictionary on the first `TryGet` as well as in `Awake`. A sheet assigned later is not picked up until `Health` is disabled and enabled again.
 
     The bar's `Image` has to be **Filled**. A Simple image ignores `fillAmount`. `HealthBar` listens to the C# event, which carries current and max. The inspector `UnityEvent`s are the no-code hooks and do not carry the `DamageInfo`.

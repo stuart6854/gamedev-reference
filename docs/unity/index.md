@@ -7,7 +7,7 @@ Written, by group. Each group's index lists its pages:
 - [Third-person orbit camera](orbit-camera.md) — a plain script and a Cinemachine 3 variant.
 - [Mechanics](mechanics/index.md) — the four movement controllers and interaction.
 - [Systems](systems/index.md) — health and stats, inventory, and building.
-- [Architecture](architecture/index.md) — events, shared variables, state machines, and pooling.
+- [Architecture](architecture/index.md) — the MonoBehaviour lifecycle, events, shared variables, state machines, and pooling.
 - [AI](ai/index.md) — enemy behaviour on a `NavMeshAgent`.
 - [Combat](combat/index.md) — weapons.
 - [Rendering](rendering/index.md) — highlight and outline.

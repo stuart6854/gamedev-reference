@@ -36,7 +36,6 @@ Pages that already exist are not listed here.
 
 ### Architecture
 
-- MonoBehaviour lifecycle (Awake, OnEnable, Start, and what each may assume about other components; script execution order; what belongs in Update, FixedUpdate, and LateUpdate)
 - Bootstrapping and services (singletons, a service locator, a persistent systems scene)
 - Command pattern (undo and redo, for building and editor-style tools)
 
