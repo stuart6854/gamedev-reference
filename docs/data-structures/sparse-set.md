@@ -119,7 +119,7 @@ contains(id):
     return s < sparse.size and sparse[s] != TOMBSTONE and dense[sparse[s]] == id
 ```
 
-A stale id then fails the last comparison, because `dense` holds the new generation. Where the generation comes from is the handle table, which is still on the [roadmap](../roadmap.md#data-structures).
+A stale id then fails the last comparison, because `dense` holds the new generation. Where the generation comes from is the [handle table](handle-table.md).
 
 ## Memory for large keys
 
