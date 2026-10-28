@@ -34,7 +34,6 @@ Pages that already exist are not listed here.
 
 ### Architecture
 
-- Bootstrapping and services (singletons, a service locator, a persistent systems scene)
 - Command pattern (undo and redo, for building and editor-style tools)
 
 ### Game systems
