@@ -31,6 +31,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Check nav
+        run: python scripts/check_nav.py
+
       - name: Build site
         run: zensical build --clean --strict
 
