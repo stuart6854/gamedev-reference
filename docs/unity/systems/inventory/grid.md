@@ -177,7 +177,7 @@ public class GridInventory : MonoBehaviour, IInventory
         if (moverFits && otherFits)
         {
             Stamp(item, x, y, rotated);
-            Stamp(only, otherPlace.X, otherPlace.Y, otherPlace.Rotated);
+            Stamp(only, old.X, old.Y, otherPlace.Rotated);
             Changed?.Invoke();
             return true;
         }
