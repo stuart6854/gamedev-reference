@@ -13,6 +13,7 @@ Pages that already exist are not listed here.
 - Ledge climb
 - Grappling hook
 - Drag selection methods (RTS-style box/marquee selection: screen-space rectangle vs world-space frustum/volume selection, lasso selection, add/remove with modifier keys, click vs drag threshold, double-click to select all of a type, drawing the selection rectangle in UI)
+- Formation movement (keeping a selected group's shape on a move order: line, box, and wedge slots, slot assignment, facing, and regrouping around obstacles)
 
 ### Cameras
 
