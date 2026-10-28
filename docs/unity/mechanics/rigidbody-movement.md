@@ -28,8 +28,8 @@ The collider's physics material is replaced in `Awake` with zero friction, zero 
 
 Each `FixedUpdate` does the following.
 
-1. Sphere-cast down from the bottom of the capsule, with a radius slightly inside the capsule so the cast does not start inside the floor. A hit is ground when its slope is within **Slope Limit**. While `linearVelocity.y` is upward the cast is skipped, so the ground just left cannot cancel the jump.
-2. On that ground, the coyote clock is refilled. In the air it simply ages. A jump is taken when the buffer has not expired and the coyote clock is still inside **Coyote Time**. Take-off speed is \(\sqrt{h \cdot -2g}\) for a jump height \(h\) and \(g\) equal to `Physics.gravity.y` times **Gravity Multiplier**. Both clocks are spent, so coyote time is not a second jump.
+1. Sphere-cast down from the bottom of the capsule, with a radius slightly inside the capsule so the cast does not start inside the floor. A hit is ground when its slope is within **Slope Limit**. If the previous step was in the air and `linearVelocity.y` is upward, the cast is skipped, so the ground just left cannot cancel a jump. A body that was grounded keeps probing while it rises, because walking up a ramp rises too: at walking speed on a 30° ramp that is over 2 m/s upward.
+2. On that ground, the coyote clock is refilled. In the air it simply ages. A jump is taken when the buffer has not expired and the coyote clock is still inside **Coyote Time**. Take-off speed is \(\sqrt{h \cdot -2g}\) for a jump height \(h\) and \(g\) equal to `Physics.gravity.y` times **Gravity Multiplier**, less half a step of gravity. The body moves a whole physics step at the take-off speed before gravity acts, and without that correction the peak is about 7 cm high at 50 Hz. Both clocks are spent, so coyote time is not a second jump.
 3. Build a wish direction from the camera, the same way as the kinematic controller: flatten the camera forward, take right as \(\mathrm{up} \times \mathrm{forward}\), clamp the stick, and drop the dead zone. Run selects **Run Speed**.
 4. Move the horizontal velocity toward that wish. On the ground the rate is **Acceleration**, or **Deceleration** when the stick is idle. In the air the rate is **Acceleration** times **Air Control**, and an idle stick does not slow the body down.
 5. On walkable ground, project that horizontal velocity onto the surface and restore its length, then add a small speed into the surface so the capsule stays seated. Standing still on a slope does not slide. A slope steeper than the limit is not ground: the horizontal velocity into that wall is removed, and gravity carries the body. The zero-friction material is what stops the solver from grabbing the wall as well.
@@ -260,7 +260,9 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             if (!buffered || !coyote || gravity >= 0f)
                 return false;
 
-            float speed = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            // The body moves one whole step at this speed before gravity acts. Taking off
+            // half a step of gravity puts every step on the true arc, so the peak is Jump Height.
+            float speed = Mathf.Sqrt(jumpHeight * -2f * gravity) + 0.5f * gravity * Time.fixedDeltaTime;
             final = new Vector3(final.x, speed, final.z);
             _jumpUntil = float.NegativeInfinity;
             _lastGrounded = Time.time - coyoteTime;
@@ -270,11 +272,13 @@ The two listings share the movement code. Each tab is a complete script. The Inp
 
         void ProbeGround(float verticalSpeed)
         {
+            bool wasGrounded = _grounded;
             _grounded = false;
             _groundNormal = Vector3.up;
 
-            // Rising frames ignore the ground just left, so the jump is not cancelled.
-            if (verticalSpeed > 0.05f)
+            // Rising after a jump ignores the ground just left, so the jump is not cancelled.
+            // A grounded body walking uphill also rises, and has to keep probing.
+            if (!wasGrounded && verticalSpeed > 0.05f)
                 return;
 
             if (!TryCast(Vector3.down, Bottom(), groundCheckDistance, out RaycastHit hit))
@@ -584,7 +588,9 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             if (!buffered || !coyote || gravity >= 0f)
                 return false;
 
-            float speed = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            // The body moves one whole step at this speed before gravity acts. Taking off
+            // half a step of gravity puts every step on the true arc, so the peak is Jump Height.
+            float speed = Mathf.Sqrt(jumpHeight * -2f * gravity) + 0.5f * gravity * Time.fixedDeltaTime;
             final = new Vector3(final.x, speed, final.z);
             _jumpUntil = float.NegativeInfinity;
             _lastGrounded = Time.time - coyoteTime;
@@ -594,11 +600,13 @@ The two listings share the movement code. Each tab is a complete script. The Inp
 
         void ProbeGround(float verticalSpeed)
         {
+            bool wasGrounded = _grounded;
             _grounded = false;
             _groundNormal = Vector3.up;
 
-            // Rising frames ignore the ground just left, so the jump is not cancelled.
-            if (verticalSpeed > 0.05f)
+            // Rising after a jump ignores the ground just left, so the jump is not cancelled.
+            // A grounded body walking uphill also rises, and has to keep probing.
+            if (!wasGrounded && verticalSpeed > 0.05f)
                 return;
 
             if (!TryCast(Vector3.down, Bottom(), groundCheckDistance, out RaycastHit hit))
