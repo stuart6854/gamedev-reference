@@ -7,7 +7,7 @@ Written, by group. Each group's index lists its pages:
 - [Cameras](cameras/index.md) — third-person orbit, first-person, and top-down strategy cameras.
 - [Mechanics](mechanics/index.md) — the four movement controllers and interaction.
 - [Systems](systems/index.md) — health and stats, inventory, and building.
-- [Architecture](architecture/index.md) — the MonoBehaviour lifecycle, events, shared variables, state machines, and pooling.
+- [Architecture](architecture/index.md) — the MonoBehaviour lifecycle, bootstrapping and services, events, shared variables, state machines, and pooling.
 - [AI](ai/index.md) — enemy behaviour on a `NavMeshAgent`.
 - [Combat](combat/index.md) — weapons.
 - [Rendering](rendering/index.md) — highlight and outline.
