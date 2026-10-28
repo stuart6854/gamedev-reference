@@ -36,6 +36,7 @@ nav = [
   { "Physics" = [
     "physics/index.md",
     { "Fixed timestep" = "physics/fixed-timestep.md" },
+    { "Integrators" = "physics/integrators.md" },
   ] },
   { "Unity" = [
     "unity/index.md",
