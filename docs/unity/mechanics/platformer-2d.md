@@ -28,7 +28,7 @@ The sprite flips on local scale X. A negative scale on a parent is left alone; t
 Each `FixedUpdate` does the following.
 
 1. Restore a platform that was ignored for a drop-through, once **Drop Through Time** has elapsed.
-2. Cast the body down by **Ground Check** and sideways by **Wall Check**, using `Rigidbody2D.Cast` so the body's own colliders are skipped. A hit is ground when the normal is within **Slope Limit** of up. Steeper hits are walls. While the vertical speed is upward the ground cast is skipped, so the floor just left cannot cancel the jump.
+2. Cast the body down by **Ground Check** and sideways by **Wall Check**, using `Rigidbody2D.Cast` so the body's own colliders are skipped. A hit is ground when the normal is within **Slope Limit** of up. Steeper hits are walls. If the previous step was airborne and the vertical speed is upward, the ground cast is skipped, so the floor just left cannot cancel the jump. A body that was grounded keeps probing while it rises, because walking up a slope or riding a lift rises too.
 3. On ground, refill the coyote clock. A jump is taken when that clock is still inside **Coyote Time** and the press is still inside **Jump Buffer**. Take-off speed is \(\sqrt{h \cdot 2 \lvert g \rvert}\) with \(g\) equal to `Physics2D.gravity.y` times the base **Gravity Scale**. Apex and fall multipliers are applied after take-off, so the peak is a little higher than **Jump Height** if the apex is light. That is deliberate.
 4. Releasing the button while still rising multiplies the upward speed by **Jump Cut**, once. A tap is a short hop. Holding the button leaves the speed alone and the body reaches the full arc.
 5. Horizontal speed moves toward the stick at **Acceleration** on the ground, or **Acceleration** times **Air Control** in the air. No input on the ground uses **Deceleration**. No input in the air keeps the momentum. For **Wall Jump Lock** seconds after a wall jump, horizontal input is ignored so air control cannot push straight back into the wall.
@@ -173,6 +173,7 @@ The two listings share the movement code. Copy one.
         float _wallLockUntil = float.NegativeInfinity;
         float _ignoreUntil;
         bool _canCut;
+        bool _wasGrounded;
         Collider2D _ignored;
 
         void Awake()
@@ -211,8 +212,11 @@ The two listings share the movement code. Copy one.
             ContactFilter2D filter = Filter();
             float horizontal = Axis(_move.x);
             bool drop = Axis(_move.y) < -0.5f;
+            // Rising after a jump ignores the floor just left. A body that was grounded keeps
+            // probing while it rises, because walking up a slope or riding a lift rises too.
             bool rising = _body.linearVelocity.y > 0.05f;
-            bool grounded = !rising && Probe(Vector2.down, groundCheck, filter, true, out RaycastHit2D groundHit);
+            RaycastHit2D groundHit = default;
+            bool grounded = (!rising || _wasGrounded) && Probe(Vector2.down, groundCheck, filter, true, out groundHit);
             int wallSide = ProbeWall(filter);
 
             if (grounded)
@@ -239,7 +243,7 @@ The two listings share the movement code. Copy one.
                 _wallLockUntil = Time.time + wallJumpLock;
                 jumped = true;
             }
-            else if (buffered && coyote && !rising)
+            else if (buffered && coyote && (grounded || !rising))
             {
                 velocity.y = JumpSpeed();
                 SpendJump();
@@ -284,6 +288,7 @@ The two listings share the movement code. Copy one.
                 velocity.y = maxFallSpeed;
 
             _body.linearVelocity = velocity;
+            _wasGrounded = grounded;
 
             float face = locked ? velocity.x : horizontal;
             if (Mathf.Abs(face) > 0.01f)
@@ -514,6 +519,7 @@ The two listings share the movement code. Copy one.
         float _wallLockUntil = float.NegativeInfinity;
         float _ignoreUntil;
         bool _canCut;
+        bool _wasGrounded;
         Collider2D _ignored;
 
         void Awake()
@@ -552,8 +558,11 @@ The two listings share the movement code. Copy one.
             ContactFilter2D filter = Filter();
             float horizontal = Axis(_move.x);
             bool drop = Axis(_move.y) < -0.5f;
+            // Rising after a jump ignores the floor just left. A body that was grounded keeps
+            // probing while it rises, because walking up a slope or riding a lift rises too.
             bool rising = _body.linearVelocity.y > 0.05f;
-            bool grounded = !rising && Probe(Vector2.down, groundCheck, filter, true, out RaycastHit2D groundHit);
+            RaycastHit2D groundHit = default;
+            bool grounded = (!rising || _wasGrounded) && Probe(Vector2.down, groundCheck, filter, true, out groundHit);
             int wallSide = ProbeWall(filter);
 
             if (grounded)
@@ -580,7 +589,7 @@ The two listings share the movement code. Copy one.
                 _wallLockUntil = Time.time + wallJumpLock;
                 jumped = true;
             }
-            else if (buffered && coyote && !rising)
+            else if (buffered && coyote && (grounded || !rising))
             {
                 velocity.y = JumpSpeed();
                 SpendJump();
@@ -625,6 +634,7 @@ The two listings share the movement code. Copy one.
                 velocity.y = maxFallSpeed;
 
             _body.linearVelocity = velocity;
+            _wasGrounded = grounded;
 
             float face = locked ? velocity.x : horizontal;
             if (Mathf.Abs(face) > 0.01f)
