@@ -11,7 +11,7 @@ Hits use the [health, damage, and stats](../systems/health.md#damage-info) pipel
 
 Attack combos are not this page. They will join this Combat group. Until that page exists they stay on the [roadmap](../../roadmap.md#combat).
 
-The aim ray is the camera from the [orbit camera](../orbit-camera.md). Recoil eases back with the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping) \(1 - e^{-k\Delta t}\).
+The aim ray is the camera from the [orbit camera](../cameras/third-person.md). Recoil eases back with the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping) \(1 - e^{-k\Delta t}\).
 
 ## Setup
 

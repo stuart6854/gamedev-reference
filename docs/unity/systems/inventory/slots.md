@@ -18,7 +18,7 @@ The item types are on the [overview](index.md). The bag behind the bar can be th
 1. Add `SlotInventory`. **Slot Count** is every cell, including the hotbar. Put starting gear on a slot index. A negative slot falls through to `TryAdd`.
 2. Add `Hotbar` on the same actor. Assign the inventory. **Size** is how many of those slots the keys reach. It should be less than or equal to the slot count.
 3. Copy the Input System `Hotbar` or the legacy one, not both. Active Input Handling has to include that backend.
-4. Turn **Select On Scroll** off when the [orbit camera](../../orbit-camera.md) already uses the wheel to zoom.
+4. Turn **Select On Scroll** off when the [orbit camera](../../cameras/third-person.md) already uses the wheel to zoom.
 5. Add `HotbarWeaponBridge` only if this bar should draw the guns. Assign the holder from the weapons page. Leave **Bindings** empty when slot `i` is weapon `i`.
 6. Add `HotbarLabel` to a uGUI `Text` if you want the selection on screen. Assign the hotbar and the same slot inventory, so a merge refreshes the name.
 

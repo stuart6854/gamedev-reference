@@ -12,7 +12,7 @@ The [plain script](#plain-script) is one component on the Unity camera. It runs 
 
 ## Plain script
 
-Yaw, pitch, and zoom use the [exponential damping](../maths/interpolation.md#frame-rate-independent-damping) step \(1 - e^{-k\Delta t}\). Collision does not. The boom shortens on the frame the sphere hits, and it eases back out only after the hit has cleared, so smoothing cannot carry the camera through a wall. The pivot itself is not damped. Damping the pivot lets the character drift off the point the camera is looking at.
+Yaw, pitch, and zoom use the [exponential damping](../../maths/interpolation.md#frame-rate-independent-damping) step \(1 - e^{-k\Delta t}\). Collision does not. The boom shortens on the frame the sphere hits, and it eases back out only after the hit has cleared, so smoothing cannot carry the camera through a wall. The pivot itself is not damped. Damping the pivot lets the character drift off the point the camera is looking at.
 
 Positive pitch raises the camera and tilts it down toward the pivot. Dragging the mouse up increases pitch. That is the orbit convention, the one used by a character viewer. An aim camera, where dragging up looks up, is the same script with the pitch sign flipped.
 

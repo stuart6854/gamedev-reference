@@ -9,7 +9,7 @@ Focus an object, show its prompt, and use it with a press or a hold. The contrac
 
 Unity does not ship a general interaction package, so this page is the plain implementation. The XR Interaction Toolkit solves a different problem and is not a stand-in here. Focus feedback is the [highlight and outline](../rendering/highlight-outline.md) page; `OnFocusEnter` and `OnFocusExit` are the hook it uses.
 
-The interactor pairs with [character movement](character-movement.md). First person uses **From Camera**, with **Rotate Towards Move** off so a parented camera owns the yaw. Third person uses **Proximity**, aimed with the [orbit camera](../orbit-camera.md).
+The interactor pairs with [character movement](character-movement.md). First person uses **From Camera**, with **Rotate Towards Move** off so a parented camera owns the yaw. Third person uses **Proximity**, aimed with the [orbit camera](../cameras/third-person.md).
 
 ## Setup
 
