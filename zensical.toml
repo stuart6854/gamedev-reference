@@ -32,6 +32,7 @@ nav = [
   { "Data structures" = [
     "data-structures/index.md",
     { "Sparse set" = "data-structures/sparse-set.md" },
+    { "Handle table" = "data-structures/handle-table.md" },
   ] },
   { "Graphics" = [
     "graphics/index.md",
