@@ -1,6 +1,6 @@
 [project]
 site_name = "Game development reference"
-site_description = "Personal notes on maths, graphics, physics, gameplay, Unity, and engine architecture."
+site_description = "Personal notes on maths, data structures, graphics, physics, gameplay, Unity, and engine architecture."
 site_author = "Stuart"
 site_url = "https://stuart6854.github.io/gamedev-reference/"
 repo_url = "https://github.com/stuart6854/gamedev-reference"
@@ -28,6 +28,10 @@ nav = [
   { "Maths" = [
     "maths/index.md",
     { "Interpolation and easing" = "maths/interpolation.md" },
+  ] },
+  { "Data structures" = [
+    "data-structures/index.md",
+    { "Sparse set" = "data-structures/sparse-set.md" },
   ] },
   { "Graphics" = [
     "graphics/index.md",
