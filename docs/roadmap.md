@@ -23,7 +23,7 @@ Pages that already exist are not listed here.
 ### Game systems
 
 - Gameplay abilities with cooldowns
-- Stat modifiers (buffs and debuffs)
+- Timed buffs and debuffs (durations, stacking rules, and refresh on top of the existing stat modifiers)
 - Loot tables (weighted random drops, rarity tiers, nested tables, guaranteed/pity drops)
 - Enemy wave spawning
 - Fog of war

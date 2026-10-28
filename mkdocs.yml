@@ -50,6 +50,7 @@ nav:
           - State machines: unity/architecture/state-machines.md
           - Object pooling: unity/architecture/pooling.md
       - AI:
+          - unity/ai/index.md
           - Enemy behaviour: unity/ai/enemy.md
       - Combat:
           - unity/combat/index.md
