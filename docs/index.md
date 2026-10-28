@@ -1,8 +1,8 @@
 # Game development reference
 
-Personal notes for looking something up in the middle of a task. Pages are short on purpose. A formula is written out when it is easy to misremember, and a code sample keeps the assumptions next to the lines you would copy.
+Personal notes for looking something up in the middle of a task. A formula is written out when it is easy to misremember, and a code sample keeps its assumptions next to the lines you would copy.
 
-This repository is the foundation: theme, navigation, search, maths, diagrams, and deployment. A handful of pages are filled in so the tone and layout can be judged. The other sections are reserved, with a short index saying what will go there. Topics that still need a page are on the [roadmap](roadmap.md).
+Engine-agnostic pages explain an idea once. Engine pages are complete, copyable implementations, so they run longer: setup steps, the scripts, and the ways each one fails. Topics that still need a page are on the [roadmap](roadmap.md).
 
 ## How a page is laid out
 
@@ -16,32 +16,14 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 - Angles in Unity scripts are degrees. Angles inside a maths formula are radians unless the formula says otherwise.
 - Spelling is British.
 
-## Sample pages
+## Sections
 
-- [Interpolation and easing](maths/interpolation.md) — lerp, remap, smoothstep, easing polynomials, and frame-rate-independent damping.
-- [Coordinate spaces](graphics/coordinate-spaces.md) — object space through to the screen, with the matrices that get you there.
-- [Third-person orbit camera](unity/orbit-camera.md) — a Unity 6 camera as a plain script and as Cinemachine 3, including collision pull-in.
-- [Character movement](unity/mechanics/character-movement.md) — a Unity 6 CharacterController with walk, run, jump, coyote time, and slopes.
-- [Rigidbody movement](unity/mechanics/rigidbody-movement.md) — the same moves on a dynamic Rigidbody, with acceleration and air control.
-- [Top-down movement](unity/mechanics/top-down.md) — twin-stick aim on a plane, in 3D or with a Rigidbody2D.
-- [2D platformer](unity/mechanics/platformer-2d.md) — a Rigidbody2D jump with coyote time, an apex, and optional walls.
-- [Interaction](unity/mechanics/interaction.md) — focus, prompt, and hold-to-interact for a first-person cast or a third-person overlap.
-- [Health, damage, and stats](unity/systems/health.md) — a Unity 6 health pool, hitbox pipeline, and stat modifiers.
-- [Weapons](unity/combat/weapons.md) — a Unity 6 firearm: fire modes, hitscan and pooled projectiles, ammo, and recoil.
-- [Event systems](unity/architecture/events.md) — C# events, UnityEvent, a typed bus, and ScriptableObject channels.
-- [Shared variables](unity/architecture/variables.md) — ScriptableObject floats, a constant-or-variable reference, and a runtime set.
-- [State machines](unity/architecture/state-machines.md) — idle, move, jump, and fall as predicate transitions, plus a pause stack.
-- [Object pooling](unity/architecture/pooling.md) — a Unity 6 `ObjectPool`, a prefab registry, and effects that return themselves.
-- [Enemy behaviour](unity/ai/enemy.md) — a Unity 6 NavMeshAgent loop: patrol, chase, attack, search, and flee.
-- [Highlight and outline](unity/rendering/highlight-outline.md) — a Unity 6 URP outline, from an inverted hull to a fresnel highlight.
-- [Inventory](unity/systems/inventory/index.md) — a Unity 6 item model, list, grid, slots and hotbar, weight, and equipment.
-- [Building and placement](unity/systems/building.md) — a Unity 6 ghost, grid and free placement, sockets, and a resource cost.
+Each section's index lists what is written there.
 
-## Reserved sections
-
-[Maths](maths/index.md), [graphics](graphics/index.md), and [Unity](unity/index.md) each start with the sample above. Still outlines only:
-
-- [Physics](physics/index.md)
-- [Gameplay and AI](gameplay/index.md)
-- [Engine architecture](engine/index.md)
-- [Optimisation](optimisation/index.md)
+- [Maths](maths/index.md) — interpolation, easing, and frame-rate-independent damping so far.
+- [Graphics](graphics/index.md) — the coordinate spaces from object space to the screen.
+- [Physics](physics/index.md) — integrators, timesteps, and collision. Outline only for now.
+- [Gameplay and AI](gameplay/index.md) — behaviour and game feel, independent of an engine. Outline only for now.
+- [Unity](unity/index.md) — the bulk of the site: cameras, controllers, systems, architecture, AI, combat, and rendering for Unity 6.
+- [Engine architecture](engine/index.md) — how a game is structured past one scene. Outline only for now.
+- [Optimisation](optimisation/index.md) — measuring first, then the fix. Outline only for now.

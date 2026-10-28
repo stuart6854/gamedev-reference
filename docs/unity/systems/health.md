@@ -7,7 +7,7 @@ version: 6+
 
 A health pool, a short damage pipeline, and a stat sheet with modifiers. UI and VFX subscribe to the events. They do not read the pool by polling.
 
-Unity has no general combat package, so this page is the plain implementation. Timed buffs and debuffs are a later page. Add a modifier with the buff component as its source, and call `RemoveFromSource` when it ends. That page is [stat modifiers (buffs and debuffs)](../../roadmap.md#game-systems) on the roadmap.
+Unity has no general combat package, so this page is the plain implementation. Modifiers are on this page. What is not is a clock: a buff that adds a modifier with itself as the source and calls `RemoveFromSource` when it expires. That is [timed buffs and debuffs](../../roadmap.md#game-systems) on the roadmap.
 
 The body that carries this health is often the [character movement](../mechanics/character-movement.md) object. A gun that spends this pool is [Weapons](../combat/weapons.md). It fills a `DamageInfo` and calls `Hurtbox.Receive`. An enemy that swings at this body uses that same call from [enemy behaviour](../ai/enemy.md). A screen that should hear `Died` without polling is [Event systems](../architecture/events.md). A HUD that should read the numbers without a `Health` field can mirror them into a [shared variable](../architecture/variables.md). [Equipment](inventory/equipment.md) adds and removes modifiers on this sheet when gear changes, and a full bag slows movement through the same modifiers on [weight](inventory/weight.md).
 
