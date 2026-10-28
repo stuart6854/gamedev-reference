@@ -15,7 +15,7 @@ pip install -r requirements.txt
 zensical serve
 ```
 
-Open <http://localhost:8000>. `zensical build --clean --strict` writes the static site to `site/` and fails on a broken link or anchor. Zensical does not warn about a page missing from the nav, so add every new page to `nav` in `zensical.toml`.
+Open <http://localhost:8000>. `zensical build --clean --strict` writes the static site to `site/` and fails on a broken link or anchor. Zensical does not check the nav, so `python scripts/check_nav.py` does: it fails if a page in `docs/` is missing from `nav` in `zensical.toml`, or the nav names a page that does not exist. CI runs it before the build.
 
 ## Publishing
 
