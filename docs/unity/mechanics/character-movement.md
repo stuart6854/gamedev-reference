@@ -27,7 +27,7 @@ Turning uses the [exponential blend](../../maths/interpolation.md#frame-rate-ind
 Each `Update` does the following.
 
 1. Read move, jump, and run. A jump press is remembered for **Jump Buffer Time** seconds, so a press that lands slightly early still fires.
-2. Cast down from the capsule centre. The hit is walkable when its slope is within **Slope Limit**. It counts as ground only when the gap under the feet is within the skin width plus `5 cm`. While vertical speed is upward the cast is skipped, so the ground just left cannot cancel the jump.
+2. Sweep a sphere the size of the capsule's base down from the centre, so a slope is measured where the capsule touches it. The hit is walkable when its slope is within **Slope Limit**. It counts as ground only when the gap is within the skin width plus `5 cm`, measured along the surface normal. While vertical speed is upward the cast is skipped, so the ground just left cannot cancel the jump.
 3. On that ground, coyote time is refilled and a small downward speed keeps the capsule seated, which is what lets the controller catch steps. In the air, coyote time counts down and gravity integrates, clamped to **Max Fall Speed**.
 4. Jump when the buffer and the coyote timer are both still live. Take-off speed is \(\sqrt{h \cdot -2g}\) for a jump height \(h\) and gravity \(g\), which is the speed that peaks at \(h\) under constant gravity. The jump spends both timers, so coyote time is not a second jump.
 5. Build a wish direction from the camera. Flatten the camera forward onto the ground plane, and take right as \(\mathrm{up} \times \mathrm{forward}\), which is Unity's left-handed cross product. Clamp the input to length `1` so a diagonal is not faster than a cardinal, drop anything inside the dead zone, then scale the rest of the range so a full push is still full speed. A partial stick scales the speed. Run selects **Run Speed**.
@@ -253,22 +253,21 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             if (_verticalSpeed > 0.05f)
                 return;
 
-            if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit))
+            if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit, out float gap))
                 return;
 
+            // The skin is kept along the normal, so its vertical size grows on a slope.
             _groundNormal = hit.normal;
-            float gap = hit.distance - _controller.height * 0.5f;
-            _grounded = gap <= _controller.skinWidth + GroundedSlack;
+            _grounded = gap <= (_controller.skinWidth + GroundedSlack) / Mathf.Max(0.1f, hit.normal.y);
         }
 
         bool SnapToGround()
         {
             if (_verticalSpeed > 0f)
                 return false;
-            if (!TryWalkableHit(snapDistance, out RaycastHit hit))
+            if (!TryWalkableHit(snapDistance, out RaycastHit hit, out float gap))
                 return false;
 
-            float gap = hit.distance - _controller.height * 0.5f;
             if (gap > snapDistance)
                 return false;
             if (gap > 0.001f)
@@ -278,13 +277,20 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             return true;
         }
 
-        bool TryWalkableHit(float extraReach, out RaycastHit hit)
+        // Sweeps the capsule's bottom sphere down. A ray from the centre would measure a slope
+        // under the centre, not where the capsule touches it, and miss ground on ramps over ~23°.
+        bool TryWalkableHit(float extraReach, out RaycastHit hit, out float gap)
         {
+            float radius = _controller.radius;
+            float toBottomSphere = Mathf.Max(0f, _controller.height * 0.5f - radius);
             Vector3 origin = transform.TransformPoint(_controller.center);
-            float reach = _controller.height * 0.5f + Mathf.Max(0f, extraReach);
-            if (!Physics.Raycast(origin, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
+            float reach = toBottomSphere + Mathf.Max(0f, extraReach);
+
+            gap = 0f;
+            if (!Physics.SphereCast(origin, radius, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
                 return false;
 
+            gap = hit.distance - toBottomSphere;
             return Vector3.Angle(hit.normal, Vector3.up) <= _controller.slopeLimit + 0.01f;
         }
 
@@ -537,22 +543,21 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             if (_verticalSpeed > 0.05f)
                 return;
 
-            if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit))
+            if (!TryWalkableHit(groundCheckDistance, out RaycastHit hit, out float gap))
                 return;
 
+            // The skin is kept along the normal, so its vertical size grows on a slope.
             _groundNormal = hit.normal;
-            float gap = hit.distance - _controller.height * 0.5f;
-            _grounded = gap <= _controller.skinWidth + GroundedSlack;
+            _grounded = gap <= (_controller.skinWidth + GroundedSlack) / Mathf.Max(0.1f, hit.normal.y);
         }
 
         bool SnapToGround()
         {
             if (_verticalSpeed > 0f)
                 return false;
-            if (!TryWalkableHit(snapDistance, out RaycastHit hit))
+            if (!TryWalkableHit(snapDistance, out RaycastHit hit, out float gap))
                 return false;
 
-            float gap = hit.distance - _controller.height * 0.5f;
             if (gap > snapDistance)
                 return false;
             if (gap > 0.001f)
@@ -562,13 +567,20 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             return true;
         }
 
-        bool TryWalkableHit(float extraReach, out RaycastHit hit)
+        // Sweeps the capsule's bottom sphere down. A ray from the centre would measure a slope
+        // under the centre, not where the capsule touches it, and miss ground on ramps over ~23°.
+        bool TryWalkableHit(float extraReach, out RaycastHit hit, out float gap)
         {
+            float radius = _controller.radius;
+            float toBottomSphere = Mathf.Max(0f, _controller.height * 0.5f - radius);
             Vector3 origin = transform.TransformPoint(_controller.center);
-            float reach = _controller.height * 0.5f + Mathf.Max(0f, extraReach);
-            if (!Physics.Raycast(origin, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
+            float reach = toBottomSphere + Mathf.Max(0f, extraReach);
+
+            gap = 0f;
+            if (!Physics.SphereCast(origin, radius, Vector3.down, out hit, reach, groundMask, QueryTriggerInteraction.Ignore))
                 return false;
 
+            gap = hit.distance - toBottomSphere;
             return Vector3.Angle(hit.normal, Vector3.up) <= _controller.slopeLimit + 0.01f;
         }
 
@@ -663,10 +675,10 @@ The two listings share the movement code. Each tab is a complete script. The Inp
 
     **Step Offset** has to stay below the capsule height. Equal or larger, and the controller fails to move.
 
-    **Ground Mask** has to exclude the character when the model has colliders. The cast starts inside the capsule, and a ray that starts inside a collider does not hit that collider, but it will hit a child collider and treat the body as the floor.
+    **Ground Mask** has to exclude the character when the model has colliders. The sweep starts inside the capsule, and a cast ignores a collider it starts inside, but it will hit a child collider and treat the body as the floor.
 
     Gravity has to stay negative. A positive value accelerates the body upward for every airborne frame. `OnValidate` replaces a positive value with its negation.
 
     A camera parented to a root that also yaws will spin, and the wish direction spins with it. Leave the camera unparented, or turn **Rotate Towards Move** off and yaw a child mesh.
 
-    The ground test is one ray through the centre. A lip closer than the floor wins the cast, and a gap the capsule cannot pass still stops the body when the ray itself is clear.
+    The ground test is one sphere sweep. Standing over a ledge, the sweep lands on the lip, so the body counts as grounded with a tilted normal until it slides off. Do not replace the sweep with a ray through the centre: on any ramp steeper than about 23°, that ray reads the ground as further away than the skin, and the body flickers between grounded and falling.
