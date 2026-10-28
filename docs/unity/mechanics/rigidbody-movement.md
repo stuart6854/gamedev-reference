@@ -18,7 +18,7 @@ Which body to use is on the [controllers](controllers/index.md) index. The kinem
 3. Put floors, slopes, and ceilings on layers included in **Ground Mask**. Exclude the character's layer.
 4. Assign **View** to the camera that defines forward, or leave it empty to use `Camera.main`. Only the camera's yaw is used.
 5. Copy the Input System listing. A new Unity 6 project uses that backend. The legacy listing is the same movement for a project still on the Input Manager. The two files declare the same class, so add one of them.
-6. For a body that should face the move, leave **Rotate Towards Move** on and keep the camera off this object. A camera parented here will yaw with the body.
+6. For a body that should face the move, leave **Rotate Towards Move** on and keep the camera off this object. A camera parented here will yaw with the body. For a first-person view, turn it off and use the [first-person camera](../cameras/first-person.md).
 
 The collider's physics material is replaced in `Awake` with zero friction, zero bounce, and **Minimum** combine. A floor material set to **Maximum** would otherwise win the combine and stick the capsule to walls. Create the asset yourself only if you want to share it; the script does not require one.
 

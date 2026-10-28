@@ -26,7 +26,6 @@ Pages that already exist are not listed here.
 ### Cameras
 
 - RTS camera (pan with keys and screen edges, zoom, rotate, bounds; pairs with drag selection)
-- First-person camera (mouse look, pitch clamp, sensitivity, head bob)
 - Camera framing (keeping several subjects in view: a group or target bounding volume, zoom to fit, look-ahead, dead zones)
 
 ### Combat
