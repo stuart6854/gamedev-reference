@@ -551,7 +551,7 @@ The two 3D listings share `TopDownMovement`. Copy one.
 
 Same idea on `Rigidbody2D`. Gravity scale and linear damping are forced to zero. The sprite's nose is local `+Y`; the angle is `Atan2(aim) - 90` degrees. **Camera Relative** uses the camera's right and up on the XY plane, which matches a camera rolled about Z. A pitched 3D isometric camera is the 3D script above, not this one.
 
-Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. **Collision Detection** is set to Continuous in `Awake`. One-way platforms and jumps are the [2D platformer](platformer-2d.md).
+Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. Leave **Freeze Rotation** off: `MoveRotation` turns a 2D body by giving it angular velocity, so a frozen body never faces the aim. `Awake` clears it. **Collision Detection** is set to Continuous in `Awake`. One-way platforms and jumps are the [2D platformer](platformer-2d.md).
 
 | Field | Default | Effect |
 | --- | --- | --- |
@@ -639,7 +639,9 @@ Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. *
             _body.angularDamping = 0f;
             _body.interpolation = RigidbodyInterpolation2D.Interpolate;
             _body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            _body.constraints = RigidbodyConstraints2D.FreezeRotation;
+            // Rotation is not frozen: MoveRotation turns the body through angular velocity,
+            // which a frozen body never gets. Face sets the angle every physics step.
+            _body.constraints = RigidbodyConstraints2D.None;
 
             Collider2D collider = GetComponent<Collider2D>();
             if (collider != null)
@@ -830,7 +832,9 @@ Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. *
             _body.angularDamping = 0f;
             _body.interpolation = RigidbodyInterpolation2D.Interpolate;
             _body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            _body.constraints = RigidbodyConstraints2D.FreezeRotation;
+            // Rotation is not frozen: MoveRotation turns the body through angular velocity,
+            // which a frozen body never gets. Face sets the angle every physics step.
+            _body.constraints = RigidbodyConstraints2D.None;
 
             Collider2D collider = GetComponent<Collider2D>();
             if (collider != null)
