@@ -6,6 +6,14 @@ Pages that already exist are not listed here.
 
 ## Planned
 
+### Maths
+
+- Vectors, dot and cross products (facing tests, projection, signed angles, change of basis)
+- Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
+- Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
+- Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
+- Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
+
 ### Movement
 
 - Dash
@@ -13,12 +21,26 @@ Pages that already exist are not listed here.
 - Ledge climb
 - Grappling hook
 - Drag selection methods (RTS-style box/marquee selection: screen-space rectangle vs world-space frustum/volume selection, lasso selection, add/remove with modifier keys, click vs drag threshold, double-click to select all of a type, drawing the selection rectangle in UI)
+- Formation movement (keeping a selected group's shape on a move order: line, box, and wedge slots, slot assignment, facing, and regrouping around obstacles)
+
+### Cameras
+
+- RTS camera (pan with keys and screen edges, zoom, rotate, bounds; pairs with drag selection)
+- First-person camera (mouse look, pitch clamp, sensitivity, head bob)
+- Camera framing (keeping several subjects in view: a group or target bounding volume, zoom to fit, look-ahead, dead zones)
 
 ### Combat
 
+- Lock-on targeting (target selection and cycling, breaking lock on distance or sight, strafing around the target, and the camera framing player and target)
 - Attack combos (melee combo chains, input buffering, animation-driven combo windows)
 - Hit flash
 - Damage numbers
+
+### Architecture
+
+- MonoBehaviour lifecycle (Awake, OnEnable, Start, and what each may assume about other components; script execution order; what belongs in Update, FixedUpdate, and LateUpdate)
+- Bootstrapping and services (singletons, a service locator, a persistent systems scene)
+- Command pattern (undo and redo, for building and editor-style tools)
 
 ### Game systems
 
@@ -27,6 +49,7 @@ Pages that already exist are not listed here.
 - Loot tables (weighted random drops, rarity tiers, nested tables, guaranteed/pity drops)
 - Enemy wave spawning
 - Fog of war
+- Grid tactics (movement range by flood fill, attack ranges, line of sight on a grid, and path cost)
 
 ### Presentation
 
@@ -38,6 +61,7 @@ Pages that already exist are not listed here.
 ### Animation
 
 - Ragdolls
+- Procedural animation (IK legs that plant and step for spiders and mechs, body height and tilt from foot positions)
 
 ### AI
 
@@ -53,7 +77,9 @@ Pages that already exist are not listed here.
 ### Space and curves
 
 - Bézier curves and splines (Unity Splines package)
+- Spline-based meshes (roads, fences, pipes, and rails extruded or instanced along a spline in the editor)
 - Spatial partitioning (grids, quadtrees)
+- Hex grids (axial and cube coordinates, neighbours, distance, rounding, and world conversion)
 
 ### Editor
 
