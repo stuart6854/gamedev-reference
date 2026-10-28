@@ -11,7 +11,7 @@ Which body to use is on the [controllers](controllers/index.md) index. This page
 
 `Move` takes a displacement for this frame and is called from `Update`. This is not a Rigidbody controller, so the Unity 6 rename of `Rigidbody.velocity` to `linearVelocity` does not apply. `CharacterController.velocity` is unchanged, and this script does not read it.
 
-Coyote time and jump buffering are noted under [Gameplay and AI](../../gameplay/index.md). Turning uses the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping) from the maths notes. A matching third-person view is the [orbit camera](../orbit-camera.md).
+Turning uses the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping) from the maths notes. A matching third-person view is the [orbit camera](../orbit-camera.md).
 
 ## Setup
 

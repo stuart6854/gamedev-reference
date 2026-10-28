@@ -9,7 +9,7 @@ Walk, run, and jump on a dynamic `Rigidbody`, relative to the camera's yaw. The 
 
 Unity 6 names the speed `linearVelocity` and the drag `linearDamping`. `velocity` and `drag` are obsolete. This script sets `linearDamping` to zero and slows down in code, so the acceleration numbers are the ones that actually happen.
 
-Which body to use is on the [controllers](controllers/index.md) index. The kinematic version is [character movement](character-movement.md). The same idle, move, jump, and fall names, read from `linearVelocity`, are on the [state machine](../architecture/state-machines.md) page. Coyote time and jump buffering are the same idea as on the character page, and they are noted under [Gameplay and AI](../../gameplay/index.md). Turning uses the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping). A matching camera is the [orbit camera](../orbit-camera.md).
+Which body to use is on the [controllers](controllers/index.md) index. The kinematic version is [character movement](character-movement.md). The same idle, move, jump, and fall names, read from `linearVelocity`, are on the [state machine](../architecture/state-machines.md) page. Coyote time and jump buffering are the same idea as on the character page. Turning uses the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping). A matching camera is the [orbit camera](../orbit-camera.md).
 
 ## Setup
 

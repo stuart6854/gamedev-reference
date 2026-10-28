@@ -1,6 +1,6 @@
 # AI
 
-Agents that decide what to do, on top of a body from [Mechanics](../mechanics/index.md). The decision model is the [state machine](../architecture/state-machines.md) from Architecture. Notes that are not tied to one engine stay under [Gameplay and AI](../../gameplay/index.md).
+Agents that decide what to do, on top of a body from [Mechanics](../mechanics/index.md). The decision model is the [state machine](../architecture/state-machines.md) from Architecture.
 
 Written:
 

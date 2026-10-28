@@ -2,7 +2,7 @@
 
 <https://stuart6854.github.io/gamedev-reference/>
 
-Personal reference site for game-development notes: maths, graphics, physics, gameplay, Unity, engine architecture, and optimisation. Built with [MkDocs](https://www.mkdocs.org/) and [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
+Personal reference site for game-development notes: maths, graphics, physics, gameplay, Unity, engine architecture, and optimisation. Built with [Zensical](https://zensical.org/). The configuration is `zensical.toml`.
 
 ## Preview locally
 
@@ -12,10 +12,10 @@ Requires Python 3.11 or newer.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-mkdocs serve
+zensical serve
 ```
 
-Open <http://127.0.0.1:8000>. `mkdocs build --strict` writes the static site to `site/` and fails if the build warns.
+Open <http://localhost:8000>. `zensical build --clean --strict` writes the static site to `site/` and fails on a broken link or anchor. Zensical does not warn about a page missing from the nav, so add every new page to `nav` in `zensical.toml`.
 
 ## Publishing
 
@@ -32,7 +32,7 @@ version: 6+
 ---
 ```
 
-`engine`, `version`, and `package` each take one value or a list. `hooks/version_pills.py` renders them as pills directly under the page title, and `docs/stylesheets/extra.css` styles them in the teal and amber theme for both colour schemes. A page with none of the keys is left unchanged.
+`engine`, `version`, and `package` each take one value or a list. `overrides/partials/content.html` renders them as pills directly under the page title, and `docs/stylesheets/extra.css` styles them in the teal and amber theme for both colour schemes. A page with none of the keys is left unchanged.
 
 `package` names an official package the page actually uses, with the version in the label:
 
@@ -41,6 +41,10 @@ package: Cinemachine 3.x
 ```
 
 For now, engine pages target only the current generation: Unity 6 and later. Unreal 5.x and Godot 4.x will use the same frontmatter when those sections exist. Do not add a page aimed at an older editor.
+
+## Hidden sections
+
+A top-level section with no pages yet (Gameplay and AI, Engine architecture, Optimisation) keeps its outline in `docs/`, but is listed under `exclude_docs` in `zensical.toml`, so it is not built or shown. When its first page is written, remove it from `exclude_docs`, add it to `nav`, and add it to the section list on the home page.
 
 ## Roadmap
 
