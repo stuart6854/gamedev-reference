@@ -14,6 +14,11 @@ Pages that already exist are not listed here.
 - Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
 - Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
 
+### Data structures
+
+- Spatial hash grid (uniform cells keyed by hashed coordinates, neighbour and radius queries, choosing a cell size, moving objects between cells)
+- Quadtree and octree (subdividing by density, insert, remove, and query, loose bounds for moving objects, when a grid is better)
+
 ### Movement
 
 - Dash
