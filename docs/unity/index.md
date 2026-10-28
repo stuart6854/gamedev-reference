@@ -4,7 +4,7 @@ Notes specific to Unity: lifecycle, input, queries, and the places where Unity�
 
 Written, by group. Each group's index lists its pages:
 
-- [Third-person orbit camera](orbit-camera.md) — a plain script and a Cinemachine 3 variant.
+- [Cameras](cameras/index.md) — the third-person orbit camera, and a first-person camera.
 - [Mechanics](mechanics/index.md) — the four movement controllers and interaction.
 - [Systems](systems/index.md) — health and stats, inventory, and building.
 - [Architecture](architecture/index.md) — the MonoBehaviour lifecycle, events, shared variables, state machines, and pooling.

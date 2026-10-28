@@ -5,7 +5,7 @@ version: 6+
 
 # Character movement
 
-Walk, run, and jump on a `CharacterController`, usable whether the camera is first person or third person. Movement is relative to the camera's yaw. The body can turn to face the move, or a parented camera can own the yaw and the mesh can turn on its own.
+Walk, run, and jump on a `CharacterController`, usable whether the camera is first person or third person. Movement is relative to the camera's yaw. The body can turn to face the move, or a [first-person camera](../cameras/first-person.md) can own the yaw.
 
 Which body to use is on the [controllers](controllers/index.md) index. This page is the kinematic capsule. The physics capsule is [Rigidbody movement](rigidbody-movement.md). Classifying idle, move, jump, and fall, without taking `Move` away from this script, is the [state machine](../architecture/state-machines.md).
 
@@ -20,7 +20,7 @@ Turning uses the [exponential blend](../../maths/interpolation.md#frame-rate-ind
 3. Assign **View** to the camera that defines forward, or leave it empty to use `Camera.main`. Only the camera's yaw is used.
 4. Copy the Input System listing. A new Unity 6 project uses that backend. The legacy listing is the same movement for a project still on the Input Manager. The two files declare the same class, so add one of them.
 5. Put floors on layers included in **Ground Mask**. Exclude the character's layer when the model has colliders of its own.
-6. For a third-person body that should face the move, leave **Rotate Towards Move** on and keep the camera off this object. The orbit camera already works that way: its pivot is in the world, not a child. For a first-person camera parented here, turn **Rotate Towards Move** off, or point **Facing Root** at a child mesh so the camera does not yaw with the body.
+6. For a third-person body that should face the move, leave **Rotate Towards Move** on and keep the camera off this object. The orbit camera already works that way: its pivot is in the world, not a child. For a first-person view, turn **Rotate Towards Move** off and use the [first-person camera](../cameras/first-person.md), which stays unparented and turns the body to its yaw.
 
 ## What each step is doing
 
