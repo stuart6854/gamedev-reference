@@ -16,7 +16,6 @@ Pages that already exist are not listed here.
 
 ### Data structures
 
-- Ring buffer (fixed-capacity FIFO, overwrite or reject when full, power-of-two masking; input history, logs, network snapshots)
 - Free list and slab pool (fixed-size blocks with an intrusive free list, the storage behind pools and handle tables)
 
 ### Movement

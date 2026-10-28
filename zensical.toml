@@ -33,6 +33,7 @@ nav = [
     "data-structures/index.md",
     { "Sparse set" = "data-structures/sparse-set.md" },
     { "Handle table" = "data-structures/handle-table.md" },
+    { "Ring buffer" = "data-structures/ring-buffer.md" },
   ] },
   { "Graphics" = [
     "graphics/index.md",
