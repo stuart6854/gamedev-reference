@@ -45,7 +45,7 @@ This is exact for any \(h\), so a jump reaches the same peak at every frame rate
 | Exact | 1.400 m |
 
 !!! warning "Variable steps change the jump"
-    The error depends on \(h\). A controller that integrates in `Update` with `Time.deltaTime` jumps to a different height at each frame rate. [Character movement](../unity/mechanics/character-movement.md) does this: with its defaults, the peak is about 7 cm high at 60 fps and 3 cm high at 144 fps. It overshoots rather than falling short because the take-off frame moves at the full jump speed before gravity is applied. Use the exact form above for the vertical move, or integrate on a fixed step.
+    The error depends on \(h\). A controller that integrates in `Update` with `Time.deltaTime` jumps to a different height at each frame rate. With the defaults on [character movement](../unity/mechanics/character-movement.md), an Euler step peaks about 7 cm high at 60 fps and 3 cm high at 144 fps. That page now moves by the average of the start and end speed, which is the exact form above written differently. The other fix is to integrate on a fixed step.
 
 ## Verlet
 
