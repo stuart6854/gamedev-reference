@@ -8,5 +8,6 @@ Written:
 
 - [Sparse set](sparse-set.md) — integer keys with constant-time add, remove, and lookup, and a packed array to iterate. The component store behind most ECS libraries.
 - [Handle table](handle-table.md) — index and generation handles that detect a destroyed object, the free list behind them, generation wrap, and a packed variant.
+- [Ring buffer](ring-buffer.md) — a fixed-capacity queue that rejects or overwrites when full, power-of-two masking, input history, moving averages, snapshots, and a lock-free queue between two threads.
 
-Ring buffers and free lists are on the [roadmap](../roadmap.md#data-structures).
+Free lists are on the [roadmap](../roadmap.md#data-structures).
