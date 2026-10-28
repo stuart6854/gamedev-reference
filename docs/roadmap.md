@@ -14,10 +14,6 @@ Pages that already exist are not listed here.
 - Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
 - Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
 
-### Data structures
-
-- Free list and slab pool (fixed-size blocks with an intrusive free list, the storage behind pools and handle tables)
-
 ### Movement
 
 - Dash
