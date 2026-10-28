@@ -14,7 +14,6 @@ Written, by group. Each group's index lists its pages:
 
 Planned, with no page yet:
 
-- `MonoBehaviour` lifecycle, script order, and what is safe in `Update` versus `LateUpdate`.
 - The legacy Input Manager and the Input System, including projects that have both enabled.
 - Physics queries: ray, sphere, and shape casts, layer masks, and triggers.
 - Data and loading: `ScriptableObject`, addressables, and what belongs out of the scene.

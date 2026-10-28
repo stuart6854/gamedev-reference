@@ -14,11 +14,22 @@ Pages that already exist are not listed here.
 - Grappling hook
 - Drag selection methods (RTS-style box/marquee selection: screen-space rectangle vs world-space frustum/volume selection, lasso selection, add/remove with modifier keys, click vs drag threshold, double-click to select all of a type, drawing the selection rectangle in UI)
 
+### Cameras
+
+- RTS camera (pan with keys and screen edges, zoom, rotate, bounds; pairs with drag selection)
+- First-person camera (mouse look, pitch clamp, sensitivity, head bob)
+
 ### Combat
 
 - Attack combos (melee combo chains, input buffering, animation-driven combo windows)
 - Hit flash
 - Damage numbers
+
+### Architecture
+
+- MonoBehaviour lifecycle (Awake, OnEnable, Start, and what each may assume about other components; script execution order; what belongs in Update, FixedUpdate, and LateUpdate)
+- Bootstrapping and services (singletons, a service locator, a persistent systems scene)
+- Command pattern (undo and redo, for building and editor-style tools)
 
 ### Game systems
 
