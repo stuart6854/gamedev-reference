@@ -18,6 +18,7 @@ nav:
       - Coordinate spaces: graphics/coordinate-spaces.md
   - Physics:
       - physics/index.md
+      - Fixed timestep: physics/fixed-timestep.md
   - Gameplay & AI:
       - gameplay/index.md
   - Unity:
