@@ -1,6 +1,6 @@
 # Architecture
 
-How Unity objects talk, the assets and machines they share, and how instances are reused. This is the Unity side. Notes that are not tied to one engine stay under [Engine architecture](../../engine/index.md).
+How Unity objects talk, the assets and machines they share, and how instances are reused. This is the Unity side.
 
 Written:
 

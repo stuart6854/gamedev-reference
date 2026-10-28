@@ -1,0 +1,161 @@
+[project]
+site_name = "Game development reference"
+site_description = "Personal notes on maths, graphics, physics, gameplay, Unity, and engine architecture."
+site_author = "Stuart"
+site_url = "https://stuart6854.github.io/gamedev-reference/"
+repo_url = "https://github.com/stuart6854/gamedev-reference"
+repo_name = "stuart6854/gamedev-reference"
+edit_uri = "edit/main/docs/"
+copyright = "Copyright &copy; 2026 Stuart"
+
+extra_css = ["stylesheets/extra.css"]
+extra_javascript = [
+  "javascripts/mathjax.js",
+  "https://unpkg.com/mathjax@3.2.2/es5/tex-mml-chtml.js",
+]
+
+# Sections with no pages yet. Their outlines stay in docs/ but are not built.
+# When a section gets its first page, remove it here and add it to the nav.
+exclude_docs = """
+gameplay/
+engine/
+optimisation/
+"""
+
+nav = [
+  { "Home" = "index.md" },
+  { "Roadmap" = "roadmap.md" },
+  { "Maths" = [
+    "maths/index.md",
+    { "Interpolation and easing" = "maths/interpolation.md" },
+  ] },
+  { "Graphics" = [
+    "graphics/index.md",
+    { "Coordinate spaces" = "graphics/coordinate-spaces.md" },
+  ] },
+  { "Physics" = [
+    "physics/index.md",
+    { "Fixed timestep" = "physics/fixed-timestep.md" },
+  ] },
+  { "Unity" = [
+    "unity/index.md",
+    { "Third-person orbit camera" = "unity/orbit-camera.md" },
+    { "Mechanics" = [
+      "unity/mechanics/index.md",
+      { "Controllers" = [
+        "unity/mechanics/controllers/index.md",
+        { "Character movement" = "unity/mechanics/character-movement.md" },
+        { "Rigidbody movement" = "unity/mechanics/rigidbody-movement.md" },
+        { "Top-down movement" = "unity/mechanics/top-down.md" },
+        { "2D platformer" = "unity/mechanics/platformer-2d.md" },
+      ] },
+      { "Interaction" = "unity/mechanics/interaction.md" },
+    ] },
+    { "Systems" = [
+      "unity/systems/index.md",
+      { "Health, damage, and stats" = "unity/systems/health.md" },
+      { "Inventory" = [
+        "unity/systems/inventory/index.md",
+        { "List" = "unity/systems/inventory/list.md" },
+        { "Grid" = "unity/systems/inventory/grid.md" },
+        { "Slots and hotbar" = "unity/systems/inventory/slots.md" },
+        { "Weight" = "unity/systems/inventory/weight.md" },
+        { "Equipment" = "unity/systems/inventory/equipment.md" },
+      ] },
+      { "Building and placement" = "unity/systems/building.md" },
+    ] },
+    { "Architecture" = [
+      "unity/architecture/index.md",
+      { "Event systems" = "unity/architecture/events.md" },
+      { "Shared variables" = "unity/architecture/variables.md" },
+      { "State machines" = "unity/architecture/state-machines.md" },
+      { "Object pooling" = "unity/architecture/pooling.md" },
+    ] },
+    { "AI" = [
+      "unity/ai/index.md",
+      { "Enemy behaviour" = "unity/ai/enemy.md" },
+    ] },
+    { "Combat" = [
+      "unity/combat/index.md",
+      { "Weapons" = "unity/combat/weapons.md" },
+    ] },
+    { "Rendering" = [
+      "unity/rendering/index.md",
+      { "Highlight and outline" = "unity/rendering/highlight-outline.md" },
+    ] },
+  ] },
+]
+
+[project.theme]
+name = "material"
+# Adds the version pills under page titles (partials/content.html).
+custom_dir = "overrides"
+language = "en"
+features = [
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.instant.progress",
+  "navigation.tracking",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.sections",
+  "navigation.expand",
+  "navigation.indexes",
+  "navigation.top",
+  "navigation.footer",
+  "toc.follow",
+  "search.suggest",
+  "search.highlight",
+  "content.code.copy",
+  "content.tabs.link",
+]
+
+[project.theme.icon]
+logo = "material/cube-outline"
+
+[project.theme.font]
+text = "Source Sans 3"
+code = "JetBrains Mono"
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "teal"
+accent = "amber"
+toggle = { icon = "material/weather-night", name = "Switch to dark mode" }
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "teal"
+accent = "amber"
+toggle = { icon = "material/weather-sunny", name = "Switch to light mode" }
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/stuart6854"
+
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+
+[project.markdown_extensions.toc]
+permalink = true
+
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+
+[project.markdown_extensions.pymdownx.details]
+
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+
+[project.markdown_extensions.pymdownx.inlinehilite]
+
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+slugify = { object = "pymdownx.slugs.slugify", kwds = { case = "lower" } }

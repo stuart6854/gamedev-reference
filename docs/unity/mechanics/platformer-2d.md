@@ -7,7 +7,7 @@ version: 6+
 
 A side-view body on a `Rigidbody2D`: run, a jump whose height depends on how long the button is held, coyote time, a jump buffer, lighter gravity at the apex, heavier gravity on the way down, ground and wall probes, and an optional wall slide and wall jump.
 
-Which body to use is on the [controllers](controllers/index.md) index. The 3D physics body is [Rigidbody movement](rigidbody-movement.md). A top-down `Rigidbody2D` with no jump is [top-down movement](top-down.md). Coyote time and the buffer are the same idea as [character movement](character-movement.md), noted under [Gameplay and AI](../../gameplay/index.md). Jump and fall as states, using `linearVelocity`, are the [state machine](../architecture/state-machines.md).
+Which body to use is on the [controllers](controllers/index.md) index. The 3D physics body is [Rigidbody movement](rigidbody-movement.md). A top-down `Rigidbody2D` with no jump is [top-down movement](top-down.md). Coyote time and the buffer are the same idea as [character movement](character-movement.md). Jump and fall as states, using `linearVelocity`, are the [state machine](../architecture/state-machines.md).
 
 Unity 6 names the speed `linearVelocity` and the drag `linearDamping`. `velocity` and `drag` are obsolete. `gravityScale` is unchanged. The script sets `linearDamping` to zero and does its slowing in code.
 

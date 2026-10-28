@@ -1,0 +1,28 @@
+{#-
+  Material's content partial, plus version pills under the page title.
+  The pills come from `engine`, `version`, and `package` in the page
+  frontmatter. Each key takes one value or a list.
+-#}
+{%- macro pill_list(value, kind) -%}
+  {%- if value is not none and value != "" -%}
+    {%- set items = [value] if value is string or value is not iterable else value -%}
+    {%- for item in items -%}
+      <span class="version-pill version-pill--{{ kind }}">{{ item }}</span>
+    {%- endfor -%}
+  {%- endif -%}
+{%- endmacro -%}
+{%- set meta = page.meta or {} -%}
+{%- set pills = pill_list(meta.engine, "engine") ~ pill_list(meta.version, "version") ~ pill_list(meta.package, "package") -%}
+{% include "partials/actions.html" %}
+{% if "<h1" not in page.content %}
+  <h1>{{ page.title | d(config.site_name, true)}}</h1>
+{% endif %}
+{% if pills %}
+  {{ page.content | replace("</h1>", "</h1><p class=\"version-pills\">" ~ pills ~ "</p>") }}
+{% else %}
+  {{ page.content }}
+{% endif %}
+{% include "partials/tags.html" %}
+{% include "partials/source-file.html" %}
+{% include "partials/feedback.html" %}
+{% include "partials/comments.html" %}
