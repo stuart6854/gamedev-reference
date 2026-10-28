@@ -28,13 +28,14 @@ Each `Update` does the following.
 
 1. Read move, jump, and run. A jump press is remembered for **Jump Buffer Time** seconds, so a press that lands slightly early still fires.
 2. Sweep a sphere the size of the capsule's base down from the centre, so a slope is measured where the capsule touches it. The hit is walkable when its slope is within **Slope Limit**. It counts as ground only when the gap is within the skin width plus `5 cm`, measured along the surface normal. While vertical speed is upward the cast is skipped, so the ground just left cannot cancel the jump.
-3. On that ground, coyote time is refilled and a small downward speed keeps the capsule seated, which is what lets the controller catch steps. In the air, coyote time counts down and gravity integrates, clamped to **Max Fall Speed**.
+3. On that ground, coyote time is refilled and a small downward speed keeps the capsule seated, which is what lets the controller catch steps. In the air, coyote time counts down.
 4. Jump when the buffer and the coyote timer are both still live. Take-off speed is \(\sqrt{h \cdot -2g}\) for a jump height \(h\) and gravity \(g\), which is the speed that peaks at \(h\) under constant gravity. The jump spends both timers, so coyote time is not a second jump.
-5. Build a wish direction from the camera. Flatten the camera forward onto the ground plane, and take right as \(\mathrm{up} \times \mathrm{forward}\), which is Unity's left-handed cross product. Clamp the input to length `1` so a diagonal is not faster than a cardinal, drop anything inside the dead zone, then scale the rest of the range so a full push is still full speed. A partial stick scales the speed. Run selects **Run Speed**.
-6. On walkable ground, project that horizontal velocity onto the surface and restore its length. The stride stays the same on a slope instead of shrinking by the cosine.
-7. `Move` by `(horizontal + up * vertical) * dt`. A ceiling contact while rising zeroes the upward speed.
-8. If this frame was not a jump and the body is still just above walkable ground, within **Snap Distance**, move down the remaining gap and treat the frame as grounded. That is a step down. A real ledge is deeper than the snap, the cast misses, and the coyote window runs instead.
-9. If **Rotate Towards Move** is set, yaw **Facing Root** toward the horizontal wish. The blend is \(1 - e^{-kt}\) with \(k\) = **Turn Sharpness**. Zero snaps.
+5. In the air, including the frame of a jump, gravity changes the vertical speed, clamped to **Max Fall Speed**. The vertical move is the average of the speed before and after, times the frame time. That is exact under constant gravity, so the peak is **Jump Height** at any frame rate. Moving by the end speed alone lands a few centimetres off, by a different amount at each frame rate. The [integrators](../../physics/integrators.md#constant-acceleration-exactly) page has the numbers.
+6. Build a wish direction from the camera. Flatten the camera forward onto the ground plane, and take right as \(\mathrm{up} \times \mathrm{forward}\), which is Unity's left-handed cross product. Clamp the input to length `1` so a diagonal is not faster than a cardinal, drop anything inside the dead zone, then scale the rest of the range so a full push is still full speed. A partial stick scales the speed. Run selects **Run Speed**.
+7. On walkable ground, project that horizontal velocity onto the surface and restore its length. The stride stays the same on a slope instead of shrinking by the cosine.
+8. `Move` by `horizontal * dt` plus that vertical step. A ceiling contact while rising zeroes the upward speed.
+9. If this frame was not a jump and the body is still just above walkable ground, within **Snap Distance**, move down the remaining gap and treat the frame as grounded. That is a step down. A real ledge is deeper than the snap, the cast misses, and the coyote window runs instead.
+10. If **Rotate Towards Move** is set, yaw **Facing Root** toward the horizontal wish. The blend is \(1 - e^{-kt}\) with \(k\) = **Turn Sharpness**. Zero snaps.
 
 A short jump and a held jump are the same height. Cutting the upward speed when the button is released is a separate tweak and is not in this script.
 
@@ -198,12 +199,17 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             else
             {
                 _coyote -= dt;
-                _verticalSpeed += gravity * dt;
-                if (_verticalSpeed < maxFallSpeed)
-                    _verticalSpeed = maxFallSpeed;
             }
 
             bool jumped = TryJump();
+
+            // Move by the average of the start and end speed. Under constant gravity that is
+            // exact, so the jump peaks at Jump Height at any frame rate.
+            float startSpeed = _verticalSpeed;
+            if (!_grounded)
+                _verticalSpeed = Mathf.Max(_verticalSpeed + gravity * dt, maxFallSpeed);
+            float verticalStep = 0.5f * (startSpeed + _verticalSpeed) * dt;
+
             Vector3 wish = WishDirection(move, out float magnitude);
             float speed = (run ? runSpeed : walkSpeed) * magnitude;
             Vector3 horizontal = wish * speed;
@@ -215,7 +221,7 @@ The two listings share the movement code. Each tab is a complete script. The Inp
                     horizontal = along.normalized * speed;
             }
 
-            Vector3 displacement = (horizontal + Vector3.up * _verticalSpeed) * dt;
+            Vector3 displacement = horizontal * dt + Vector3.up * verticalStep;
             CollisionFlags flags = _controller.Move(displacement);
             if ((flags & CollisionFlags.Above) != 0 && _verticalSpeed > 0f)
                 _verticalSpeed = 0f;
@@ -488,12 +494,17 @@ The two listings share the movement code. Each tab is a complete script. The Inp
             else
             {
                 _coyote -= dt;
-                _verticalSpeed += gravity * dt;
-                if (_verticalSpeed < maxFallSpeed)
-                    _verticalSpeed = maxFallSpeed;
             }
 
             bool jumped = TryJump();
+
+            // Move by the average of the start and end speed. Under constant gravity that is
+            // exact, so the jump peaks at Jump Height at any frame rate.
+            float startSpeed = _verticalSpeed;
+            if (!_grounded)
+                _verticalSpeed = Mathf.Max(_verticalSpeed + gravity * dt, maxFallSpeed);
+            float verticalStep = 0.5f * (startSpeed + _verticalSpeed) * dt;
+
             Vector3 wish = WishDirection(move, out float magnitude);
             float speed = (run ? runSpeed : walkSpeed) * magnitude;
             Vector3 horizontal = wish * speed;
@@ -505,7 +516,7 @@ The two listings share the movement code. Each tab is a complete script. The Inp
                     horizontal = along.normalized * speed;
             }
 
-            Vector3 displacement = (horizontal + Vector3.up * _verticalSpeed) * dt;
+            Vector3 displacement = horizontal * dt + Vector3.up * verticalStep;
             CollisionFlags flags = _controller.Move(displacement);
             if ((flags & CollisionFlags.Above) != 0 && _verticalSpeed > 0f)
                 _verticalSpeed = 0f;
