@@ -1,6 +1,6 @@
 # Interpolation and easing
 
-Blending two values, rebuilding a blend parameter, and approaching a target by a fraction that does not depend on the frame rate. The [orbit camera](../unity/orbit-camera.md) uses the damping step at the bottom for its zoom and for the way it eases back out after a collision.
+Blending two values, rebuilding a blend parameter, and approaching a target by a fraction that does not depend on the frame rate. The [orbit camera](../unity/cameras/third-person.md) uses the damping step at the bottom for its zoom and for the way it eases back out after a collision.
 
 Throughout, \(t\) is a blend weight. Outside a function that says it saturates, \(t\) is whatever the caller passed in. Easing polynomials below assume \(t \in [0, 1]\).
 

@@ -7,7 +7,7 @@ version: 6+
 
 Move with WASD or the left stick, and aim somewhere else: at the mouse, through a ray on the ground plane, or with the right stick. The 3D body is a `Rigidbody` locked to the horizontal plane. A 2D variant at the bottom uses `Rigidbody2D` with gravity off.
 
-Which body to use is on the [controllers](controllers/index.md) index. This one does not jump. A camera pitched down from the side is still this controller; the [orbit camera](../orbit-camera.md) works if **Camera Relative** is on and the camera is not a child of the body.
+Which body to use is on the [controllers](controllers/index.md) index. This one does not jump. A camera pitched down from the side is still this controller; the [orbit camera](../cameras/third-person.md) works if **Camera Relative** is on and the camera is not a child of the body.
 
 ## Setup
 
@@ -975,7 +975,7 @@ Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. L
 
 !!! warning "Common pitfalls"
 
-    Do not parent the camera to the body. The body yaws to aim, and a child camera yaws with it, so the mouse ray and the camera-relative axes spin. The [orbit camera](../orbit-camera.md) stays unparented; this page wants the same.
+    Do not parent the camera to the body. The body yaws to aim, and a child camera yaws with it, so the mouse ray and the camera-relative axes spin. The [orbit camera](../cameras/third-person.md) stays unparented; this page wants the same.
 
     **Linear Damping** is forced to zero. A leftover drag value stacks with **Deceleration** and the stick never quite reaches **Speed**. **Interpolate** is what keeps a follow camera from stepping at the physics rate. Leave **Use Gravity** off on the 3D body, and **Gravity Scale** at zero on the 2D body. Freezing position Y is the 3D lock; gravity on top of that fights the constraint.
 

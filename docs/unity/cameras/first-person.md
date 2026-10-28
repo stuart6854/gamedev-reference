@@ -7,7 +7,7 @@ version: 6+
 
 Mouse and right-stick look, a pitch clamp, cursor lock, and a head bob driven by how far the body actually moved. The camera is not parented to the body. It follows the body's position in `LateUpdate` and owns the yaw, and the body is turned to match. That one arrangement works for both the [CharacterController](../mechanics/character-movement.md) and the [Rigidbody](../mechanics/rigidbody-movement.md) controllers.
 
-Cinemachine is not used here. A first-person view is one transform at the eyes. Cinemachine adds blending between cameras, which a cutscene needs and plain look does not. The third-person rig with Cinemachine is the [orbit camera](../orbit-camera.md).
+Cinemachine is not used here. A first-person view is one transform at the eyes. Cinemachine adds blending between cameras, which a cutscene needs and plain look does not. The third-person rig with Cinemachine is the [orbit camera](third-person.md).
 
 ## Setup
 
