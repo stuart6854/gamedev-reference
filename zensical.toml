@@ -44,6 +44,7 @@ nav = [
       "unity/cameras/index.md",
       { "Third-person orbit camera" = "unity/orbit-camera.md" },
       { "First-person camera" = "unity/cameras/first-person.md" },
+      { "Top-down strategy camera" = "unity/cameras/rts.md" },
     ] },
     { "Mechanics" = [
       "unity/mechanics/index.md",
