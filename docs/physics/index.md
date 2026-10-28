@@ -4,7 +4,7 @@ Notes on simulation as it is written in gameplay code: integrators, queries, and
 
 Planned topics:
 
-- Explicit Euler, semi-implicit Euler, and when a Verlet step is the one you actually want.
+- Explicit Euler, semi-implicit Euler, and when a Verlet step is the one you actually want. Written: [Integrators](integrators.md).
 - Fixed timesteps, the accumulator, and what is allowed to read the interpolated render pose. Written: [Fixed timestep and the accumulator](fixed-timestep.md).
 - Collision detection versus collision response, contact manifolds, and triggers.
 - Character controllers: sliding along a plane, step offset, and ground snapping.

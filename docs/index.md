@@ -22,7 +22,7 @@ Each section's index lists what is written there.
 
 - [Maths](maths/index.md) — interpolation, easing, and frame-rate-independent damping so far.
 - [Graphics](graphics/index.md) — the coordinate spaces from object space to the screen.
-- [Physics](physics/index.md) — the fixed timestep and the accumulator so far.
+- [Physics](physics/index.md) — the fixed timestep and integrators.
 - [Unity](unity/index.md) — the bulk of the site: cameras, controllers, systems, architecture, AI, combat, and rendering for Unity 6.
 
 Gameplay and AI, engine architecture, and optimisation join this list when their first page is written.

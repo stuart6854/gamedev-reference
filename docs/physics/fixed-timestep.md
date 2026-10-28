@@ -219,4 +219,4 @@ clock.Advance(frameTime, ball.Simulate);
 Draw(ball.RenderPosition(clock.Alpha));
 ```
 
-The step method in `Ball` is semi-implicit Euler. Why that ordering matters, and when a different integrator is worth it, is the integrators topic on the [physics](index.md) index.
+The step method in `Ball` is semi-implicit Euler. Why that ordering matters, and when a different integrator is worth it, is on [integrators](integrators.md).
