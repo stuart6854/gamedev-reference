@@ -277,9 +277,31 @@ public class StatSheet : MonoBehaviour
     [SerializeField] Binding[] bindings = Array.Empty<Binding>();
 
     readonly Dictionary<StatDefinition, Stat> _stats = new Dictionary<StatDefinition, Stat>();
+    bool _built;
 
     void Awake()
     {
+        Build();
+    }
+
+    public bool TryGet(StatDefinition definition, out Stat stat)
+    {
+        // Build on first use too. Another component's OnEnable can run before this Awake.
+        Build();
+        if (definition == null)
+        {
+            stat = null;
+            return false;
+        }
+
+        return _stats.TryGetValue(definition, out stat);
+    }
+
+    void Build()
+    {
+        if (_built)
+            return;
+        _built = true;
         if (bindings == null)
             return;
 
@@ -290,17 +312,6 @@ public class StatSheet : MonoBehaviour
                 continue;
             _stats.Add(definition, new Stat(bindings[i].baseValue));
         }
-    }
-
-    public bool TryGet(StatDefinition definition, out Stat stat)
-    {
-        if (definition == null)
-        {
-            stat = null;
-            return false;
-        }
-
-        return _stats.TryGetValue(definition, out stat);
     }
 }
 ```
@@ -678,6 +689,6 @@ public class HealthBar : MonoBehaviour
 
     Changing a modifier's numbers in place does nothing to the cache. `StatModifier` has no setters. Remove it and add a new one, or remove by source. A null source cannot be withdrawn as a group.
 
-    The max stat is read when `Health` enables. `StatSheet.Awake` builds the dictionary, and every `Awake` runs before every `OnEnable`, so the sheet on the same object is ready. A sheet created later is not picked up until `Health` is disabled and enabled again.
+    The max stat is read when `Health` enables. Unity only promises that a script's `Awake` runs before its own `OnEnable`, not before another component's, so `StatSheet` builds its dictionary on the first `TryGet` as well as in `Awake`. A sheet assigned later is not picked up until `Health` is disabled and enabled again.
 
     The bar's `Image` has to be **Filled**. A Simple image ignores `fillAmount`. `HealthBar` listens to the C# event, which carries current and max. The inspector `UnityEvent`s are the no-code hooks and do not carry the `DamageInfo`.
