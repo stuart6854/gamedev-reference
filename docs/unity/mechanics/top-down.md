@@ -21,7 +21,7 @@ Which body to use is on the [controllers](controllers/index.md) index. This one 
 
 ## What each step is doing
 
-`Update` stores the move, and resolves aim. A right stick past the dead zone wins, because a resting mouse at the edge of the window should not fight a gamepad. Otherwise the mouse is a ray from the camera onto the plane `y = body height`. The stick is mapped through the same camera axes as movement. The mouse is already a world point, so it is not multiplied by those axes again.
+`Update` stores the move, and resolves aim. A right stick past the dead zone wins, because a resting mouse at the edge of the window should not fight a gamepad. Releasing the stick keeps that aim. The mouse takes over again only once it moves. Mouse aim is a ray from the camera onto the plane `y = body height`. The stick is mapped through the same camera axes as movement. The mouse is already a world point, so it is not multiplied by those axes again.
 
 `FixedUpdate` moves `linearVelocity` on XZ toward the wish at **Acceleration**, or toward zero at **Deceleration**. Y stays zero because position Y is frozen and gravity is off. `MoveRotation` yaws toward the aim. The blend is \(1 - e^{-kt}\). Zero **Turn Sharpness** snaps.
 
@@ -129,6 +129,8 @@ The two 3D listings share `TopDownMovement`. Copy one.
         CapsuleCollider _capsule;
         Transform _mainCamera;
         Vector2 _move;
+        Vector2 _lastMouse;
+        bool _mouseAims = true;
         Vector3 _aim = Vector3.forward;
 
         void Awake()
@@ -181,9 +183,18 @@ The two 3D listings share `TopDownMovement`. Copy one.
         Vector3 ResolveAim(Vector2 look, bool haveLook, Vector2 mouse, bool haveMouse)
         {
             if (haveLook && look.sqrMagnitude >= inputDeadzone * inputDeadzone)
+            {
+                _mouseAims = false;
                 return Axes(look.normalized);
+            }
 
-            if (haveMouse && TryMouseAim(mouse, out Vector3 at))
+            // The mouse takes over again only once it moves, so letting go of the right
+            // stick keeps the aim instead of snapping to an idle cursor.
+            if (haveMouse && mouse != _lastMouse)
+                _mouseAims = true;
+            _lastMouse = mouse;
+
+            if (_mouseAims && haveMouse && TryMouseAim(mouse, out Vector3 at))
                 return at;
 
             return _aim;
@@ -353,6 +364,8 @@ The two 3D listings share `TopDownMovement`. Copy one.
         CapsuleCollider _capsule;
         Transform _mainCamera;
         Vector2 _move;
+        Vector2 _lastMouse;
+        bool _mouseAims = true;
         Vector3 _aim = Vector3.forward;
 
         void Awake()
@@ -405,9 +418,18 @@ The two 3D listings share `TopDownMovement`. Copy one.
         Vector3 ResolveAim(Vector2 look, bool haveLook, Vector2 mouse, bool haveMouse)
         {
             if (haveLook && look.sqrMagnitude >= inputDeadzone * inputDeadzone)
+            {
+                _mouseAims = false;
                 return Axes(look.normalized);
+            }
 
-            if (haveMouse && TryMouseAim(mouse, out Vector3 at))
+            // The mouse takes over again only once it moves, so letting go of the right
+            // stick keeps the aim instead of snapping to an idle cursor.
+            if (haveMouse && mouse != _lastMouse)
+                _mouseAims = true;
+            _lastMouse = mouse;
+
+            if (_mouseAims && haveMouse && TryMouseAim(mouse, out Vector3 at))
                 return at;
 
             return _aim;
@@ -605,6 +627,8 @@ Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. *
         Rigidbody2D _body;
         Transform _mainCamera;
         Vector2 _move;
+        Vector2 _lastMouse;
+        bool _mouseAims = true;
         Vector2 _aim = Vector2.up;
 
         void Awake()
@@ -647,9 +671,18 @@ Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. *
         Vector2 ResolveAim(Vector2 look, bool haveLook, Vector2 mouse, bool haveMouse)
         {
             if (haveLook && look.sqrMagnitude >= inputDeadzone * inputDeadzone)
+            {
+                _mouseAims = false;
                 return Axes(look.normalized);
+            }
 
-            if (haveMouse && TryMouseAim(mouse, out Vector2 at))
+            // The mouse takes over again only once it moves, so letting go of the right
+            // stick keeps the aim instead of snapping to an idle cursor.
+            if (haveMouse && mouse != _lastMouse)
+                _mouseAims = true;
+            _lastMouse = mouse;
+
+            if (_mouseAims && haveMouse && TryMouseAim(mouse, out Vector2 at))
                 return at;
 
             return _aim;
@@ -785,6 +818,8 @@ Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. *
         Rigidbody2D _body;
         Transform _mainCamera;
         Vector2 _move;
+        Vector2 _lastMouse;
+        bool _mouseAims = true;
         Vector2 _aim = Vector2.up;
 
         void Awake()
@@ -827,9 +862,18 @@ Add a `Rigidbody2D`, a collider, and `TopDownMovement2D`. Set **Interpolate**. *
         Vector2 ResolveAim(Vector2 look, bool haveLook, Vector2 mouse, bool haveMouse)
         {
             if (haveLook && look.sqrMagnitude >= inputDeadzone * inputDeadzone)
+            {
+                _mouseAims = false;
                 return Axes(look.normalized);
+            }
 
-            if (haveMouse && TryMouseAim(mouse, out Vector2 at))
+            // The mouse takes over again only once it moves, so letting go of the right
+            // stick keeps the aim instead of snapping to an idle cursor.
+            if (haveMouse && mouse != _lastMouse)
+                _mouseAims = true;
+            _lastMouse = mouse;
+
+            if (_mouseAims && haveMouse && TryMouseAim(mouse, out Vector2 at))
                 return at;
 
             return _aim;
