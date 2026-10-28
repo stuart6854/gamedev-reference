@@ -6,6 +6,12 @@ Pages that already exist are not listed here.
 
 ## Planned
 
+### Maths
+
+- Vectors, dot and cross products (facing tests, projection, signed angles, change of basis)
+- Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
+- Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
+
 ### Movement
 
 - Dash
@@ -19,9 +25,11 @@ Pages that already exist are not listed here.
 
 - RTS camera (pan with keys and screen edges, zoom, rotate, bounds; pairs with drag selection)
 - First-person camera (mouse look, pitch clamp, sensitivity, head bob)
+- Camera framing (keeping several subjects in view: a group or target bounding volume, zoom to fit, look-ahead, dead zones)
 
 ### Combat
 
+- Lock-on targeting (target selection and cycling, breaking lock on distance or sight, strafing around the target, and the camera framing player and target)
 - Attack combos (melee combo chains, input buffering, animation-driven combo windows)
 - Hit flash
 - Damage numbers
@@ -50,6 +58,7 @@ Pages that already exist are not listed here.
 ### Animation
 
 - Ragdolls
+- Procedural animation (IK legs that plant and step for spiders and mechs, body height and tilt from foot positions)
 
 ### AI
 
@@ -65,6 +74,7 @@ Pages that already exist are not listed here.
 ### Space and curves
 
 - Bézier curves and splines (Unity Splines package)
+- Spline-based meshes (roads, fences, pipes, and rails extruded or instanced along a spline in the editor)
 - Spatial partitioning (grids, quadtrees)
 
 ### Editor
