@@ -11,6 +11,8 @@ Pages that already exist are not listed here.
 - Vectors, dot and cross products (facing tests, projection, signed angles, change of basis)
 - Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
 - Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
+- Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
+- Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
 
 ### Movement
 
@@ -47,6 +49,7 @@ Pages that already exist are not listed here.
 - Loot tables (weighted random drops, rarity tiers, nested tables, guaranteed/pity drops)
 - Enemy wave spawning
 - Fog of war
+- Grid tactics (movement range by flood fill, attack ranges, line of sight on a grid, and path cost)
 
 ### Presentation
 
@@ -76,6 +79,7 @@ Pages that already exist are not listed here.
 - Bézier curves and splines (Unity Splines package)
 - Spline-based meshes (roads, fences, pipes, and rails extruded or instanced along a spline in the editor)
 - Spatial partitioning (grids, quadtrees)
+- Hex grids (axial and cube coordinates, neighbours, distance, rounding, and world conversion)
 
 ### Editor
 
