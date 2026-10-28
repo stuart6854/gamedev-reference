@@ -497,7 +497,7 @@ public class GhostView : MonoBehaviour
 
 The overlap box is the footprint, not `Renderer.bounds`. Bounds change with the visual lift and with a child prop. The box is shrunk by **Shrink** on each side, and its bottom sits **Shrink + Skin** above the pivot, so the ground and a flush neighbour are not hits.
 
-`OverlapBoxNonAlloc` collects what the shrunk box touches. `ComputePenetration` then drops a contact thinner than a millimetre. A non-convex `MeshCollider` makes `ComputePenetration` return false even when the shapes overlap, so that hit still counts. Use a box or a convex mesh as the blocking collider.
+`OverlapBoxNonAlloc` collects what the shrunk box touches. `ComputePenetration` then drops a contact thinner than a millimetre. It needs one convex shape, and the probe is a box, so a placed piece may use any collider, including a non-convex `MeshCollider`.
 
 Corner rays start half a metre above the pivot and cast down by `tan(maxSlope) * diagonal + 1`. A miss is a hole. A hit whose height is farther than that drop from the pivot is also a miss, so a socket cannot treat a floor several metres below as support. Corners that differ by more than the drop fail the slope, which lets a legal slope through and rejects a step. **Requires Ground** off skips the corners. A wall that only exists because a socket held it up uses that. The cursor ray's own slope is still tested, in `Follow`, before this method runs.
 
@@ -858,11 +858,7 @@ public sealed class PlacementCheck
                 out float distance);
 
             if (!penetrated)
-            {
-                if (other is MeshCollider mesh && !mesh.convex)
-                    return false;
                 continue;
-            }
 
             if (distance > 0.001f)
                 return false;
@@ -1675,7 +1671,7 @@ public class BuildNavRefresh : MonoBehaviour
 
     The lift that stops z-fighting is not part of the pose. Sockets and the overlap box use the unlifted pivot. A preview material with no lift, drawn in the ground plane, flickers. A polygon offset on the preview shader is the other fix. The lift is the one in this page.
 
-    An overlap box that reaches below the pivot hits the ground and the ghost is never green. Keep the ground layer out of **Blocks**. The shrink is what lets two flush footprints share a face. `ComputePenetration` on a non-convex mesh returns false while the shapes overlap. Use a box or a convex mesh. The buffer holds 32 hits. A full buffer is treated as blocked.
+    An overlap box that reaches below the pivot hits the ground and the ghost is never green. Keep the ground layer out of **Blocks**. The shrink is what lets two flush footprints share a face. The buffer holds 32 hits. A full buffer is treated as blocked.
 
     `BuildNavMesh` on every confirm stalls the frame. Carving and `UpdateNavMesh` together fight: the rebake fills the hole the obstacle cut. The enemy page is the bake setup. A negative scale on the surface's parent breaks that bake.
 
