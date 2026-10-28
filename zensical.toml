@@ -18,7 +18,6 @@ extra_javascript = [
 # When a section gets its first page, remove it here and add it to the nav.
 exclude_docs = """
 gameplay/
-engine/
 optimisation/
 """
 
@@ -44,6 +43,15 @@ nav = [
     "physics/index.md",
     { "Fixed timestep" = "physics/fixed-timestep.md" },
     { "Integrators" = "physics/integrators.md" },
+  ] },
+  { "Engine" = [
+    "engine/index.md",
+    { "Entity component system" = [
+      "engine/ecs/index.md",
+      { "Entities" = "engine/ecs/entities.md" },
+      { "Sparse-set storage" = "engine/ecs/sparse-set-storage.md" },
+      { "Archetype storage" = "engine/ecs/archetype-storage.md" },
+    ] },
   ] },
   { "Unity" = [
     "unity/index.md",

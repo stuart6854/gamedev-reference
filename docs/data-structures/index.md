@@ -11,4 +11,6 @@ Written:
 - [Ring buffer](ring-buffer.md) — a fixed-capacity queue that rejects or overwrites when full, power-of-two masking, input history, moving averages, snapshots, and a lock-free queue between two threads.
 - [Free list and slab pool](free-list.md) — fixed-size blocks linked through their own free bytes, lazy init, index links, slabs that keep pointers stable, size classes, and catching use after free.
 
+The [entity component system](../engine/ecs/index.md) pages build an ECS from the sparse set, the handle table, and a free list.
+
 Spatial hash grids and quadtrees are on the [roadmap](../roadmap.md#data-structures).

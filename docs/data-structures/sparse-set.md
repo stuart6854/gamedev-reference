@@ -1,6 +1,6 @@
 # Sparse set
 
-A set of small non-negative integer keys, such as entity ids, with constant-time add, remove, and membership test, and a packed array of the members to iterate. Values can ride along in a second packed array, which makes it a map. Most ECS libraries store each component type this way.
+A set of small non-negative integer keys, such as entity ids, with constant-time add, remove, and membership test, and a packed array of the members to iterate. Values can ride along in a second packed array, which makes it a map. Many ECS libraries store each component type this way; see [sparse-set storage](../engine/ecs/sparse-set-storage.md).
 
 ## When to use it
 
