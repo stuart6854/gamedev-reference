@@ -94,7 +94,6 @@ Pages that already exist are not listed here.
 
 - Noise for procedural generation
 - Dungeon-like procedural generation (rooms and corridors, BSP, random walk / drunkard's walk, graph-based room layouts)
-- Day and night cycle
 
 ## Ideas / maybe later
 

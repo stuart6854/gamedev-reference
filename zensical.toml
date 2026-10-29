@@ -106,6 +106,7 @@ nav = [
     ] },
     { "Rendering" = [
       "unity/rendering/index.md",
+      { "Day and night cycle" = "unity/rendering/day-night.md" },
       { "Highlight and outline" = "unity/rendering/highlight-outline.md" },
     ] },
   ] },
