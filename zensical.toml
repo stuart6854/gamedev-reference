@@ -27,6 +27,7 @@ nav = [
   { "Maths" = [
     "maths/index.md",
     { "Interpolation and easing" = "maths/interpolation.md" },
+    { "Random distributions and shuffles" = "maths/random.md" },
   ] },
   { "Data structures" = [
     "data-structures/index.md",

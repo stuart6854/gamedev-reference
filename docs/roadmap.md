@@ -10,7 +10,6 @@ Pages that already exist are not listed here.
 
 - Vectors, dot and cross products (facing tests, projection, signed angles, change of basis)
 - Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
-- Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
 - Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
 - Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
 
