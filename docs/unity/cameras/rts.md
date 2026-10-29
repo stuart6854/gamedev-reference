@@ -7,7 +7,7 @@ version: 6+
 
 The camera of an RTS or a city builder. It looks down at a point on the ground and can be panned with the keys, the screen edges, or by dragging the ground with the middle mouse button. The scroll wheel zooms towards the cursor, Q and E rotate around the point, and the point stays inside the map.
 
-Like the [first-person camera](first-person.md), it is one script on an unparented camera. It stores a **focus** point on the ground, a yaw, and a distance, and builds the camera pose from them every frame. Nothing is parented, so there is no rig hierarchy to keep in step. The left mouse button is left free for selection, which is the planned [drag selection](../../roadmap.md#movement) page.
+Like the [first-person camera](first-person.md), it is one script on an unparented camera. It stores a **focus** point on the ground, a yaw, and a distance, and builds the camera pose from them every frame. Nothing is parented, so there is no rig hierarchy to keep in step. The left mouse button is left free for selection, which is the [drag selection](../mechanics/selection.md) page.
 
 ## Setup
 
