@@ -19,6 +19,8 @@ The ordering facts this relies on are on the [MonoBehaviour lifecycle](lifecycle
 | **ScriptableObject channels and variables** | Assets that scenes share by reference, from [event systems](events.md) and [shared variables](variables.md). | Great for data and events. Not a home for something with a lifetime, like an `AudioSource`. |
 | **Bootstrapper and locator** (this page) | A static method spawns a systems prefab before the first scene's `Awake`. Systems register an interface. | Every consumer must handle a missing service, which is also what makes tests and partial scenes work. |
 
+A Core scene for UI and the loader, loaded additively under each level, is [scenes and loading](scenes.md). It complements this prefab rather than replacing it.
+
 A dependency injection framework such as VContainer or Zenject is the next step past a locator. It is a package choice, and it is not covered here.
 
 ## Setup
