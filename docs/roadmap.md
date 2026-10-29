@@ -10,8 +10,11 @@ Pages that already exist are not listed here.
 
 - Vectors, dot and cross products (facing tests, projection, signed angles, change of basis)
 - Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
+- Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
 - Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
+- Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
 - Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
+- Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
 
 ### Data structures
 
@@ -34,7 +37,6 @@ Pages that already exist are not listed here.
 ### Combat
 
 - Lock-on targeting (target selection and cycling, breaking lock on distance or sight, strafing around the target, and the camera framing player and target)
-- Attack combos (melee combo chains, input buffering, animation-driven combo windows)
 
 ### Architecture
 
@@ -54,7 +56,6 @@ Pages that already exist are not listed here.
 - Shaders and materials
 - Water shaders
 - URP renderer features
-- Post-processing
 
 ### Animation
 
@@ -93,7 +94,6 @@ Pages that already exist are not listed here.
 
 - Noise for procedural generation
 - Dungeon-like procedural generation (rooms and corridors, BSP, random walk / drunkard's walk, graph-based room layouts)
-- Day and night cycle
 
 ## Ideas / maybe later
 

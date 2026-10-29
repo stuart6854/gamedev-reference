@@ -7,7 +7,7 @@ version: 6+
 
 One item definition, one stack, and one interface, shared by the four bags below and by [equipment](equipment.md). A list, a grid, a row of slots, and a weight cap disagree about space. They should not disagree about what an item is.
 
-The numbers a piece of gear adds live on the [stat sheet](../health.md#stats). A gun the hotbar selects still fires through the [weapon holder](../../combat/weapons.md#holder). A placed piece that spends materials uses `Contains` and `TryRemove`. That loop is [building](../building.md). Dragging icons between slots is not on this page. That UI is [drag and drop](../../../roadmap.md#interface). Writing the bag to disk is not on this page either. Store ids, then use the [save and load](../../../roadmap.md#game-flow) work when it exists. Rolling a drop into the bag is [loot tables](../../../roadmap.md#game-systems).
+The numbers a piece of gear adds live on the [stat sheet](../health.md#stats). A gun the hotbar selects still fires through the [weapon holder](../../combat/weapons.md#holder). A placed piece that spends materials uses `Contains` and `TryRemove`. That loop is [building](../building.md). Dragging icons between slots is not on this page. That UI is [drag and drop](../../../roadmap.md#interface). Writing the bag to disk is not on this page either. Store ids, then use the [save and load](../../../roadmap.md#game-flow) work when it exists. Rolling a drop into the bag is [loot tables](../loot.md).
 
 ## Which bag
 
