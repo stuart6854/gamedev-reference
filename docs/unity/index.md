@@ -5,7 +5,7 @@ Notes specific to Unity: lifecycle, input, queries, and the places where Unity�
 Written, by group. Each group's index lists its pages:
 
 - [Architecture](architecture/index.md) — the MonoBehaviour lifecycle, bootstrapping and services, events, shared variables, state machines, and pooling.
-- [Mechanics](mechanics/index.md) — the four movement controllers and interaction.
+- [Mechanics](mechanics/index.md) — the four movement controllers, interaction, and drag selection.
 - [Cameras](cameras/index.md) — first-person, third-person orbit, and top-down strategy cameras.
 - [Combat](combat/index.md) — hit flash, damage numbers, and weapons.
 - [AI](ai/index.md) — enemy behaviour on a `NavMeshAgent`.
