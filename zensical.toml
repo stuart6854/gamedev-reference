@@ -103,6 +103,7 @@ nav = [
         { "Equipment" = "unity/systems/inventory/equipment.md" },
       ] },
       { "Building and placement" = "unity/systems/building.md" },
+      { "Loot tables" = "unity/systems/loot.md" },
     ] },
     { "Rendering" = [
       "unity/rendering/index.md",
