@@ -9,6 +9,7 @@ Pages that already exist are not listed here.
 ### Maths
 
 - Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
+- Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
 - Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
 - Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
 - Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
