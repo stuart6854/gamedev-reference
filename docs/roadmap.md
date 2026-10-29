@@ -8,6 +8,8 @@ Pages that already exist are not listed here.
 
 ### Maths
 
+- Vectors, dot and cross products (facing tests, projection, signed angles, change of basis)
+- Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
 - Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
 - Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
 - Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
