@@ -35,7 +35,6 @@ Pages that already exist are not listed here.
 ### Combat
 
 - Lock-on targeting (target selection and cycling, breaking lock on distance or sight, strafing around the target, and the camera framing player and target)
-- Attack combos (melee combo chains, input buffering, animation-driven combo windows)
 
 ### Architecture
 

@@ -9,7 +9,7 @@ A firearm driven by a shared definition: damage, fire rate, magazine, spread, fa
 
 Hits use the [health, damage, and stats](../systems/health.md#damage-info) pipeline. A shot builds a `DamageInfo` and calls [`Hurtbox.Receive`](../systems/health.md#hurtbox-and-hitbox), which applies the damage-type multiplier and then `Health.ApplyDamage`. A collider with no hurtbox falls back to `IDamageable`. The amount on the way in is the amount before that multiplier, the same as `Hitbox`.
 
-Attack combos are not this page. They will join this Combat group. Until that page exists they stay on the [roadmap](../../roadmap.md#combat).
+Melee chains are [attack combos](combos.md).
 
 The aim ray is the camera from the [orbit camera](../cameras/third-person.md). Recoil eases back with the [exponential blend](../../maths/interpolation.md#frame-rate-independent-damping) \(1 - e^{-k\Delta t}\).
 
@@ -37,7 +37,7 @@ in seconds. Each shot schedules the next one \(\Delta t\) later, using `Time.tim
 
 Time with the trigger up is not stored. The schedule is pulled forward to now, otherwise the next press would dump every interval missed while you were not firing. One frame also stops after 16 shots, and any further lateness from a stall is dropped, so a hitch cannot empty the magazine on the following frames. Sixteen is enough for 57,600 rounds per minute at 60 fps. Above that, or across a stall, the extra intervals are discarded.
 
-Semi-auto fires at most one shot per press, then waits \(\Delta t\). It does not use the loop. A press during the wait is ignored. There is no input buffer on this page. That belongs with attack combos.
+Semi-auto fires at most one shot per press, then waits \(\Delta t\). It does not use the loop. A press during the wait is ignored. There is no input buffer on this page. The [attack combos](combos.md#input-buffer) page has one.
 
 Full-auto runs the loop while the trigger is held. Burst loads **Burst Count** on the press, then spends that queue through the same interval. A press while a burst is already running, or while the schedule is still in the future, does not start another.
 
