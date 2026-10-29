@@ -107,6 +107,7 @@ nav = [
     { "Rendering" = [
       "unity/rendering/index.md",
       { "Highlight and outline" = "unity/rendering/highlight-outline.md" },
+      { "Post-processing" = "unity/rendering/post-processing.md" },
     ] },
   ] },
 ]

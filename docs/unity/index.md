@@ -10,7 +10,7 @@ Written, by group. Each group's index lists its pages:
 - [Combat](combat/index.md) — hit flash, damage numbers, and weapons.
 - [AI](ai/index.md) — enemy behaviour on a `NavMeshAgent`.
 - [Systems](systems/index.md) — health and stats, inventory, and building.
-- [Rendering](rendering/index.md) — highlight and outline.
+- [Rendering](rendering/index.md) — highlight and outline, and post-processing.
 
 Planned, with no page yet:
 
