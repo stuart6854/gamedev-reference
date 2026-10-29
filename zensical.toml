@@ -115,6 +115,10 @@ nav = [
       { "Building and placement" = "unity/systems/building.md" },
       { "Loot tables" = "unity/systems/loot.md" },
     ] },
+    { "UI" = [
+      "unity/ui/index.md",
+      { "uGUI and UI Toolkit" = "unity/ui/choosing.md" },
+    ] },
     { "Rendering" = [
       "unity/rendering/index.md",
       { "Day and night cycle" = "unity/rendering/day-night.md" },
