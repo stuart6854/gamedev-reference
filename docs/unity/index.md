@@ -10,6 +10,7 @@ Written, by group. Each group's index lists its pages:
 - [Combat](combat/index.md) — hit flash, damage numbers, weapons, and attack combos.
 - [AI](ai/index.md) — enemy behaviour on a `NavMeshAgent`, waves, and continuous spawning.
 - [Systems](systems/index.md) — health and stats, inventory, building, and loot tables.
+- [UI](ui/index.md) — choosing between uGUI and UI Toolkit, and views that only show state and report requests.
 - [Rendering](rendering/index.md) — a day and night cycle, highlight and outline, and post-processing.
 
 Planned, with no page yet:
