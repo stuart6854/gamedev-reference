@@ -60,7 +60,7 @@ r = e_x \lvert n_x\rvert + e_y \lvert n_y\rvert + e_z \lvert n_z\rvert,
 \text{outside if } \mathbf{n} \cdot \mathbf{c} + d < -r
 \]
 
-which is the box's projected radius on the normal, the same quantity the separating axis test uses.
+which is the box's projected radius on the normal, the same quantity the [separating axis test](intersections.md#separating-axis-test) uses.
 
 Unity: `GeometryUtility.TestPlanesAABB(planes, bounds)`.
 

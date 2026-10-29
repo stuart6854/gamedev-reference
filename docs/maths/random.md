@@ -144,7 +144,7 @@ At 25%, the first attempt after a success has an 8.5% chance, and success is cer
 
 \(C\) has no closed form. Find it numerically: for a candidate \(C\), the expected number of attempts per success is \(E = \sum_N N\,P(\text{first success at } N)\), and the rate is \(1/E\). Bisect on \(C\) until the rate equals \(p\).
 
-A pity counter on a loot table is the same idea with a hard cap instead of a ramp.
+The [pity counter on loot tables](../unity/systems/loot.md#pity) is the same idea with a hard cap instead of a ramp.
 
 !!! warning "Common pitfalls"
 

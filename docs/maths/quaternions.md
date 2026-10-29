@@ -95,7 +95,7 @@ The second is the [damping step](interpolation.md#frame-rate-independent-damping
 
 | Need | Unity | Notes |
 | --- | --- | --- |
-| Face a direction | `Quaternion.LookRotation(forward, up)` | Fails when `forward` is parallel to `up`, because the cross product it builds the frame from is zero. |
+| Face a direction | `Quaternion.LookRotation(forward, up)` | Fails when `forward` is parallel to `up`. See [building a frame](vectors.md#building-a-frame-from-a-forward-vector). |
 | Smallest rotation from one direction to another | `Quaternion.FromToRotation(from, to)` | Free to pick any roll. Aligning a character's up to a slope normal is a typical use. |
 | Angle about an axis | `Quaternion.AngleAxis(degrees, axis)` | Degrees, like the rest of `Quaternion`. |
 | From Euler angles | `Quaternion.Euler(x, y, z)` | Applies \(z\), then \(x\), then \(y\), each about the world axes. |

@@ -376,7 +376,7 @@ public class LootDropper : MonoBehaviour
 
 ## Big tables
 
-The pick above walks every entry, which is \(O(n)\). For tables of a few dozen entries rolled on death, that is nothing. For thousands of entries rolled thousands of times, precompute the prefix sums of the weights and binary search them, \(O(\log n)\), or build Walker's alias table once, \(O(1)\) per pick. Both need rebuilding when a weight changes, so neither works with soft pity on that table.
+The pick above walks every entry, which is \(O(n)\). For tables of a few dozen entries rolled on death, that is nothing. The options are on the [random distributions](../../maths/random.md#weighted-picks) page. For thousands of entries rolled thousands of times, precompute the prefix sums of the weights and binary search them, \(O(\log n)\), or build Walker's alias table once, \(O(1)\) per pick. Both need rebuilding when a weight changes, so neither works with soft pity on that table.
 
 !!! warning "Common pitfalls"
 

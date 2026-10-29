@@ -79,7 +79,7 @@ hit if t > epsilon
 
 The hit point is \(\mathbf{a} + u\,\mathbf{e}_1 + v\,\mathbf{e}_2\). \(u\) and \(v\) interpolate anything stored per vertex: UVs, normals, colours.
 
-The sign of `det` tells which face was hit. Keep only `det > epsilon` to cull back faces. Which sign is the front depends on the winding and the engine's handedness. In Unity, front faces wind clockwise as seen by the camera.
+The sign of `det` tells which face was hit. Keep only `det > epsilon` to cull back faces. Which sign is the front depends on the winding and the engine's handedness. In Unity, front faces wind clockwise as seen by the camera; see the [triangle normal](vectors.md#triangle-normal).
 
 ## Overlap tests
 
