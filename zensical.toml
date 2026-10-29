@@ -28,6 +28,7 @@ nav = [
     "maths/index.md",
     { "Vectors, dot and cross products" = "maths/vectors.md" },
     { "Interpolation and easing" = "maths/interpolation.md" },
+    { "Intersection tests" = "maths/intersections.md" },
     { "Frustum and visibility tests" = "maths/frustum.md" },
   ] },
   { "Data structures" = [
