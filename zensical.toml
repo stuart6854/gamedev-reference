@@ -78,6 +78,7 @@ nav = [
         { "2D platformer" = "unity/mechanics/platformer-2d.md" },
       ] },
       { "Interaction" = "unity/mechanics/interaction.md" },
+      { "Formation movement" = "unity/mechanics/formations.md" },
       { "Drag selection" = "unity/mechanics/selection.md" },
     ] },
     { "Cameras" = [
