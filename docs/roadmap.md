@@ -6,16 +6,6 @@ Pages that already exist are not listed here.
 
 ## Planned
 
-### Maths
-
-- Vectors, dot and cross products (facing tests, projection, signed angles, change of basis)
-- Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
-- Quaternions and rotations (composition, slerp versus normalised lerp, look rotations, avoiding Euler angles)
-- Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
-- Random distributions and shuffles (seeded generators, weighted picks, Fisher–Yates, shuffle bags, distributions other than uniform)
-- Frustum and visibility tests (is a point or bounds on screen, frustum planes, culling, and off-screen indicators)
-- Intersection tests (ray against sphere, box, plane, and triangle; box against box with the separating axis test)
-
 ### Data structures
 
 - Spatial hash grid (uniform cells keyed by hashed coordinates, neighbour and radius queries, choosing a cell size, moving objects between cells)
@@ -27,8 +17,6 @@ Pages that already exist are not listed here.
 - Wall run
 - Ledge climb
 - Grappling hook
-- Drag selection methods (RTS-style box/marquee selection: screen-space rectangle vs world-space frustum/volume selection, lasso selection, add/remove with modifier keys, click vs drag threshold, double-click to select all of a type, drawing the selection rectangle in UI; pairs with the [top-down strategy camera](unity/cameras/rts.md))
-- Formation movement (keeping a selected group's shape on a move order: line, box, and wedge slots, slot assignment, facing, and regrouping around obstacles)
 
 ### Cameras
 
@@ -46,8 +34,6 @@ Pages that already exist are not listed here.
 
 - Gameplay abilities with cooldowns
 - Timed buffs and debuffs (durations, stacking rules, and refresh on top of the existing stat modifiers)
-- Loot tables (weighted random drops, rarity tiers, nested tables, guaranteed/pity drops)
-- Enemy wave spawning
 - Fog of war
 - Grid tactics (movement range by flood fill, attack ranges, line of sight on a grid, and path cost)
 

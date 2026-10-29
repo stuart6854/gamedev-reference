@@ -6,7 +6,7 @@ package: AI Navigation 2.x
 
 # Formation movement
 
-A move order for a selected group that keeps its shape: line, box, wedge, or circle, facing the way the player chose. Each unit gets a slot, and the slots are assigned so units do not cross each other's paths more than they have to. Units are `NavMeshAgent`s. The selection comes from `SelectionManager` on the drag selection page.
+A move order for a selected group that keeps its shape: line, box, wedge, or circle, facing the way the player chose. Each unit gets a slot, and the slots are assigned so units do not cross each other's paths more than they have to. Units are `NavMeshAgent`s. The selection comes from `SelectionManager` on the [drag selection](selection.md) page.
 
 Two ways to get there:
 
