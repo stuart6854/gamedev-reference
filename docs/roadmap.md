@@ -52,7 +52,6 @@ Pages that already exist are not listed here.
 - Shaders and materials
 - Water shaders
 - URP renderer features
-- Post-processing
 
 ### Animation
 
