@@ -8,7 +8,7 @@ Written, by group. Each group's index lists its pages:
 - [Mechanics](mechanics/index.md) — the four movement controllers and interaction.
 - [Cameras](cameras/index.md) — first-person, third-person orbit, and top-down strategy cameras.
 - [Combat](combat/index.md) — hit flash, damage numbers, and weapons.
-- [AI](ai/index.md) — enemy behaviour on a `NavMeshAgent`.
+- [AI](ai/index.md) — enemy behaviour on a `NavMeshAgent`, waves, and continuous spawning.
 - [Systems](systems/index.md) — health and stats, inventory, and building.
 - [Rendering](rendering/index.md) — highlight and outline.
 
