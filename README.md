@@ -42,6 +42,20 @@ package: Cinemachine 3.x
 
 For now, engine pages target only the current generation: Unity 6 and later. Unreal 5.x and Godot 4.x will use the same frontmatter when those sections exist. Do not add a page aimed at an older editor.
 
+## Used-for pills
+
+A page can list what it is useful for. `uses` is a list of entries with a `name` and a one-line `text`:
+
+```yaml
+uses:
+  - name: Zombie hordes
+    text: Gunshots pull every zombie within the noise radius.
+  - name: Stealth
+    text: Guards notice the player faster when they are lit.
+```
+
+Each `name` becomes a grey pill after the version pills, and the entries are listed in a **Used for** box under the title. The text is plain: it is not run through Markdown. Keep the names to genres or features, so the same name reads the same on every page.
+
 ## Hidden sections
 
 A top-level section with no pages yet (Gameplay and AI, Optimisation) keeps its outline in `docs/`, but is listed under `exclude_docs` in `zensical.toml`, so it is not built or shown. When its first page is written, remove it from `exclude_docs`, add it to `nav`, and add it to the section list on the home page.
