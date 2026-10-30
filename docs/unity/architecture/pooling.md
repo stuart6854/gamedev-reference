@@ -24,7 +24,7 @@ Profile before you add a pool. The CPU Usage module and the GC Alloc column are 
 
 ## Setup
 
-1. Save the prefab with its root **inactive**. `Instantiate` of an active prefab runs `OnEnable` before your code can stop it.
+1. Save the prefab with its root **inactive**. `Instantiate` of an active prefab runs `OnEnable` before your code can stop it. A `NavMeshAgent` on the prefab should also be saved **disabled**. The inactive root has not run `Awake` before its first return to the pool, so the base class cannot disable the agent for it, and an enabled agent warns that it is not on the NavMesh when the instance first activates. `PooledAgent` enables it once the spawn point is sampled.
 2. Add `PooledBehaviour`, or a subclass such as `PooledEffect`, on that root. A particle system that should return itself sits on **the same object** as the script. A system on a child does not send `OnParticleSystemStopped` to the parent. Set **Stop Action** to **Callback**. The script sets it again on spawn, so a prefab left on **Destroy** does not delete a pooled instance.
 3. Add `PoolManager` to an object at the origin, scale `1`, not parented to the player or the camera. A moving parent carries every inactive instance, and a scaled parent scales the mesh.
 4. Drop prefabs into **Prewarm**. The count is how many to create at `Start`. It must be at most **Max Size**, or the extras are destroyed as they come back.
@@ -149,6 +149,7 @@ public class PooledBehaviour : MonoBehaviour, IPoolable
     Rigidbody _body;
     TrailRenderer[] _trails;
     NavMeshAgent _agent;
+    IPoolable[] _hooks;
 
     protected NavMeshAgent Agent => _agent;
 
@@ -180,12 +181,20 @@ public class PooledBehaviour : MonoBehaviour, IPoolable
     public void Activate()
     {
         gameObject.SetActive(true);
-        IPoolable[] hooks = GetComponentsInChildren<IPoolable>(true);
+        IPoolable[] hooks = Hooks();
         for (int i = 0; i < hooks.Length; i++)
         {
             if (hooks[i] != null)
                 hooks[i].OnSpawn();
         }
+    }
+
+    // Found once per instance. Searching on every spawn would allocate an array each time.
+    IPoolable[] Hooks()
+    {
+        if (_hooks == null)
+            _hooks = GetComponentsInChildren<IPoolable>(true);
+        return _hooks;
     }
 
     public void Release()
@@ -203,7 +212,7 @@ public class PooledBehaviour : MonoBehaviour, IPoolable
         _inPool = true;
         ResetMotion();
 
-        IPoolable[] hooks = GetComponentsInChildren<IPoolable>(true);
+        IPoolable[] hooks = Hooks();
         for (int i = 0; i < hooks.Length; i++)
         {
             if (hooks[i] != null)
@@ -582,5 +591,7 @@ public class PooledImpact : MonoBehaviour
     `maxSize` destroys the extra instance after `actionOnRelease`. A prewarm larger than that cap does not stay resident. `defaultCapacity` does not create anything.
 
     A `NavMeshAgent` left enabled off the mesh logs an error on the next `SetDestination`. Reset the path only when `isOnNavMesh` is true, disable on the way in, and `Warp` after `SamplePosition` on the way out. The [enemy](../ai/enemy.md) page uses that sample. The agent type still has `velocity`. Unity 6 did not rename it. `linearVelocity` is the rigidbody.
+
+    The `IPoolable` hooks are found once per instance and cached. Components added to an instance at runtime, after its first spawn, are not in that cache. Add them to the prefab instead.
 
     `GenericPool<T>` and the collection pools are process-wide. `ListPool` inside a job is the wrong allocator. Jobs and Entities are out of scope here.
