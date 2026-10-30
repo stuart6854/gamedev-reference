@@ -8,7 +8,6 @@ Pages that already exist are not listed here.
 
 ### Data structures
 
-- Spatial hash grid (uniform cells keyed by hashed coordinates, neighbour and radius queries, choosing a cell size, moving objects between cells)
 - Quadtree and octree (subdividing by density, insert, remove, and query, loose bounds for moving objects, when a grid is better)
 
 ### Movement
@@ -63,7 +62,6 @@ Pages that already exist are not listed here.
 
 - Bézier curves and splines (Unity Splines package)
 - Spline-based meshes (roads, fences, pipes, and rails extruded or instanced along a spline in the editor)
-- Spatial partitioning (grids, quadtrees)
 - Hex grids (axial and cube coordinates, neighbours, distance, rounding, and world conversion)
 
 ### Editor
