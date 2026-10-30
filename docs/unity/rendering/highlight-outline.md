@@ -93,6 +93,8 @@ A fresnel term is a glow that strengthens as the normal turns away from the came
 
 Assign the fresnel shader as the prop's material and set `Outline` **Mode** to **Fresnel**. The hull features can stay on the renderer; Fresnel mode does not move the layer, so they draw nothing extra.
 
+The HLSL fresnel shader below is deliberately minimal: it is unlit, and it has no shadow-caster, depth, or depth-normals pass. A prop using it looks flat, casts no shadow, and is missing from the depth and normals textures that the edge pass and SSAO read. For a real prop, put the rim into a lit material instead: a **URP → Lit Shader Graph** with a **Fresnel Effect** node, multiplied by the highlight colour and a Float property named `_Highlight`, into **Emission**. That keeps lighting, shadows, and every pass URP needs, and the `Outline` component drives it unchanged.
+
 ## Parameters
 
 | Field | Default | Effect |
@@ -306,7 +308,8 @@ Shader "Game/OutlineEdge"
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float2 uv = input.texcoord;
-                float2 texel = _BlitTexture_TexelSize.xy;
+                // One pixel of the camera target. _ScreenSize is a URP global: xy is the size, zw is 1 / size.
+                float2 texel = _ScreenSize.zw;
 
                 float centre = EyeDepth(uv);
                 float depthDelta = abs(EyeDepth(uv + float2(texel.x, 0)) - centre);
@@ -624,5 +627,7 @@ public void OnFocusExit(Interactor interactor)
     Render Objects filters the GameObject layer. Writing `renderingLayerMask` does not select it. Moving the layer also moves any collider on that object: put the mesh on a child, or copy the collision-matrix row onto `Outline`. The renderer's **Opaque Layer Mask** has to include `Outline`, or the focused mesh vanishes apart from the stroke.
 
     Deferred stores material bits in the stencil during the G-buffer. These features run **after** opaques, once lighting has consumed that stencil. Do not move them earlier. Forward and Forward+ are the paths this was written for.
+
+    The minimal fresnel shader is unlit and has only a forward pass. Objects using it cast no shadows and are absent from the depth and normals textures. Use the Lit Shader Graph version for anything in the level.
 
     The component caches renderers in `OnEnable`. A mesh added after that, or one that was inactive, is not moved. Hull mode clears property blocks on those renderers. The full-screen edge is the whole frame; it does not know which prop is focused.
