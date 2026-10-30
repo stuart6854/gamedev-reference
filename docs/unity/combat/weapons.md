@@ -19,11 +19,11 @@ The aim ray is the camera from the [orbit camera](../cameras/third-person.md). R
 2. Create a **Weapon** asset (`Game/Weapon`). Set the damage, fire mode, delivery, magazine, spread, falloff, and recoil. The asset is shared, so the rounds left in the gun are not stored on it.
 3. Under the shooter, add one child per weapon with a `Weapon` component, a mesh, and an empty **Muzzle** at the barrel. Assign the asset. **Hit Mask** should include the world and the hurtboxes and exclude the shooter. Leave **Owner** empty while this object sits under the shooter. The root is used. Set **Owner** when the gun is not parented to the shooter.
 4. Add an empty child of the camera and put `WeaponRecoil` on it. Assign that child as **View** and as **Recoil** on every weapon. The orbit script writes the camera. It must not write this child. Shots read the child, so the next round follows the kick.
-5. Add `WeaponHolder` on the shooter and assign the weapons. Key 1 selects index 0. Copy the Input System listing. A new Unity 6 project uses that backend. The legacy listing is the same holder for a project still on the Input Manager. The two files declare the same class, so add one of them.
+5. Add `WeaponHolder` on the shooter and assign the weapons. Key 1 selects index 0. Copy one `WeaponInput` listing: Input System for a new Unity 6 project, or legacy for a project still on the Input Manager. The two declare the same class, so add one of them.
 6. If this view is the orbit camera, turn **Switch On Scroll** off. That camera already zooms with the wheel. Number keys and the gamepad d-pad still switch. With the toggle on, one frame of wheel movement changes weapon by one.
 7. For projectiles, set **Delivery** to Projectile and assign a prefab with `Projectile` on the root. Do not parent that prefab to the gun. No rigidbody, or a kinematic one, steps the transform and casts along the step. A dynamic rigidbody is moved by physics, and the same cast covers the gap between frames. Put the projectile on a layer that does not collide with the shooter, and include the layers it should damage in **Hit Mask**.
 8. Put `AmmoReadout` on a canvas object that stays active, and assign the holder. Put `MuzzleFlash` on each weapon. Put `ImpactEffect` on an object that stays active and assign the holder, so a shot already in the air still spawns a hit after a swap.
-9. Active Input Handling must be **Input System Package (New)** or **Both** for the first holder, and **Input Manager (Old)** or **Both** for the legacy holder. The samples read devices directly and do not need an actions asset.
+9. Active Input Handling must be **Input System Package (New)** or **Both** for the Input System listing, and **Input Manager (Old)** or **Both** for the legacy one. The samples read devices directly and do not need an actions asset.
 
 ## Fire rate
 
@@ -49,7 +49,7 @@ Charge stores hold time up to **Charge Time** and fires once on release. Damage 
 
 A ray from the camera centre and a ray along the muzzle are not the same line. The muzzle sits below and to the side, so a muzzle ray misses the point under the crosshair at close range, and a camera ray can count a hit the gun cannot actually see.
 
-The camera ray only chooses an aim point. Let the camera origin be \(C\) and its forward \(f\). If that ray hits something in range, the aim point \(A\) is the hit. Otherwise \(A = C + f \cdot \mathrm{range}\). The shot leaves the muzzle \(M\) along
+The camera ray only chooses an aim point. Let the camera origin be \(C\) and its forward \(f\). The ray starts at \(C' = C + f\,\max\bigl(0,\ (M - C)\cdot f\bigr)\), level with the muzzle \(M\) along the view. With an orbit camera behind the player, a ray from \(C\) itself would hit whatever stands between the camera and the player, such as a door frame or an enemy behind you, and the shot would fire sideways or backwards. If the ray from \(C'\) hits something in range, the aim point \(A\) is the hit. Otherwise \(A = C' + f \cdot \mathrm{range}\). The shot leaves the muzzle \(M\) along
 
 \[
 d = \frac{A - M}{\|A - M\|}
@@ -57,7 +57,7 @@ d = \frac{A - M}{\|A - M\|}
 
 before spread. The damage ray is this second ray, not the camera ray. If something sits between the muzzle and \(A\), that something is what gets hit. A crosshair past a wall does not shoot through the wall.
 
-Spread is applied to \(d\). A uniform point in a disk of radius **Spread + bloom** degrees becomes a pitch and yaw. The disk is `Random.insideUnitCircle`, so shots cluster at the centre. A square of `Random.Range` on each axis puts extra shots in the corners. Bloom is added after the shot, so the first round uses only **Spread**. It then recovers at **Bloom Recovery** degrees per second, from the clock, not once per frame as a fixed step.
+Spread is applied to \(d\). A uniform point in a disk of radius **Spread + bloom** degrees becomes a pitch and yaw. The disk is `Random.insideUnitCircle`, which is uniform over the disk's area: shots spread evenly across the cone, with no extra weight at the centre. A square of `Random.Range` on each axis would put extra shots in the corners. For a pattern that clusters at the centre, scale the disk point by a second random value, or use a triangular radius as on the [random distributions](../../maths/random.md#non-uniform-distributions) page. Bloom is added after the shot, so the first round uses only **Spread**. It then recovers at **Bloom Recovery** degrees per second, from the clock, not once per frame as a fixed step.
 
 Falloff uses the distance along the damage ray, in metres. With start \(s_0\), end \(s_1\), and minimum fraction \(m\),
 
@@ -74,7 +74,7 @@ The ray ignores the shooter's colliders, uses **Hit Mask**, and hits triggers (`
 The prefab decides the motion.
 
 - **Kinematic.** No rigidbody, or a kinematic one. Each `Update` casts from the current position along `velocity * dt` and moves only when the segment is clear. The cast is the whole step, so a fast shot cannot tunnel past a thin wall.
-- **Dynamic.** A non-kinematic `Rigidbody`. The shot sets `linearVelocity` (Unity 6's name; `velocity` is obsolete), turns gravity off, and sets `CollisionDetectionMode.ContinuousDynamic`. Continuous detection still misses some thin colliders at a high speed. `LateUpdate` casts from the previous position to the current one and that segment is what applies damage. Gravity is forced off so this sample flies straight. An arcing shot would leave gravity on and keep the same segment cast.
+- **Dynamic.** A non-kinematic `Rigidbody`. The shot sets `linearVelocity` (Unity 6's name; `velocity` is obsolete), turns gravity off, and sets `CollisionDetectionMode.ContinuousDynamic`. Continuous detection still misses some thin colliders at a high speed. `LateUpdate` casts from the previous position to the current one and that segment is what applies damage. Gravity is forced off so this sample flies straight. An arcing shot would leave gravity on and keep the same segment cast. Give a dynamic shot a trigger collider, or none: a solid collider lets physics bounce it off the target during the step, and the segment from the previous position to the bounced one can then miss the surface it hit.
 
 Lifetime and range both return the shot to the pool. Range is distance travelled, and falloff uses that distance, including the last segment. Impact calls back into the weapon that spawned the shot, which applies `DamageInfo` and raises the impact event. A dynamic body is set to `RigidbodyInterpolation.None` so a reused instance does not smear from its previous pose.
 
@@ -94,7 +94,7 @@ The offset is the local rotation of the recoil child. The orbit script can keep 
 
 ## Holder and events
 
-The holder reads fire, reload, the wheel, and the number keys, then calls `Weapon.Tick`. Its execution order is `-100`, so that tick sees this frame's press even though the weapon also ticks from its own `Update`. A second call in the same frame is ignored.
+The holder reads fire, reload, the wheel, and the number keys, then calls `Weapon.Tick`. Its execution order is `-100`, so that tick sees this frame's press even though the weapon also ticks from its own `Update`. A second call in the same frame is ignored. The weapon clears its input in `LateUpdate`, so if the holder stops sending input, for example while disabled by a menu, the trigger is released rather than left held.
 
 C# events carry the payload. `Fired` is the muzzle. `Impact` is the point and normal. `AmmoChanged` is the magazine and the reserve. `ReloadStarted` is the duration. Inspector `UnityEvent`s are the no-code hooks. `AmmoChanged` is also a `UnityEvent<int, int>`. The readout and the impact spawner listen to the C# events, the same way the [health bar](../systems/health.md#health-bar) listens to `HealthChanged`. Subscription rules, a typed bus, and a ScriptableObject channel for the same signals are [Event systems](../architecture/events.md). A counter that should not hold this weapon can mirror the magazine into a [shared variable](../architecture/variables.md).
 
@@ -149,7 +149,7 @@ On the weapon and the holder:
 
 ## Scripts
 
-Copy these into the project next to the health scripts. They use `DamageType`, `DamageInfo`, `IDamageable`, and `Hurtbox` from that page. The two holder listings are one class each. Copy one of them, not both.
+Copy these into the project next to the health scripts. They use `DamageType`, `DamageInfo`, `IDamageable`, and `Hurtbox` from that page. The two `WeaponInput` listings declare the same class. Copy one of them, not both.
 
 ### Weapon definition
 
@@ -358,6 +358,7 @@ public class Weapon : MonoBehaviour
 
     void OnEnable()
     {
+        ClearInput();
         float now = Time.time;
         if (_nextShotTime < now)
             _nextShotTime = now;
@@ -379,11 +380,25 @@ public class Weapon : MonoBehaviour
         Tick();
     }
 
+    // Input is for one frame. A holder that stops calling SetInput, because it was disabled
+    // or the game paused it, must not leave the trigger held down.
+    void LateUpdate()
+    {
+        ClearInput();
+    }
+
     public void SetInput(bool firePressed, bool fireHeld, bool reloadPressed)
     {
         _firePressed = firePressed;
         _fireHeld = fireHeld;
         _reloadPressed = reloadPressed;
+    }
+
+    void ClearInput()
+    {
+        _firePressed = false;
+        _fireHeld = false;
+        _reloadPressed = false;
     }
 
     public void Tick()
@@ -600,9 +615,16 @@ public class Weapon : MonoBehaviour
         if (eye == null)
             return MuzzlePosition() + ViewForward() * definition.range;
 
-        if (TryRay(eye.position, eye.forward, definition.range, out RaycastHit hit))
+        // Start the aim ray level with the muzzle along the view. With a camera behind the player,
+        // anything between the camera and the player would otherwise become the aim point.
+        Vector3 start = eye.position;
+        float skip = Vector3.Dot(MuzzlePosition() - start, eye.forward);
+        if (skip > 0f)
+            start += eye.forward * skip;
+
+        if (TryRay(start, eye.forward, definition.range, out RaycastHit hit))
             return hit.point;
-        return eye.position + eye.forward * definition.range;
+        return start + eye.forward * definition.range;
     }
 
     Vector3 ApplySpread(Vector3 direction)
@@ -1081,122 +1103,29 @@ public class WeaponRecoil : MonoBehaviour
 }
 ```
 
-### Holder
+### Holder input
 
-The keyboard is the number keys, R, and the left mouse button. A gamepad uses the right trigger, the north face button, and the d-pad left and right. The wheel switches only when **Switch On Scroll** is on. Device reads are already this frame's state and are not multiplied by `Time.deltaTime`. The fire interval is what consumes time. A hotbar that selects by the same index calls `Equip` from [Slots and hotbar](../systems/inventory/slots.md).
+Only the device reads differ between the input backends. Copy one listing. Device reads are already this frame's state and are not multiplied by `Time.deltaTime`; the fire interval is what consumes time.
 
 === "Input System"
 
+    The keyboard is the number keys, R, and the left mouse button. A gamepad uses the right trigger, the north face button, and the d-pad left and right. Requires Active Input Handling set to **Input System Package (New)** or **Both**. Devices are read directly, so no actions asset is needed.
+
     ```csharp
-    using System;
-    using UnityEngine;
     using UnityEngine.InputSystem;
 
     /// <summary>
-    /// Switches weapons and feeds fire and reload into the equipped one.
+    /// Weapon input for the Input System. Number is 0 for key 1, or -1 for none.
     /// </summary>
-    /// <remarks>
-    /// Input System, the default backend in a new Unity 6 project.
-    /// Requires the Input System package, and Active Input Handling set to
-    /// "Input System Package (New)" or "Both". Reads devices directly so
-    /// the sample does not need an actions asset. Runs before the weapon
-    /// so this frame's press fires this frame.
-    /// </remarks>
-    [DefaultExecutionOrder(-100)]
-    [DisallowMultipleComponent]
-    public class WeaponHolder : MonoBehaviour
+    public static class WeaponInput
     {
         static readonly Key[] NumberKeys =
         {
-            Key.Digit1,
-            Key.Digit2,
-            Key.Digit3,
-            Key.Digit4,
-            Key.Digit5,
-            Key.Digit6,
-            Key.Digit7,
-            Key.Digit8,
-            Key.Digit9
+            Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5,
+            Key.Digit6, Key.Digit7, Key.Digit8, Key.Digit9
         };
 
-        [SerializeField] Weapon[] weapons = Array.Empty<Weapon>();
-        [SerializeField] int startIndex;
-
-        [Tooltip("Turn off when an orbit camera already uses the scroll wheel to zoom.")]
-        [SerializeField] bool switchOnScroll = true;
-
-        int _index = -1;
-
-        public event Action<Weapon> WeaponChanged;
-
-        public Weapon Current => _index >= 0 && weapons != null && _index < weapons.Length ? weapons[_index] : null;
-
-        public Weapon[] Weapons => weapons;
-
-        void Start()
-        {
-            if (weapons == null || weapons.Length == 0)
-                return;
-
-            int index = Mathf.Clamp(startIndex, 0, weapons.Length - 1);
-            for (int i = 0; i < weapons.Length; i++)
-            {
-                if (i != index && weapons[i] != null)
-                    weapons[i].gameObject.SetActive(false);
-            }
-
-            Equip(index);
-        }
-
-        void Update()
-        {
-            ReadInput(out bool firePressed, out bool fireHeld, out bool reload, out float scroll, out int number);
-
-            if (number >= 0)
-                Equip(number);
-            else if (switchOnScroll && scroll > 0f)
-                Equip(Wrap(_index + 1));
-            else if (switchOnScroll && scroll < 0f)
-                Equip(Wrap(_index - 1));
-
-            Weapon current = Current;
-            if (current != null)
-            {
-                current.SetInput(firePressed, fireHeld, reload);
-                current.Tick();
-            }
-        }
-
-        public void Equip(int index)
-        {
-            if (weapons == null || index < 0 || index >= weapons.Length)
-                return;
-            if (weapons[index] == null)
-                return;
-            if (_index == index && weapons[index].gameObject.activeSelf)
-                return;
-
-            if (_index >= 0 && _index < weapons.Length && weapons[_index] != null)
-                weapons[_index].gameObject.SetActive(false);
-
-            _index = index;
-            weapons[_index].gameObject.SetActive(true);
-            WeaponChanged?.Invoke(weapons[_index]);
-        }
-
-        int Wrap(int index)
-        {
-            int count = weapons == null ? 0 : weapons.Length;
-            if (count <= 0)
-                return 0;
-
-            int wrapped = index % count;
-            if (wrapped < 0)
-                wrapped += count;
-            return wrapped;
-        }
-
-        void ReadInput(out bool firePressed, out bool fireHeld, out bool reload, out float scroll, out int number)
+        public static void Read(out bool firePressed, out bool fireHeld, out bool reload, out float scroll, out int number)
         {
             firePressed = false;
             fireHeld = false;
@@ -1239,114 +1168,22 @@ The keyboard is the number keys, R, and the left mouse button. A gamepad uses th
                     scroll = -1f;
             }
         }
-
-        void OnValidate()
-        {
-            if (startIndex < 0)
-                startIndex = 0;
-        }
     }
     ```
 
 === "Legacy Input Manager"
 
-    `GetMouseButton` is the left button. `GetKeyDown(KeyCode.R)` reloads. `GetAxis("Mouse ScrollWheel")` is the default wheel axis, already this frame's notch, and it is not multiplied by `Time.deltaTime`. There is no gamepad on this listing. A right trigger and a d-pad need the Input System tab.
+    `GetMouseButton` is the left button. `GetKeyDown(KeyCode.R)` reloads. `GetAxis("Mouse ScrollWheel")` is the default wheel axis. There is no gamepad on this listing; a right trigger and a d-pad need the Input System tab. Active Input Handling must be **Input Manager (Old)** or **Both**.
 
     ```csharp
-    using System;
     using UnityEngine;
 
     /// <summary>
-    /// Switches weapons and feeds fire and reload into the equipped one.
+    /// Weapon input for the legacy Input Manager. Number is 0 for key 1, or -1 for none.
     /// </summary>
-    /// <remarks>
-    /// Legacy Input Manager. Active Input Handling must be
-    /// "Input Manager (Old)" or "Both". Fire is the left mouse button,
-    /// reload is R, and the wheel uses the default Mouse ScrollWheel axis.
-    /// Runs before the weapon so this frame's press fires this frame.
-    /// </remarks>
-    [DefaultExecutionOrder(-100)]
-    [DisallowMultipleComponent]
-    public class WeaponHolder : MonoBehaviour
+    public static class WeaponInput
     {
-        [SerializeField] Weapon[] weapons = Array.Empty<Weapon>();
-        [SerializeField] int startIndex;
-
-        [Tooltip("Turn off when an orbit camera already uses the scroll wheel to zoom.")]
-        [SerializeField] bool switchOnScroll = true;
-
-        int _index = -1;
-
-        public event Action<Weapon> WeaponChanged;
-
-        public Weapon Current => _index >= 0 && weapons != null && _index < weapons.Length ? weapons[_index] : null;
-
-        public Weapon[] Weapons => weapons;
-
-        void Start()
-        {
-            if (weapons == null || weapons.Length == 0)
-                return;
-
-            int index = Mathf.Clamp(startIndex, 0, weapons.Length - 1);
-            for (int i = 0; i < weapons.Length; i++)
-            {
-                if (i != index && weapons[i] != null)
-                    weapons[i].gameObject.SetActive(false);
-            }
-
-            Equip(index);
-        }
-
-        void Update()
-        {
-            ReadInput(out bool firePressed, out bool fireHeld, out bool reload, out float scroll, out int number);
-
-            if (number >= 0)
-                Equip(number);
-            else if (switchOnScroll && scroll > 0f)
-                Equip(Wrap(_index + 1));
-            else if (switchOnScroll && scroll < 0f)
-                Equip(Wrap(_index - 1));
-
-            Weapon current = Current;
-            if (current != null)
-            {
-                current.SetInput(firePressed, fireHeld, reload);
-                current.Tick();
-            }
-        }
-
-        public void Equip(int index)
-        {
-            if (weapons == null || index < 0 || index >= weapons.Length)
-                return;
-            if (weapons[index] == null)
-                return;
-            if (_index == index && weapons[index].gameObject.activeSelf)
-                return;
-
-            if (_index >= 0 && _index < weapons.Length && weapons[_index] != null)
-                weapons[_index].gameObject.SetActive(false);
-
-            _index = index;
-            weapons[_index].gameObject.SetActive(true);
-            WeaponChanged?.Invoke(weapons[_index]);
-        }
-
-        int Wrap(int index)
-        {
-            int count = weapons == null ? 0 : weapons.Length;
-            if (count <= 0)
-                return 0;
-
-            int wrapped = index % count;
-            if (wrapped < 0)
-                wrapped += count;
-            return wrapped;
-        }
-
-        void ReadInput(out bool firePressed, out bool fireHeld, out bool reload, out float scroll, out int number)
+        public static void Read(out bool firePressed, out bool fireHeld, out bool reload, out float scroll, out int number)
         {
             firePressed = Input.GetMouseButtonDown(0);
             fireHeld = Input.GetMouseButton(0);
@@ -1366,22 +1203,120 @@ The keyboard is the number keys, R, and the left mouse button. A gamepad uses th
                     number = i;
             }
         }
-
-        void OnValidate()
-        {
-            if (startIndex < 0)
-                startIndex = 0;
-        }
     }
     ```
 
-### Readout and effects
+### Holder
 
-`Text` is the uGUI text component. A muzzle particle should be a short burst with **Play On Awake** off. The impact prefab is instantiated and destroyed. It is not pooled. A busy gun can pool it the same way as `Projectile`.
+The wheel switches only when **Switch On Scroll** is on. A hotbar that selects by the same index calls `Equip` from [Slots and hotbar](../systems/inventory/slots.md).
 
 ```csharp
+using System;
 using UnityEngine;
-using UnityEngine.UI;
+
+/// <summary>
+/// Switches weapons and feeds fire and reload into the equipped one.
+/// </summary>
+/// <remarks>
+/// Reads input through WeaponInput, so it is the same for either input backend.
+/// Runs before the weapon so this frame's press fires this frame.
+/// </remarks>
+[DefaultExecutionOrder(-100)]
+[DisallowMultipleComponent]
+public class WeaponHolder : MonoBehaviour
+{
+    [SerializeField] Weapon[] weapons = Array.Empty<Weapon>();
+    [SerializeField] int startIndex;
+
+    [Tooltip("Turn off when an orbit camera already uses the scroll wheel to zoom.")]
+    [SerializeField] bool switchOnScroll = true;
+
+    int _index = -1;
+
+    public event Action<Weapon> WeaponChanged;
+
+    public Weapon Current => _index >= 0 && weapons != null && _index < weapons.Length ? weapons[_index] : null;
+
+    public Weapon[] Weapons => weapons;
+
+    void Start()
+    {
+        if (weapons == null || weapons.Length == 0)
+            return;
+
+        int index = Mathf.Clamp(startIndex, 0, weapons.Length - 1);
+        for (int i = 0; i < weapons.Length; i++)
+        {
+            if (i != index && weapons[i] != null)
+                weapons[i].gameObject.SetActive(false);
+        }
+
+        Equip(index);
+    }
+
+    void Update()
+    {
+        WeaponInput.Read(out bool firePressed, out bool fireHeld, out bool reload, out float scroll, out int number);
+
+        if (number >= 0)
+            Equip(number);
+        else if (switchOnScroll && scroll > 0f)
+            Equip(Wrap(_index + 1));
+        else if (switchOnScroll && scroll < 0f)
+            Equip(Wrap(_index - 1));
+
+        Weapon current = Current;
+        if (current != null)
+        {
+            current.SetInput(firePressed, fireHeld, reload);
+            current.Tick();
+        }
+    }
+
+    public void Equip(int index)
+    {
+        if (weapons == null || index < 0 || index >= weapons.Length)
+            return;
+        if (weapons[index] == null)
+            return;
+        if (_index == index && weapons[index].gameObject.activeSelf)
+            return;
+
+        if (_index >= 0 && _index < weapons.Length && weapons[_index] != null)
+            weapons[_index].gameObject.SetActive(false);
+
+        _index = index;
+        weapons[_index].gameObject.SetActive(true);
+        WeaponChanged?.Invoke(weapons[_index]);
+    }
+
+    int Wrap(int index)
+    {
+        int count = weapons == null ? 0 : weapons.Length;
+        if (count <= 0)
+            return 0;
+
+        int wrapped = index % count;
+        if (wrapped < 0)
+            wrapped += count;
+        return wrapped;
+    }
+
+    void OnValidate()
+    {
+        if (startIndex < 0)
+            startIndex = 0;
+    }
+}
+```
+
+### Readout and effects
+
+`AmmoReadout` uses TextMeshPro, and `SetText` with arguments, so a shot does not build a string. A muzzle particle should be a short burst with **Play On Awake** off. The impact prefab is instantiated and destroyed. It is not pooled. A busy gun can pool it the same way as `Projectile`.
+
+```csharp
+using TMPro;
+using UnityEngine;
 
 /// <summary>
 /// Shows the equipped weapon's magazine and reserve.
@@ -1390,7 +1325,7 @@ using UnityEngine.UI;
 public class AmmoReadout : MonoBehaviour
 {
     [SerializeField] WeaponHolder holder;
-    [SerializeField] Text label;
+    [SerializeField] TMP_Text label;
 
     Weapon _weapon;
 
@@ -1426,7 +1361,7 @@ public class AmmoReadout : MonoBehaviour
     void Refresh(int magazine, int reserve)
     {
         if (label != null)
-            label.text = magazine + " / " + reserve;
+            label.SetText("{0} / {1}", magazine, reserve);
     }
 }
 ```
