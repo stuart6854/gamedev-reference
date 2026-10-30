@@ -4,6 +4,7 @@ Agents that decide what to do, on top of a body from [Mechanics](../mechanics/in
 
 Written:
 
+- [Utility AI](utility.md) — actions scored from considerations and response curves, compensation, momentum and commitment, and a needs example.
 - [Enemy behaviour](enemy.md) — patrol, chase, attack, search, and flee on a `NavMeshAgent`, with placeholder sight.
 - [Enemy waves](waves.md) — off-screen spawn points, an alive cap, and authored or budget-bought waves.
 - [Continuous spawning](spawning.md) — a timed trickle on curves, proximity zones, and a director that paces build-up, peak, and relax.
