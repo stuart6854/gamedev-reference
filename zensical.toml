@@ -102,6 +102,7 @@ nav = [
       { "Enemy behaviour" = "unity/ai/enemy.md" },
       { "Enemy waves" = "unity/ai/waves.md" },
       { "Continuous spawning" = "unity/ai/spawning.md" },
+      { "Horde simulation" = "unity/ai/horde.md" },
     ] },
     { "Systems" = [
       "unity/systems/index.md",
