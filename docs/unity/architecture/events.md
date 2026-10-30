@@ -66,17 +66,17 @@ public class GameOverScreen : MonoBehaviour
 Ammo is the same shape with arguments. [`Weapon.AmmoChanged`](../combat/weapons.md#weapon) passes the magazine and the reserve. The counter on the weapons page is [`AmmoReadout`](../combat/weapons.md#readout-and-effects), which also rebinds when the holder swaps guns. The short form, when the counter already knows the weapon, is:
 
 ```csharp
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
-/// Writes Weapon.AmmoChanged into a uGUI label.
+/// Writes Weapon.AmmoChanged into a TextMeshPro label.
 /// </summary>
 [DisallowMultipleComponent]
 public class HudAmmoCounter : MonoBehaviour
 {
     [SerializeField] Weapon weapon;
-    [SerializeField] Text label;
+    [SerializeField] TMP_Text label;
 
     void OnEnable()
     {
@@ -95,8 +95,9 @@ public class HudAmmoCounter : MonoBehaviour
 
     void Refresh(int magazine, int reserve)
     {
+        // SetText with arguments formats into TextMeshPro's own buffer: no string per shot.
         if (label != null)
-            label.text = magazine + " / " + reserve;
+            label.SetText("{0} / {1}", magazine, reserve);
     }
 }
 ```
@@ -359,26 +360,42 @@ Subscription order is call order. Script execution order only affects who subscr
 
 A channel is the bus stored on an asset, so a designer can assign it. Void is a signal with no payload. A typed channel is one argument. There is no `CreateAssetMenu` on an open generic, so each payload you want in the menu is a small subclass.
 
-Listeners are not serialised. `[NonSerialized]` keeps them off the asset. With domain reload disabled the asset object is the same one next Play Mode, and that field would still hold last session's delegates. `OnEnable` and `OnDisable` on a `ScriptableObject` still run on those Play Mode transitions. Entering Play Mode runs the asset `OnEnable` before scene `OnEnable`, so the clear happens before listeners subscribe. Unity calls the `OnEnable` on the base. A subclass that declares its own `OnEnable` hides it, and the clear does not run unless that method calls `base.OnEnable()`. The channel `Raise` is a normal delegate invoke: a nested raise re-enters. It does not use the bus queue.
+Listeners are not serialised. `[NonSerialized]` keeps them off the asset. With domain reload disabled the asset object is the same one next Play Mode, and that field would still hold last session's delegates, pointing at destroyed scene objects. A ScriptableObject's `OnDisable` and `OnEnable` are part of the domain reload, so with **Reload Domain** off they do not run on entering Play Mode, and cannot be relied on to clear the list. Each channel therefore adds itself to a static set when it is enabled, and a `SubsystemRegistration` method clears every channel in that set at the start of Play Mode, before any scene `OnEnable`. That is the same reset the bus uses. A subclass that declares its own `OnEnable` hides the base one and must call `base.OnEnable()`. The channel `Raise` is a normal delegate invoke: a nested raise re-enters. It does not use the bus queue.
 
 ```csharp
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Clears runtime listeners on Play Mode transitions, including when domain reload is off.
+/// Clears runtime listeners at the start of every Play Mode, including when domain reload is off.
 /// </summary>
 public abstract class EventChannelBase : ScriptableObject
 {
+    // Survives Play Mode with domain reload off, and so do the channels in it.
+    static readonly HashSet<EventChannelBase> Loaded = new HashSet<EventChannelBase>();
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ClearAll()
+    {
+        foreach (EventChannelBase channel in Loaded)
+        {
+            if (channel != null)
+                channel.ClearListeners();
+        }
+    }
+
     // Protected so Unity still finds these when the asset's type is a subclass.
     // A subclass that declares its own OnEnable hides this one. Call base.OnEnable().
     protected void OnEnable()
     {
+        Loaded.Add(this);
         ClearListeners();
     }
 
     protected void OnDisable()
     {
+        Loaded.Remove(this);
         ClearListeners();
     }
 
@@ -677,7 +694,7 @@ A destroyed `MonoBehaviour` compares equal to null with Unity's `==`, and it is 
 
 Unsubscribing from a publisher that is already destroyed is safe. The C# object is still there for the rest of the frame, and the event field is managed. The failure is the other way: the publisher lives, the listener does not.
 
-**Reload Domain** off (**Project Settings → Editor → Enter Play Mode Options**) keeps static fields and the runtime fields of asset instances. Scene objects are destroyed and created again if **Reload Scene** is still on, and their `OnDisable` / `OnEnable` run. A static list that escaped `OnDisable` still holds the dead listener. `SubsystemRegistration` runs on the next enter Play Mode, before scene `OnEnable`, which is why the bus clears there and the channel clears in the asset `OnEnable`.
+**Reload Domain** off (**Project Settings → Editor → Enter Play Mode Options**) keeps static fields and the runtime fields of asset instances. Scene objects are destroyed and created again if **Reload Scene** is still on, and their `OnDisable` / `OnEnable` run. A static list that escaped `OnDisable` still holds the dead listener. `SubsystemRegistration` runs on the next enter Play Mode, before scene `OnEnable`, which is why both the bus and the channels clear there. A ScriptableObject's own `OnEnable` and `OnDisable` are part of the domain reload, so with it off they do not run, and a reset that lives only in them never happens.
 
 **Reload Scene** off as well means those scene objects stay enabled. `OnEnable` does not run again. Clearing the bus then drops live subscriptions and nobody puts them back. Reset statics when the domain survives. Do not clear a list that your listeners will not rebuild.
 
@@ -697,7 +714,7 @@ A method-group subscribe allocates the delegate once, when the list has to grow.
 
 Boxing is a cast to `object` or to an interface. `EventBus<PlayerDied>.Raise(payload)` does not box `PlayerDied`. `EventBus<object>` is rejected by the struct constraint. `EventChannel<object>.Raise(someStruct)` boxes, because `T` is `object`. Keep `T` as the payload type.
 
-`GetInvocationList` allocates. `UnityEvent`'s persistent call allocates more than a direct `Action`. String interpolation in a listener that runs per shot allocates. The ammo label should set `text` from the numbers it was given, not build a fresh string API around them beyond that assignment. `Text.text` itself allocates. That is the label, and it is still cheaper than subscribing a closure to do it.
+`GetInvocationList` allocates. `UnityEvent`'s persistent call allocates more than a direct `Action`. String concatenation or interpolation in a listener that runs per shot allocates a string every shot. TextMeshPro's `SetText` with arguments, as `HudAmmoCounter` uses, formats into the component's own buffer instead.
 
 The bus queue allocates when a nested burst exceeds the spare capacity. It does not allocate on a raise that nobody re-enters.
 
@@ -718,6 +735,8 @@ An observer, in the textbook sense, is a list of interested parties and a notify
     `RuntimeInitializeOnLoadMethod` on `EventBus<T>` does not run. The attribute has to sit on a non-generic type. `SubsystemRegistration` is the one that runs before the scene loads. `BeforeSceneLoad` is already late enough for some assets to have subscribed.
 
     Raising `UnityEvent` from a projectile, or allocating `GetInvocationList` per hit, shows up as GC in the profiler long before the game-over screen does. Death and a button can use the inspector. The fire loop should use the C# event the weapon already raises.
+
+    A channel that clears its listeners only in its own `OnEnable` keeps last session's dead listeners when domain reload is off, because that `OnEnable` is skipped. Clear from `SubsystemRegistration`, as `EventChannelBase` does.
 
     One channel asset is one list. Two players sharing Player Died both notify every listener. A listener on an inactive panel never subscribes. **Raise** in Edit Mode does not test the scene. Enter Play Mode first.
 
