@@ -16,7 +16,7 @@ uses:
 
 # Steering and crowds
 
-Local movement from simple forces: seek a point, arrive and slow down, flee, pursue a moving target, and keep apart from neighbours. Combined with a **flow field**, one path search serves a whole crowd heading to the same goal. This page builds a crowd that moves hundreds of agents with plain transforms, using the `SpatialHashGrid` from the spatial hash grid page for neighbours.
+Local movement from simple forces: seek a point, arrive and slow down, flee, pursue a moving target, and keep apart from neighbours. Combined with a **flow field**, one path search serves a whole crowd heading to the same goal. This page builds a crowd that moves hundreds of agents with plain transforms, using the `SpatialHashGrid` from the [spatial hash grid](../../data-structures/spatial-hash.md#reference-implementation) page for neighbours.
 
 A `NavMeshAgent` already does pathfinding and local avoidance for one agent, as on the [enemy behaviour](enemy.md) page. Each agent costs a path and an avoidance solve. Past a few hundred agents, or when the motion should look like a crowd rather than individuals, steering takes over.
 
@@ -66,7 +66,7 @@ Diagonal moves are allowed only when both neighbouring straight cells are walkab
 
 ## Setup
 
-1. Copy `SpatialHashGrid` from the spatial hash grid page, then `Steering`, `FlowField`, and `Crowd` below.
+1. Copy `SpatialHashGrid` from the [spatial hash grid](../../data-structures/spatial-hash.md#reference-implementation) page, then `Steering`, `FlowField`, and `Crowd` below.
 2. Put `FlowField` on an empty object at the bottom-left corner of the walkable area. Set **Size** in cells and **Cell Size**. Set **Obstacle Mask** to the walls. The gizmo shows blocked cells in red and the directions as lines.
 3. Put `Crowd` on any object. Assign the field and a **Target**. Agents register with `Crowd.Add(transform)`, for example from a spawner, or add children with **Adopt Children On Start**.
 4. Call `FlowField.SetGoal(position)` when the goal moves. `Crowd` does this for you every **Goal Refresh** seconds while a target is assigned.
@@ -501,7 +501,7 @@ The velocities are computed for every agent before any agent moves. Updating pos
 
 - **Thousands of agents.** Move the two loops into Burst jobs, with positions in `NativeArray<float3>` and `IJobParallelForTransform` writing the transforms through a `TransformAccessArray`. The grid's counting sort is a natural job too.
 - **Rendering.** Thousands of separate GameObjects with skinned meshes cost more to draw than to move. GPU instancing, or vertex-animation textures for the walk, carry the rest.
-- **Far agents.** Agents far from the player can step less often, or as a group. That is horde simulation's level of detail, not this page.
+- **Far agents.** Agents far from the player can step less often, or as a group. That is [horde simulation](horde.md)'s level of detail, not this page.
 
 !!! warning "Common pitfalls"
 

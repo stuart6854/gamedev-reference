@@ -18,7 +18,7 @@ uses:
 
 What an agent knows about the world: what it can see, what it has heard, and how sure it is. Sight is a cone, a range, and rays against walls. Hearing is noise events with a radius, muffled by walls. Both feed an **awareness** meter per target, so an agent first turns to look, then investigates, then commits, instead of snapping from idle to attack the moment one ray connects. When a target is lost, the agent remembers where it last was.
 
-Perception only reports. Deciding what to do with it is the brain's job: the [state machine](../architecture/state-machines.md) on [enemy behaviour](enemy.md), or a utility score.
+Perception only reports. Deciding what to do with it is the brain's job: the [state machine](../architecture/state-machines.md) on [enemy behaviour](enemy.md), or a [utility](utility.md) score.
 
 ## Sight
 
@@ -448,7 +448,7 @@ A noticed target stays noticed while its awareness decays, so a brain keeps chas
 ## At scale
 
 - **Many perceivers, one player.** The loop is perceivers × targets × aim points rays per tick. With 200 agents ticking at 5 Hz and two aim points, that is up to 2,000 rays a second, which is fine. The range check comes first, so distant agents cast nothing.
-- **Hundreds of agents and noises.** `Noise.Emit` checks every perceiver. Filing perceivers in a spatial hash grid makes a noise check only the cells within its radius.
+- **Hundreds of agents and noises.** `Noise.Emit` checks every perceiver. Filing perceivers in a [spatial hash grid](../../data-structures/spatial-hash.md) makes a noise check only the cells within its radius.
 - **Thousands of agents.** Batch the sight rays with `RaycastCommand` in a job, and give distant agents a slower tick, or no sight at all until a noise wakes them.
 
 !!! warning "Common pitfalls"

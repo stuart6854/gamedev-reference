@@ -48,7 +48,7 @@ Simple and dormant records are not all stepped every frame. Each has a next-tick
 
 Records carry a goal. `Attract(position, radius)` sets the goal of every record within the radius, whatever its tier, using a spatial hash grid of all record positions. Active agents get the call too, through the `Attracted` event on their `HordeAgent`, for their brain to act on.
 
-This is how noise moves a horde. Forward gameplay noises to it alongside the per-agent perception:
+This is how noise moves a horde. Forward gameplay noises to it alongside the per-agent [perception](perception.md#hearing):
 
 ```csharp
 // A gunshot: nearby perceivers hear it, and the wider population drifts towards it.
@@ -65,7 +65,7 @@ Records are plain data: a position, a heading, a goal. Saving the horde is savin
 ## Setup
 
 1. Make the agent prefab: the full enemy, such as the one from [enemy behaviour](enemy.md), plus `HordeAgent` on the root. When it dies, call `HordeAgent.Kill()`; the record is removed and the corpse is left to the prefab.
-2. Copy `SpatialHashGrid` from the spatial hash grid page, then `HordeAgent` and `HordeSimulation` below.
+2. Copy `SpatialHashGrid` from the [spatial hash grid](../../data-structures/spatial-hash.md#reference-implementation) page, then `HordeAgent` and `HordeSimulation` below.
 3. Put `HordeSimulation` on a manager object. Assign the player and the prefab. Set the radii and **Max Active**.
 4. Populate it with `Add(position)`, for example scattered over the map at load, or from a [spawner](spawning.md) that adds records instead of instantiating.
 5. Select the manager in Play mode. Gizmos show dormant records in grey, simple in yellow, and active in red.
@@ -454,7 +454,7 @@ The comparer is a class held in a field, so sorting the candidates every frame d
 
     A pooled instance keeps the state of its last use: health, animator state, brain state, perception memory. Reset all of it on promotion, as the [object pooling](../architecture/pooling.md) page describes.
 
-    Simple and dormant agents walk through walls. If the player can see further than **Active Radius**, they see it happen. Raise the radius, or hide distant agents with fog, darkness, or [vision rendering](../rendering/index.md).
+    Simple and dormant agents walk through walls. If the player can see further than **Active Radius**, they see it happen. Raise the radius, or hide distant agents with fog, darkness, or [fog of war and vision](../rendering/vision.md).
 
     A dead active agent that does not call `Kill` is demoted when the player leaves, and its record walks off again. Call it from the death handler.
 

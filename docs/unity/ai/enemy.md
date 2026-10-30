@@ -8,7 +8,7 @@ package: AI Navigation 2.x
 
 A patrol, chase, attack, search, and flee loop on a `NavMeshAgent`, driven by the [state machine](../architecture/state-machines.md). The attack uses the same [`DamageInfo`](../systems/health.md#damage-info) as a [weapon](../combat/weapons.md). It prefers `Hurtbox.Receive`, and falls back to `IDamageable`.
 
-Sight here is a distance check, an angle check, and one ray. That is a stand-in. The real model is [line of sight and hearing](../../roadmap.md#ai), which is not written yet. A utility score, or a [behaviour tree](../../roadmap.md#ai_1), would replace the predicates on this machine when the set of reasons grows past a list you can read. [Steering](../../roadmap.md#ai) would replace `SetDestination` when the agent's own avoidance is not the local motion you want. None of those are this page.
+Sight here is a distance check, an angle check, and one ray. That is a stand-in. The full model is [perception](perception.md): several aim points, hearing, and an awareness meter. A [utility](utility.md) score, or a [behaviour tree](../../roadmap.md#ai), would replace the predicates on this machine when the set of reasons grows past a list you can read. [Steering](steering.md) would replace `SetDestination` when the agent's own avoidance is not the local motion you want. None of those are this page.
 
 `NavMeshAgent` is in `UnityEngine.AI`. Baking is the AI Navigation package: `NavMeshSurface` lives in `Unity.AI.Navigation`. The agent's speed property is still `velocity`. Unity 6 renamed `Rigidbody.velocity` to `linearVelocity` and did not rename the agent.
 
@@ -661,9 +661,9 @@ public class NavMeshRebuild : MonoBehaviour
 
     `BuildNavMesh` stalls the frame. Bake in the editor, or call it when the level actually changes. A wall placed at runtime is [building](../systems/building.md#navigation-mesh). Prefer a `NavMeshObstacle` that carves. `UpdateNavMesh` is the other option, and it is not a per-frame call.
 
-    The sight component is one ray and a cone. It will see through a gap the size of the ray, and it has no hearing. Replace the component when the [perception](../../roadmap.md#ai) page exists. Do not add those rules here.
+    The sight component is one ray and a cone. It will see through a gap the size of the ray, and it has no hearing. For more, replace it with [perception](perception.md). Do not add those rules here.
 
-    A behaviour tree or a utility score replaces this machine when the priority numbers become a puzzle. Steering replaces the motor, not the states. Those three stay on the [roadmap](../../roadmap.md#ai). Behaviour trees are the Ideas entry on that list.
+    A behaviour tree or a utility score replaces this machine when the priority numbers become a puzzle. Steering replaces the motor, not the states. [Utility AI](utility.md) and [steering](steering.md) have their own pages; behaviour trees are on the [roadmap](../../roadmap.md#ai).
 
     Copy `StateMachine` before `EnemyBrain`, or the brain does not compile. `Health` with no assignment never flees. A missing `Hurtbox` still applies damage through `IDamageable`, and skips limb multipliers. Do not call both.
 

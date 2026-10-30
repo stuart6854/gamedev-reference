@@ -15,7 +15,7 @@ uses:
 
 # Fog of war and vision
 
-Showing the player only what their character can see, and dimming what they have seen before. A grid over the map stores three states per cell:
+Showing the player only what their character can see, and dimming what they have seen before. Inside buildings it pairs with [roof and wall cutaways](cutaways.md). A grid over the map stores three states per cell:
 
 | State | Shown as | Units in it |
 | --- | --- | --- |

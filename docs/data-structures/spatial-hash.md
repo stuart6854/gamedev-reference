@@ -200,6 +200,8 @@ public sealed class SpatialHashGrid
 }
 ```
 
+The Unity [steering](../unity/ai/steering.md), [perception](../unity/ai/perception.md), and [horde simulation](../unity/ai/horde.md) pages use this class.
+
 A query appends the point itself if it is one of the indexed points. Callers that want neighbours skip their own index.
 
 ## Language tips
