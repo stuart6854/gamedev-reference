@@ -121,6 +121,12 @@ nav = [
       ] },
       { "Building and placement" = "unity/systems/building.md" },
       { "Loot tables" = "unity/systems/loot.md" },
+      { "Saving" = [
+        "unity/systems/saving/index.md",
+        { "Save system" = "unity/systems/saving/save-system.md" },
+        { "World state" = "unity/systems/saving/world-state.md" },
+        { "Versioning" = "unity/systems/saving/versioning.md" },
+      ] },
     ] },
     { "UI" = [
       "unity/ui/index.md",

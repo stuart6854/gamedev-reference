@@ -2,18 +2,18 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (23)
+- [Top-down survival](#top-down-survival) (26)
 - [Hordes and crowds](#hordes-and-crowds) (16)
 - [Stealth](#stealth) (6)
 - [Shooters](#shooters) (26)
 - [Melee action](#melee-action) (6)
 - [Strategy and tactics](#strategy-and-tactics) (13)
-- [RPGs](#rpgs) (22)
+- [RPGs](#rpgs) (24)
 - [Roguelikes](#roguelikes) (5)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (8)
-- [Base building](#base-building) (3)
-- [Open worlds](#open-worlds) (10)
+- [Base building](#base-building) (4)
+- [Open worlds](#open-worlds) (12)
 - [Wildlife](#wildlife) (4)
 - [Companions and NPCs](#companions-and-npcs) (2)
 - [Multiplayer](#multiplayer) (5)
@@ -39,12 +39,15 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Systems that read each other at startup without null references.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A low-health look and grading that changes with the mood.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — Walking into a house hides its roof and upper floor, and the room stays dark with the roof's shadow.
+- [Save system](unity/systems/saving/save-system.md) — Autosave on a timer, blocked while in combat or dead.
 - [Scenes and loading](unity/architecture/scenes.md) — Moving between town and interiors behind a loading screen.
 - [Slots and hotbar](unity/systems/inventory/slots.md) — Quick slots for consumables and tools.
 - [Top-down movement](unity/mechanics/top-down.md) — Moving one way while aiming another, with mouse or twin-stick aim.
 - [Vectors, dot and cross products](maths/vectors.md) — The 2D perp dot says whether a threat is to the left or right of the player.
+- [Versioning saves](unity/systems/saving/versioning.md) — Early-access updates that change items and the map under existing worlds.
 - [Weapons](unity/combat/weapons.md) — Scarce ammo and reloads that matter.
 - [Weight inventory](unity/systems/inventory/weight.md) — Carry weight that slows the player when overloaded.
+- [World state](unity/systems/saving/world-state.md) — Looted containers stay empty, broken doors stay broken, and dropped items stay where they fell.
 
 ## Hordes and crowds
 
@@ -158,11 +161,13 @@ Stats, items, loot, and characters that grow.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Spawned characters that get their data before they enable.
 - [Random distributions and shuffles](maths/random.md) — Weighted loot, fair crit chances with pseudo-random distribution, and bell-curve stats.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — In isometric RPGs, walls between the camera and the party dissolve, so the party is never hidden.
+- [Save system](unity/systems/saving/save-system.md) — Several manual slots plus an autosave, each with a date and play time.
 - [Scenes and loading](unity/architecture/scenes.md) — Areas that load additively, with the UI kept in one place.
 - [Shared variables](unity/architecture/variables.md) — HUD bars and counters that read shared values without referencing the player.
 - [Spatial hash grid](data-structures/spatial-hash.md) — An explosion or a spell finds everything within its radius.
 - [Third-person orbit camera](unity/cameras/third-person.md) — An orbit camera that pulls in when walls get in the way.
 - [uGUI and UI Toolkit](unity/ui/choosing.md) — Menus, inventories, and HUDs kept separate from game state.
+- [Versioning saves](unity/systems/saving/versioning.md) — Long games where players keep saves across many patches.
 - [Weight inventory](unity/systems/inventory/weight.md) — Encumbrance on top of an ordinary bag.
 
 ## Roguelikes
@@ -207,6 +212,7 @@ Placing, upgrading, and defending structures.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
 - [Top-down strategy camera](unity/cameras/rts.md) — A top-down view for placing and managing structures.
+- [World state](unity/systems/saving/world-state.md) — Placed pieces are spawned objects, saved with their prefab key and position.
 
 ## Open worlds
 
@@ -220,8 +226,10 @@ Large maps, streaming, and a world that runs while you are away.
 - [Integrators](physics/integrators.md) — Vehicles and ropes that stay stable over long sessions.
 - [Interpolation and easing](maths/interpolation.md) — Day and night colours, fades, and remapped values from one lerp.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — Local volumes for caves, underwater, and interiors.
+- [Save system](unity/systems/saving/save-system.md) — One save that names the level to load, then puts the player back.
 - [Scenes and loading](unity/architecture/scenes.md) — A persistent core with levels and chunks loaded on top.
 - [Steering and crowds](unity/ai/steering.md) — Pedestrians follow a flow field through streets and avoid each other.
+- [World state](unity/systems/saving/world-state.md) — Chunks that unload keep their state in memory, then in the save.
 
 ## Wildlife
 
