@@ -39,6 +39,7 @@ nav = [
     { "Handle table" = "data-structures/handle-table.md" },
     { "Ring buffer" = "data-structures/ring-buffer.md" },
     { "Free list and slab pool" = "data-structures/free-list.md" },
+    { "Spatial hash grid" = "data-structures/spatial-hash.md" },
   ] },
   { "Graphics" = [
     "graphics/index.md",

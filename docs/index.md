@@ -21,7 +21,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 Each section's index lists what is written there.
 
 - [Maths](maths/index.md) — vectors, quaternions, interpolation and damping, randomness, intersection tests, and frustum tests.
-- [Data structures](data-structures/index.md) — containers the standard libraries leave out, sparse sets, handle tables, ring buffers, and free lists.
+- [Data structures](data-structures/index.md) — containers the standard libraries leave out, sparse sets, handle tables, ring buffers, free lists, and spatial hash grids.
 - [Graphics](graphics/index.md) — the coordinate spaces from object space to the screen.
 - [Physics](physics/index.md) — the fixed timestep and integrators.
 - [Engine architecture](engine/index.md) — how an entity component system stores entities and components.
