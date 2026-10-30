@@ -101,6 +101,7 @@ nav = [
       "unity/ai/index.md",
       { "Utility AI" = "unity/ai/utility.md" },
       { "Enemy behaviour" = "unity/ai/enemy.md" },
+      { "Perception" = "unity/ai/perception.md" },
       { "Enemy waves" = "unity/ai/waves.md" },
       { "Steering and crowds" = "unity/ai/steering.md" },
       { "Continuous spawning" = "unity/ai/spawning.md" },

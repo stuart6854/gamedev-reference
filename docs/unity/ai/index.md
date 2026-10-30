@@ -6,6 +6,7 @@ Written:
 
 - [Utility AI](utility.md) — actions scored from considerations and response curves, compensation, momentum and commitment, and a needs example.
 - [Enemy behaviour](enemy.md) — patrol, chase, attack, search, and flee on a `NavMeshAgent`, with placeholder sight.
+- [Perception](perception.md) — sight cones with several aim points, noise events muffled by walls, an awareness meter, and memory of the last known position.
 - [Enemy waves](waves.md) — off-screen spawn points, an alive cap, and authored or budget-bought waves.
 - [Steering and crowds](steering.md) — seek, arrive, flee, pursue, wander, and separation, a flow field for one goal, and a crowd that moves hundreds of agents.
 - [Continuous spawning](spawning.md) — a timed trickle on curves, proximity zones, and a director that paces build-up, peak, and relax.
