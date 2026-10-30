@@ -5,11 +5,11 @@ package: URP 17.x
 uses:
   - name: Top-down survival
     text: Walking into a house hides its roof and upper floor, and the room stays dark with the roof's shadow.
-  - name: Isometric RPGs
-    text: Walls between the camera and the party dissolve, so the party is never hidden.
-  - name: Life and building sims
+  - name: RPGs
+    text: In isometric RPGs, walls between the camera and the party dissolve, so the party is never hidden.
+  - name: Life and colony sims
     text: Upper floors hide while the player works on the floor below.
-  - name: Tactics games
+  - name: Strategy and tactics
     text: A see-through circle around the selected unit shows it behind cover.
 ---
 

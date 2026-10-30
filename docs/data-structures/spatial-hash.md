@@ -2,12 +2,12 @@
 uses:
   - name: Hordes and crowds
     text: Each agent finds its neighbours for separation and flocking without testing every other agent.
-  - name: Perception
-    text: A noise or a sight check only looks at agents in the cells around it.
-  - name: Bullet hell
+  - name: Stealth
+    text: A noise or a sight check only looks at the agents in the cells around it.
+  - name: Shooters
     text: Thousands of bullets test against the few targets in their cell.
-  - name: Area effects
-    text: An explosion finds everything within its radius.
+  - name: RPGs
+    text: An explosion or a spell finds everything within its radius.
   - name: Multiplayer
     text: The server sends each client only the entities in the cells near it.
 ---

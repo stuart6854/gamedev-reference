@@ -2,15 +2,15 @@
 engine: Unity
 version: 6+
 uses:
-  - name: Hordes
+  - name: Hordes and crowds
     text: A gunshot pulls every zombie within its radius towards where it was fired.
   - name: Stealth
     text: Guards fill an awareness meter faster when the player is close, lit, or standing up.
   - name: Wildlife
     text: Animals hear footsteps and flee before the player is in sight.
-  - name: Turrets and cameras
-    text: A narrow cone and a long range, with no hearing.
-  - name: Companions
+  - name: Shooters
+    text: Turrets and cameras with a narrow cone, a long range, and no hearing.
+  - name: Companions and NPCs
     text: Allies notice threats the player has not seen, and call them out.
 ---
 

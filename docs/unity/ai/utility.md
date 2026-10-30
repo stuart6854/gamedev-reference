@@ -2,13 +2,13 @@
 engine: Unity
 version: 6+
 uses:
-  - name: Survivor NPCs
-    text: Eat, sleep, scavenge, guard, or flee, chosen by hunger, fatigue, threat, and time of day.
-  - name: Colony and life sims
+  - name: Companions and NPCs
+    text: Survivors eat, sleep, scavenge, guard, or flee, chosen by hunger, fatigue, threat, and time of day.
+  - name: Life and colony sims
     text: Many needs compete smoothly, without a hand-written rule for every combination.
-  - name: Combat AI
+  - name: Shooters
     text: Attack, take cover, reload, or retreat, scored by health, ammo, and distance.
-  - name: Animals
+  - name: Wildlife
     text: Graze, drink, rest, or flee, with a little randomness so a herd does not move in lockstep.
 ---
 

@@ -34,6 +34,9 @@ jobs:
       - name: Check nav
         run: python scripts/check_nav.py
 
+      - name: Check uses page
+        run: python scripts/gen_uses.py --check
+
       - name: Build site
         run: zensical build --clean --strict
 

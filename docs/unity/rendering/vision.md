@@ -5,7 +5,7 @@ package: URP 17.x
 uses:
   - name: Top-down survival
     text: Only what the character can see is lit; rooms behind walls go dark, and zombies there are hidden.
-  - name: RTS and 4X
+  - name: Strategy and tactics
     text: Unexplored map is black, explored map is grey, and enemy units show only inside vision.
   - name: Roguelikes
     text: Grid field of view, with remembered tiles drawn dimmed.

@@ -24,6 +24,7 @@ optimisation/
 nav = [
   { "Home" = "index.md" },
   { "Roadmap" = "roadmap.md" },
+  { "Browse by use" = "uses.md" },
   { "Maths" = [
     "maths/index.md",
     { "Vectors, dot and cross products" = "maths/vectors.md" },

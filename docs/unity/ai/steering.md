@@ -2,16 +2,14 @@
 engine: Unity
 version: 6+
 uses:
-  - name: Hordes
-    text: Hundreds of agents head for one goal without stacking on each other.
-  - name: RTS units
+  - name: Hordes and crowds
+    text: Hundreds of agents head for one goal without stacking, and swarmers pursue where the player is going.
+  - name: Strategy and tactics
     text: A selected group spreads out at the destination instead of fighting over one point.
-  - name: Flocks and schools
+  - name: Wildlife
     text: Birds, fish, and bats from separation, alignment, and cohesion.
-  - name: Pedestrians
-    text: Crowds follow a flow field through streets and avoid each other.
-  - name: Swarm enemies
-    text: Fast enemies pursue a predicted position instead of where the player was.
+  - name: Open worlds
+    text: Pedestrians follow a flow field through streets and avoid each other.
 ---
 
 # Steering and crowds

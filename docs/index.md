@@ -2,7 +2,7 @@
 
 Personal notes for looking something up in the middle of a task. A formula is written out when it is easy to misremember, and a code sample keeps its assumptions next to the lines you would copy.
 
-Engine-agnostic pages explain an idea once. Engine pages are complete, copyable implementations, so they run longer: setup steps, the scripts, and the ways each one fails. Topics that still need a page are on the [roadmap](roadmap.md).
+Engine-agnostic pages explain an idea once. Engine pages are complete, copyable implementations, so they run longer: setup steps, the scripts, and the ways each one fails. Topics that still need a page are on the [roadmap](roadmap.md). To find pages by genre or feature, such as stealth or hordes, use [browse by use](uses.md).
 
 ## How a page is laid out
 
