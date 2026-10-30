@@ -98,6 +98,7 @@ nav = [
     ] },
     { "AI" = [
       "unity/ai/index.md",
+      { "Utility AI" = "unity/ai/utility.md" },
       { "Enemy behaviour" = "unity/ai/enemy.md" },
       { "Enemy waves" = "unity/ai/waves.md" },
       { "Continuous spawning" = "unity/ai/spawning.md" },
