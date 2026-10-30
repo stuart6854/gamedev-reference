@@ -238,7 +238,7 @@ The two views show the same menu, with Resume and Quit buttons:
     }
     ```
 
-Something else, such as the input code for Escape, calls `GamePause.SetPaused(!GamePause.IsPaused)`. Code that should keep running while paused, such as menu animations and a loading screen fade, uses unscaled time.
+Something else, such as the input code for Escape, calls `GamePause.SetPaused(!GamePause.IsPaused)`. Code that should keep running while paused, such as menu animations and the [loading screen fade](../architecture/scenes.md#scene-loader), uses unscaled time.
 
 ## Performance and layout
 
@@ -261,7 +261,7 @@ Something else, such as the input code for Escape, calls `GamePause.SetPaused(!G
 
 !!! warning "Common pitfalls"
 
-    A uGUI scene without an **EventSystem** does not respond to clicks at all. Create one with the UI, and keep a single one, in a scene that is always loaded.
+    A uGUI scene without an **EventSystem** does not respond to clicks at all. Create one with the UI, and keep a single one, in a scene that is always loaded, such as the [Core scene](../architecture/scenes.md).
 
     A view that subscribes in `Awake` or `Start` and never unsubscribes keeps a destroyed view alive in the event's list, and throws the next time it fires.
 
