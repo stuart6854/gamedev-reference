@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Shooters
+    text: A body that takes knockback and explosion impulses.
+  - name: Platformers
+    text: Physics-driven movement that pushes props around.
 ---
 
 # Rigidbody movement

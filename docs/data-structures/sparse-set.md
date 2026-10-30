@@ -1,3 +1,11 @@
+---
+uses:
+  - name: Hordes and crowds
+    text: Component storage for thousands of entities with packed iteration.
+  - name: Roguelikes
+    text: Fast sets of entity ids with constant-time add, remove, and clear.
+---
+
 # Sparse set
 
 A set of small non-negative integer keys, such as entity ids, with constant-time add, remove, and membership test, and a packed array of the members to iterate. Values can ride along in a second packed array, which makes it a map. Many ECS libraries store each component type this way; see [sparse-set storage](../engine/ecs/sparse-set-storage.md).

@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Shooters
+    text: Mouse and stick look with a pitch clamp and head bob.
+  - name: Stealth
+    text: First-person exploration with a body that turns with the view.
 ---
 
 # First-person camera

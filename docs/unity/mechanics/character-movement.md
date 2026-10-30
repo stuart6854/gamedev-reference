@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Top-down survival
+    text: Reliable walking over stairs and slopes for a character on foot.
+  - name: Platformers
+    text: Coyote time and jump buffering on a kinematic capsule.
+  - name: RPGs
+    text: Third-person movement relative to the camera.
 ---
 
 # Character movement

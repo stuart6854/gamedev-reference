@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Shooters
+    text: Bullets, impacts, and muzzle flashes reused instead of instantiated.
+  - name: Hordes and crowds
+    text: Enemies and their effects recycled during waves.
 ---
 
 # Object pooling

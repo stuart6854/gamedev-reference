@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Top-down survival
+    text: Moving one way while aiming another, with mouse or twin-stick aim.
+  - name: Shooters
+    text: Twin-stick shooters and isometric aiming.
 ---
 
 # Top-down movement

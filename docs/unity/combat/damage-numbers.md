@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: Floating numbers coloured by damage type.
+  - name: Hordes and crowds
+    text: Pooled popups that merge rapid hits on many enemies.
 ---
 
 # Damage numbers

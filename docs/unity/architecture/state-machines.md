@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Platformers
+    text: Idle, run, jump, and fall with a pause that resumes mid-jump.
+  - name: Shooters
+    text: Enemy states that switch on clear rules.
+  - name: Melee action
+    text: Locomotion and attacks kept in separate machines.
 ---
 
 # State machines

@@ -1,3 +1,13 @@
+---
+uses:
+  - name: RPGs
+    text: Weighted loot, fair crit chances with pseudo-random distribution, and bell-curve stats.
+  - name: Roguelikes
+    text: Seeded runs that replay exactly, shuffle bags, and points spread over a map.
+  - name: Shooters
+    text: Weapon spread that clusters at the centre, from a triangular distribution.
+---
+
 # Random distributions and shuffles
 
 Getting randomness that is reproducible, unbiased, and shaped the way the design wants: seeded generators, ranges, weighted picks, shuffles, shuffle bags, distributions other than uniform, and randomness that feels fair to players.

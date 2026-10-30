@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Melee action
+    text: Light and heavy chains with hit windows and an input buffer.
+  - name: RPGs
+    text: Weapon combos with damage types and hurtboxes.
 ---
 
 # Attack combos

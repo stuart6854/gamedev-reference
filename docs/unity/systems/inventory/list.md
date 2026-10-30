@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: A sortable bag for crafting materials and loot.
+  - name: Top-down survival
+    text: Scavenged items stacked by type.
 ---
 
 # List inventory

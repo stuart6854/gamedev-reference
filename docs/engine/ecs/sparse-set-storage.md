@@ -1,3 +1,11 @@
+---
+uses:
+  - name: Hordes and crowds
+    text: Status effects and tags that come and go every few frames.
+  - name: Roguelikes
+    text: Many entity types with unusual component combinations.
+---
+
 # Sparse-set storage
 
 One [sparse set](../../data-structures/sparse-set.md) per component type, called a pool, keyed by [entity](entities.md) index. Adding or removing a component touches only that type's pool. Iterating one type is a walk over a packed array. Iterating several types is where the design needs extra work. EnTT is the best-known library built this way.

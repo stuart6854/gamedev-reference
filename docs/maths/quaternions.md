@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Shooters
+    text: Turrets and characters that turn towards a target at a fixed rate.
+  - name: Melee action
+    text: Aligning to a slope while keeping a facing, and twist limits for bones.
+  - name: Strategy and tactics
+    text: Units that rotate to face a move order without snapping.
+---
+
 # Quaternions and rotations
 
 A rotation stored as four numbers, which composes without gimbal lock and interpolates smoothly. You rarely need the algebra. You do need to know which way round a product applies, why a blend can take the long way, and why reading Euler angles back is a trap.

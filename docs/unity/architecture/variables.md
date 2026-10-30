@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: HUD bars and counters that read shared values without referencing the player.
+  - name: Strategy and tactics
+    text: Live counts of units or enemies from a runtime set.
 ---
 
 # Shared variables

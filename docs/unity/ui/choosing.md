@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: Menus, inventories, and HUDs kept separate from game state.
+  - name: Strategy and tactics
+    text: Lots of screens that must work at many resolutions.
 ---
 
 # uGUI and UI Toolkit

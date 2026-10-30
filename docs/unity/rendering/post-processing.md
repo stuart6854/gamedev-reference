@@ -2,6 +2,13 @@
 engine: Unity
 version: 6+
 package: URP 17.x
+uses:
+  - name: Shooters
+    text: A red vignette that pulses on damage.
+  - name: Top-down survival
+    text: A low-health look and grading that changes with the mood.
+  - name: Open worlds
+    text: Local volumes for caves, underwater, and interiors.
 ---
 
 # Post-processing with volumes

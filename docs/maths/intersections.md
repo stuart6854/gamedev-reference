@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Shooters
+    text: Hitscan against boxes and spheres without colliders, and bullet impacts on triangles.
+  - name: Strategy and tactics
+    text: Clicking the ground plane under the cursor, and picking units by their bounds.
+  - name: Base building
+    text: Overlap tests for whether a placed piece fits.
+---
+
 # Intersection tests
 
 Does this ray hit that shape, and where? Do these two shapes overlap? Physics engines answer these for colliders. The formulas are still needed for picking without colliders, custom spatial structures, jobs and shaders, and anything that runs where the physics scene does not.

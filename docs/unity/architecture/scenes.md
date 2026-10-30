@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Open worlds
+    text: A persistent core with levels and chunks loaded on top.
+  - name: Top-down survival
+    text: Moving between town and interiors behind a loading screen.
+  - name: RPGs
+    text: Areas that load additively, with the UI kept in one place.
 ---
 
 # Scenes and loading

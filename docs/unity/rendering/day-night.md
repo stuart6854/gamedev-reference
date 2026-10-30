@@ -2,6 +2,13 @@
 engine: Unity
 version: 6+
 package: URP 17.x
+uses:
+  - name: Top-down survival
+    text: Nights that are dangerous and lamps that switch on at dusk.
+  - name: Open worlds
+    text: A clock that drives the sun, the sky, and the ambient light.
+  - name: Life and colony sims
+    text: Schedules tied to the time of day.
 ---
 
 # Day and night cycle

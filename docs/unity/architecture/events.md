@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: Quests, achievements, and UI reacting to deaths and pickups.
+  - name: Shooters
+    text: HUD counters that update when ammo changes, without polling.
 ---
 
 # Event systems

@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Top-down survival
+    text: Systems that read each other at startup without null references.
+  - name: RPGs
+    text: Spawned characters that get their data before they enable.
 ---
 
 # MonoBehaviour lifecycle

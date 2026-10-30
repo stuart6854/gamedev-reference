@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Top-down survival
+    text: A backpack where an item's shape is a decision.
+  - name: RPGs
+    text: Tetris-style loot screens.
 ---
 
 # Grid inventory

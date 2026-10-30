@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Melee action
+    text: A flash on every landed hit, so blows read clearly.
+  - name: Shooters
+    text: Feedback that a shot connected.
 ---
 
 # Hit flash

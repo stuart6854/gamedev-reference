@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Shooters
+    text: Recoil and camera smoothing that feel the same at 30 and 144 fps.
+  - name: Platformers
+    text: Easing curves for jumps, landings, and UI that is not linear.
+  - name: Open worlds
+    text: Day and night colours, fades, and remapped values from one lerp.
+---
+
 # Interpolation and easing
 
 Blending two values, rebuilding a blend parameter, and approaching a target by a fraction that does not depend on the frame rate. The [orbit camera](../unity/cameras/third-person.md) uses the damping step at the bottom for its zoom and for the way it eases back out after a collision.

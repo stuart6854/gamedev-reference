@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Shooters
+    text: A hotbar that selects weapons with number keys.
+  - name: Top-down survival
+    text: Quick slots for consumables and tools.
 ---
 
 # Slots and hotbar

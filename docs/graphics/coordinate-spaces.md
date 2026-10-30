@@ -1,3 +1,11 @@
+---
+uses:
+  - name: Shooters
+    text: From a world point to the screen and back, for crosshairs and hit markers.
+  - name: Strategy and tactics
+    text: Turning a mouse position into a world ray for selection and orders.
+---
+
 # Coordinate spaces
 
 The same point, written in a different frame at each stage of the pipeline. A vertex starts in object space and is transformed until the rasteriser can place it in a pixel. Getting the *order* of those transforms wrong is a more common bug than getting any one matrix wrong.

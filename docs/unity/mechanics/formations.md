@@ -2,6 +2,11 @@
 engine: Unity
 version: 6+
 package: AI Navigation 2.x
+uses:
+  - name: Strategy and tactics
+    text: Groups that move in a line, box, or wedge and face the way the player chose.
+  - name: Hordes and crowds
+    text: Keeping a squad's shape as it marches.
 ---
 
 # Formation movement

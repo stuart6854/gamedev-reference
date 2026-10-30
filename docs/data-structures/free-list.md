@@ -1,3 +1,11 @@
+---
+uses:
+  - name: Shooters
+    text: Fixed-size blocks for bullets and impacts with no allocation in play.
+  - name: Hordes and crowds
+    text: Storage for many same-sized agents that spawn and die constantly.
+---
+
 # Free list and slab pool
 
 A fixed-size block allocator. Memory is carved into equal blocks, and the free blocks are chained into a list through their own unused bytes. Allocating pops the head of the list, freeing pushes onto it, and both are \(O(1)\) with no per-block header and no fragmentation. A pool that grows by adding chunks of blocks is a slab pool.
