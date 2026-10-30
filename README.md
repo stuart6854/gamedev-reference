@@ -54,7 +54,9 @@ uses:
     text: Guards notice the player faster when they are lit.
 ```
 
-Each `name` becomes a grey pill after the version pills, and the entries are listed in a **Used for** box under the title. The text is plain: it is not run through Markdown. Keep the names to genres or features, so the same name reads the same on every page.
+Each `name` becomes a grey pill after the version pills, and the entries are listed in a **Used for** box under the title. The text is plain: it is not run through Markdown.
+
+Names come from the fixed list `USES` in `scripts/gen_uses.py`, so the same use reads the same on every page. Each name appears at most once per page. After changing any `uses`, run `python scripts/gen_uses.py` to regenerate `docs/uses.md`, the **Browse by use** page. CI runs it with `--check` and fails on an unknown name or a stale page. To add a new use, add it to `USES` with a one-line description.
 
 ## Hidden sections
 

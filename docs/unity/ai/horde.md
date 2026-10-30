@@ -3,13 +3,13 @@ engine: Unity
 version: 6+
 package: AI Navigation 2.x
 uses:
-  - name: Zombie hordes
+  - name: Hordes and crowds
     text: Thousands of zombies across the map, with full AI only for the few near the player.
-  - name: Herds and wildlife
+  - name: Wildlife
     text: Herds graze and migrate across a large map without a GameObject each.
-  - name: City crowds and traffic
+  - name: Open worlds
     text: Pedestrians and cars exist down every street, but only nearby ones are real.
-  - name: RTS armies
+  - name: Strategy and tactics
     text: Off-screen battles resolve cheaply while on-screen ones get full detail.
 ---
 
