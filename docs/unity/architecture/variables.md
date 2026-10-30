@@ -24,15 +24,20 @@ Use a variable for a fact many objects read: a mirrored health, a mirrored ammo 
 
 `Initial Value` is the authored number. It is what the asset stores, and what a build ships. `Value` is the runtime number. It is `[NonSerialized]`, so a change during Play Mode is not written back to the asset when you exit. Entering Play Mode copies initial into runtime.
 
-That copy has to run in `OnEnable`, not in a field initialiser. With **Enter Play Mode Options** and **Reload Domain** off, field initialisers do not run again. `OnEnable` on the asset still does, and it runs before scene `OnEnable`. The same method clears `Changed`, so a listener that leaked from the last Play Mode is gone before this scene subscribes. Listeners subscribe in their own `OnEnable` and read `Value` once. The reset does not raise, because nobody is listening yet.
+That copy cannot live in a field initialiser. It runs in two places:
 
-`SubsystemRegistration` walks variables already in memory and does the same quiet reset. That covers an asset that stayed loaded from the previous Play Mode. Scene-referenced assets that are not loaded yet reset when their `OnEnable` runs.
+- The asset's `OnEnable`, which runs when the asset is loaded. That covers a build, an asset first loaded during this Play Mode, and the editor with domain reload on.
+- A `SubsystemRegistration` method that walks every variable already in memory. With **Enter Play Mode Options** and **Reload Domain** off, an asset that stayed loaded from the last Play Mode does not get `OnDisable` or `OnEnable` again, because those calls are part of the domain reload. This scan is what resets it. It runs before any scene `OnEnable`.
+
+Both clear `Changed` too, so a listener that leaked from the last Play Mode is gone before this scene subscribes. Listeners subscribe in their own `OnEnable` and read `Value` once. The reset does not raise, because nobody is listening yet.
 
 In a player build there is no exit from Play Mode. The shipped `Initial Value` is the value at build time. `OnEnable` runs when the asset is loaded, not on every scene change. A variable that stays loaded keeps its runtime value across scenes. That is what you want for a score, and it is why a health mirror must be pushed again by the player's `OnEnable`.
 
 `Set` raises the C# event, then the optional [channel](events.md#scriptableobject-channels). The channel is a concrete asset whose payload is `T`, the same shape as `AmmoEventChannel` on the events page. `FloatEventChannel` below is that one-line subclass. Leave the slot empty and only the C# event runs. An equal value does not raise. A listener must not call `Set` on the same variable: the listeners already in this raise still see the value from this call, and the nested `Set` raises them again.
 
 A subclass that declares `OnEnable` hides the reset. Call `base.OnEnable()`.
+
+The block below is one listing, but Unity needs every `ScriptableObject` type you create assets from in its own file, named after the class: `FloatVariable.cs`, `IntVariable.cs`, `BoolVariable.cs`, and `FloatEventChannel.cs`. An asset whose class lives in a file of another name loses its script reference. `VariableAsset` and `Variable<T>` can share a file, because no asset is made from them directly.
 
 ```csharp
 using System;
@@ -351,7 +356,7 @@ Subscribe to `reference.Variable` only when `UseConstant` is off and the asset i
 
 ## Runtime sets
 
-A set is the variable pattern for a list: who is registered right now. The list is not serialised. The asset `OnEnable` runs before scene `OnEnable`, clears the list, then each member adds itself. `OnDisable` removes. Death is not `OnDisable` unless you disable or destroy the body, so the enemy member also unregisters on [`Health.Died`](../systems/health.md#health).
+A set is the variable pattern for a list: who is registered right now. The list is not serialised. It is cleared the same two ways as a variable, by the asset's `OnEnable` and by a `SubsystemRegistration` scan, before scene `OnEnable`, then each member adds itself. `OnDisable` removes. Death is not `OnDisable` unless you disable or destroy the body, so the enemy member also unregisters on [`Health.Died`](../systems/health.md#health), and adds itself back when `Revive` raises `HealthChanged` on a living body.
 
 The player does not get this component. The set would otherwise count the player as an enemy. One set asset is one list. Two rooms that share it share the count.
 
@@ -473,7 +478,6 @@ public class HealthRuntimeSet : RuntimeSet<Health>
 
 ```csharp
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Registers this body's Health while it is alive. Do not put it on the player.
@@ -487,26 +491,44 @@ public class HealthSetMember : MonoBehaviour
     void OnEnable()
     {
         _health = GetComponent<Health>();
-        if (_health != null)
-            _health.Died += OnDied;
-        if (set != null && _health != null)
+        if (_health == null)
+            return;
+
+        _health.Died += OnDied;
+        _health.HealthChanged += OnHealthChanged;
+        if (set != null && !_health.IsDead)
             set.Add(_health);
     }
 
     void OnDisable()
     {
-        if (_health != null)
-            _health.Died -= OnDied;
-        if (set != null && _health != null)
+        if (_health == null)
+            return;
+
+        _health.Died -= OnDied;
+        _health.HealthChanged -= OnHealthChanged;
+        if (set != null)
             set.Remove(_health);
     }
 
     void OnDied()
     {
-        if (set != null && _health != null)
+        if (set != null)
             set.Remove(_health);
     }
+
+    void OnHealthChanged(float current, float max)
+    {
+        // Revive raises HealthChanged on a living body. Add ignores a body already in the set.
+        if (set != null && !_health.IsDead)
+            set.Add(_health);
+    }
 }
+```
+
+```csharp
+using TMPro;
+using UnityEngine;
 
 /// <summary>
 /// Count of a runtime set. This object stays active.
@@ -515,7 +537,7 @@ public class HealthSetMember : MonoBehaviour
 public class RuntimeSetCountLabel : MonoBehaviour
 {
     [SerializeField] HealthRuntimeSet set;
-    [SerializeField] Text label;
+    [SerializeField] TMP_Text label;
 
     void OnEnable()
     {
@@ -534,7 +556,7 @@ public class RuntimeSetCountLabel : MonoBehaviour
     void Refresh()
     {
         if (label != null && set != null)
-            label.text = set.Count.ToString();
+            label.SetText("{0}", set.Count);
     }
 }
 ```
@@ -549,7 +571,6 @@ The [health bar](../systems/health.md#health-bar) listens to `Health` directly. 
 
 ```csharp
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Copies Health into shared floats. Does not replace Health.
@@ -583,6 +604,11 @@ public class HealthToVariables : MonoBehaviour
             max.Set(maxValue);
     }
 }
+```
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Filled image from two float variables. No Health reference.
@@ -625,7 +651,6 @@ Ammo is the same mirror. [`AmmoReadout`](../combat/weapons.md#readout-and-effect
 
 ```csharp
 using UnityEngine;
-using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public class WeaponAmmoToVariables : MonoBehaviour
@@ -656,13 +681,18 @@ public class WeaponAmmoToVariables : MonoBehaviour
             reserve.Set(reserveValue);
     }
 }
+```
+
+```csharp
+using TMPro;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 public class AmmoVariableLabel : MonoBehaviour
 {
     [SerializeField] IntVariable magazine;
     [SerializeField] IntVariable reserve;
-    [SerializeField] Text label;
+    [SerializeField] TMP_Text label;
 
     void OnEnable()
     {
@@ -686,7 +716,7 @@ public class AmmoVariableLabel : MonoBehaviour
         if (label == null || magazine == null)
             return;
         int spare = reserve != null ? reserve.Value : 0;
-        label.text = magazine.Value + " / " + spare;
+        label.SetText("{0} / {1}", magazine.Value, spare);
     }
 }
 ```
@@ -716,7 +746,7 @@ public class AmmoVariableLabel : MonoBehaviour
 
     A serialised runtime field is how Play Mode edits leak into the asset and into the next build. Only `Initial Value` is serialised. Do not copy `Value` back onto it in `OnDisable`. The custom inspector locks it during play. Inspector debug mode does not, and it will save what you type.
 
-    `OnEnable` on the asset is the reset. A subclass that declares `OnEnable` and does not call `base.OnEnable()` skips it. **Reload Domain** off does not re-run field initialisers, so a reset that lived only in a field initialiser runs once per editor session. **Reload Scene** off as well means scene objects do not run `OnEnable` again. Clearing `Changed` or the set then drops live listeners and members, and nothing puts them back. The events page has the same rule for the bus.
+    With **Reload Domain** off, an asset that stayed loaded does not get `OnEnable` again on entering Play Mode, and field initialisers do not re-run. A reset that lived only in either runs once per editor session. The `SubsystemRegistration` scan is what resets those assets. A subclass that declares `OnEnable` and does not call `base.OnEnable()` also skips the load-time reset. **Reload Scene** off as well means scene objects do not run `OnEnable` again. Clearing `Changed` or the set then drops live listeners and members, and nothing puts them back. The events page has the same rule for the bus.
 
     In a build, `OnEnable` runs when the asset loads, not when the scene changes and not on a timer. A reference from a scene loads it with that scene. `Resources.Load` loads it on the call. An Addressables load runs `OnEnable` when the handle completes, which may be halfway through a level, and a release can unload it. The next load resets runtime to **Initial Value**. Preloaded assets load at startup and then stay. An asset that never loads never resets and is never read.
 
@@ -725,5 +755,7 @@ public class AmmoVariableLabel : MonoBehaviour
     One asset is one value on that machine. Two local players writing one health variable overwrite each other. A host and a client do not share the asset's memory. This is not a network variable. Per-enemy health stays on `Health`. The set counts bodies that registered. It does not replicate.
 
     Select the asset while playing to see **Runtime**. The line repaints only while that inspector is open. Listeners are C# events, so the inspector does not list them. A bar that does not move is usually subscribed before the reset cleared the list, or subscribed with a closure that `OnDisable` cannot remove.
+
+    Several classes share a listing on this page. Unity needs each `MonoBehaviour` and each `ScriptableObject` you create assets from in its own file, named after the class, or components and assets lose their script reference.
 
     `Set` from inside `Changed` raises again. HUD code should read `Value` and not write it. `HealthToVariables` is the writer. The bar is the reader.
