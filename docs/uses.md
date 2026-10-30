@@ -2,30 +2,32 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (23)
-- [Hordes and crowds](#hordes-and-crowds) (16)
-- [Stealth](#stealth) (6)
+- [Top-down survival](#top-down-survival) (26)
+- [Hordes and crowds](#hordes-and-crowds) (18)
+- [Stealth](#stealth) (7)
 - [Shooters](#shooters) (26)
-- [Melee action](#melee-action) (6)
-- [Strategy and tactics](#strategy-and-tactics) (13)
+- [Melee action](#melee-action) (7)
+- [Strategy and tactics](#strategy-and-tactics) (15)
 - [RPGs](#rpgs) (22)
 - [Roguelikes](#roguelikes) (5)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (8)
-- [Base building](#base-building) (3)
+- [Base building](#base-building) (4)
 - [Open worlds](#open-worlds) (10)
 - [Wildlife](#wildlife) (4)
-- [Companions and NPCs](#companions-and-npcs) (2)
+- [Companions and NPCs](#companions-and-npcs) (4)
 - [Multiplayer](#multiplayer) (5)
 
 ## Top-down survival
 
 Scavenging, threats in the dark, and buildings to hide in, seen from above.
 
+- [Breakable obstacles](unity/ai/navigation/breakable.md) — Zombies that break through a door when it is quicker than the long way round, and barricades that hold them.
 - [Building and placement](unity/systems/building.md) — Barricades and walls built from scavenged materials.
 - [Character movement](unity/mechanics/character-movement.md) — Reliable walking over stairs and slopes for a character on foot.
 - [Continuous spawning](unity/ai/spawning.md) — A director that builds tension, peaks, and gives the player a breather.
 - [Day and night cycle](unity/rendering/day-night.md) — Nights that are dangerous and lamps that switch on at dusk.
+- [Doors and windows](unity/ai/navigation/doors-windows.md) — Survivors open doors and climb through windows, zombies only get in by breaking them.
 - [Enemy behaviour](unity/ai/enemy.md) — A simple threat to build on before adding perception.
 - [Equipment](unity/systems/inventory/equipment.md) — Wearing armour and holding a weapon in each hand.
 - [Fog of war and vision](unity/rendering/vision.md) — Only what the character can see is lit; rooms behind walls go dark, and zombies there are hidden.
@@ -34,6 +36,7 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [Health, damage, and stats](unity/systems/health.md) — Health, healing, and invulnerability after a hit.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — Outlining the container or door the player can use.
 - [Interaction](unity/mechanics/interaction.md) — Opening doors and holding to search or pick up items.
+- [Large targets](unity/ai/navigation/large-targets.md) — Zombies that surround a car or a barricaded house instead of piling up on one corner.
 - [List inventory](unity/systems/inventory/list.md) — Scavenged items stacked by type.
 - [Loot tables](unity/systems/loot.md) — Containers and enemies that drop what the area should have.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Systems that read each other at startup without null references.
@@ -51,6 +54,7 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 Many agents at once: zombies, swarms, armies, and pedestrians.
 
 - [Archetype storage](engine/ecs/archetype-storage.md) — Systems that read position and velocity of every agent in tight loops.
+- [Breakable obstacles](unity/ai/navigation/breakable.md) — A crowd that piles onto the one weak wall instead of circling the base.
 - [Continuous spawning](unity/ai/spawning.md) — A trickle that rises over time, as in survivor-likes.
 - [Damage numbers](unity/combat/damage-numbers.md) — Pooled popups that merge rapid hits on many enemies.
 - [Enemy waves](unity/ai/waves.md) — Waves bought from a budget that grows each round.
@@ -66,11 +70,13 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Sparse-set storage](engine/ecs/sparse-set-storage.md) — Status effects and tags that come and go every few frames.
 - [Spatial hash grid](data-structures/spatial-hash.md) — Each agent finds its neighbours for separation and flocking without testing every other agent.
 - [Steering and crowds](unity/ai/steering.md) — Hundreds of agents head for one goal without stacking, and swarmers pursue where the player is going.
+- [Stuck agents and chokepoints](unity/ai/navigation/stuck.md) — Zombies that queue at a doorway instead of jamming it, and recover when pushed off the mesh.
 
 ## Stealth
 
 Being seen, being heard, and staying out of sight.
 
+- [Doors and windows](unity/ai/navigation/doors-windows.md) — Guards who open doors on patrol, and doors the player locks behind them.
 - [Enemy behaviour](unity/ai/enemy.md) — Patrols and searches at the last seen position.
 - [First-person camera](unity/cameras/first-person.md) — First-person exploration with a body that turns with the view.
 - [Fog of war and vision](unity/rendering/vision.md) — The player sees the guards' view cones and knows what is out of sight.
@@ -115,6 +121,7 @@ Swings, combos, hit feedback, and close-range fights.
 
 - [Attack combos](unity/combat/combos.md) — Light and heavy chains with hit windows and an input buffer.
 - [Hit flash](unity/combat/hit-flash.md) — A flash on every landed hit, so blows read clearly.
+- [Large targets](unity/ai/navigation/large-targets.md) — Enemies that spread round a large boss or a big player character.
 - [Quaternions and rotations](maths/quaternions.md) — Aligning to a slope while keeping a facing, and twist limits for bones.
 - [Ring buffer](data-structures/ring-buffer.md) — Input history for fighting-game motions and jump buffering.
 - [State machines](unity/architecture/state-machines.md) — Locomotion and attacks kept in separate machines.
@@ -131,10 +138,12 @@ RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 - [Frustum and visibility tests](maths/frustum.md) — Off-screen indicators pointing at units and objectives.
 - [Horde simulation](unity/ai/horde.md) — Off-screen battles resolve cheaply while on-screen ones get full detail.
 - [Intersection tests](maths/intersections.md) — Clicking the ground plane under the cursor, and picking units by their bounds.
+- [Large targets](unity/ai/navigation/large-targets.md) — Units that attack a building from every side, each from its own spot.
 - [Quaternions and rotations](maths/quaternions.md) — Units that rotate to face a move order without snapping.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — A see-through circle around the selected unit shows it behind cover.
 - [Shared variables](unity/architecture/variables.md) — Live counts of units or enemies from a runtime set.
 - [Steering and crowds](unity/ai/steering.md) — A selected group spreads out at the destination instead of fighting over one point.
+- [Stuck agents and chokepoints](unity/ai/navigation/stuck.md) — Units that funnel through a gap one at a time.
 - [Top-down strategy camera](unity/cameras/rts.md) — Edge pan, drag pan, rotation, and zoom to the cursor.
 - [uGUI and UI Toolkit](unity/ui/choosing.md) — Lots of screens that must work at many resolutions.
 
@@ -204,6 +213,7 @@ Needs, schedules, and building a place to live.
 
 Placing, upgrading, and defending structures.
 
+- [Breakable obstacles](unity/ai/navigation/breakable.md) — Player walls with health, which raiders break when there is no gate open.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
 - [Top-down strategy camera](unity/cameras/rts.md) — A top-down view for placing and managing structures.
@@ -236,7 +246,9 @@ Animals, flocks, and herds.
 
 Allies and characters with needs and opinions.
 
+- [Doors and windows](unity/ai/navigation/doors-windows.md) — Followers who take the window when the door is locked.
 - [Perception](unity/ai/perception.md) — Allies notice threats the player has not seen, and call them out.
+- [Stuck agents and chokepoints](unity/ai/navigation/stuck.md) — A follower that notices it is stuck and catches up out of sight.
 - [Utility AI](unity/ai/utility.md) — Survivors eat, sleep, scavenge, guard, or flee, chosen by hunger, fatigue, threat, and time of day.
 
 ## Multiplayer
