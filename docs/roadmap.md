@@ -119,7 +119,6 @@ Not committed. These stay here until one of them is promoted into Planned, or wr
 - Input rebinding UI
 - Localisation
 - Addressables
-- Save and load (JSON)
 - Audio manager
 
 ### Performance
