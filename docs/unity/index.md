@@ -8,7 +8,7 @@ Written, by group. Each group's index lists its pages:
 - [Mechanics](mechanics/index.md) — the four movement controllers, interaction, drag selection, and formation movement.
 - [Cameras](cameras/index.md) — first-person, third-person orbit, and top-down strategy cameras.
 - [Combat](combat/index.md) — hit flash, damage numbers, weapons, and attack combos.
-- [AI](ai/index.md) — enemy behaviour, perception, steering and crowds, utility AI, waves and spawning, and horde simulation.
+- [AI](ai/index.md) — enemy behaviour, perception, steering and crowds, utility AI, waves and spawning, horde simulation, and navigation scenarios.
 - [Systems](systems/index.md) — health and stats, inventory, building, loot tables, and saving.
 - [UI](ui/index.md) — choosing between uGUI and UI Toolkit, and views that only show state and report requests.
 - [Rendering](rendering/index.md) — a day and night cycle, highlight and outline, post-processing, roof and wall cutaways, and fog of war.

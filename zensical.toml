@@ -107,6 +107,13 @@ nav = [
       { "Enemy waves" = "unity/ai/waves.md" },
       { "Continuous spawning" = "unity/ai/spawning.md" },
       { "Horde simulation" = "unity/ai/horde.md" },
+      { "Navigation scenarios" = [
+        "unity/ai/navigation/index.md",
+        { "Doors and windows" = "unity/ai/navigation/doors-windows.md" },
+        { "Breakable obstacles" = "unity/ai/navigation/breakable.md" },
+        { "Large targets" = "unity/ai/navigation/large-targets.md" },
+        { "Stuck agents and chokepoints" = "unity/ai/navigation/stuck.md" },
+      ] },
     ] },
     { "Systems" = [
       "unity/systems/index.md",

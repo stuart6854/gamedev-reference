@@ -11,5 +11,6 @@ Written:
 - [Enemy waves](waves.md) — off-screen spawn points, an alive cap, and authored or budget-bought waves.
 - [Continuous spawning](spawning.md) — a timed trickle on curves, proximity zones, and a director that paces build-up, peak, and relax.
 - [Horde simulation](horde.md) — thousands of agents as records, with active, simple, and dormant tiers, hysteresis, an active budget, time slicing, and attraction.
+- [Navigation scenarios](navigation/index.md) — doors and windows as NavMesh links, breaking through when it is quicker or the only way, surrounding large targets, and recovering stuck agents and queueing at chokepoints.
 
 Behaviour trees are on the [roadmap](../../roadmap.md#ai).
