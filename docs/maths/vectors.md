@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Stealth
+    text: A dot product against a view direction is the cone test behind every guard's sight.
+  - name: Shooters
+    text: Projecting onto a plane and reflecting give ricochets and slope-aligned aiming.
+  - name: Top-down survival
+    text: The 2D perp dot says whether a threat is to the left or right of the player.
+---
+
 # Vectors, dot and cross products
 
 The two products that answer most gameplay geometry questions: is it in front of me, how far along this direction, which side is it on, and what are its coordinates in my frame. Formulas are engine-agnostic. Unity names follow each one, since Unity's left-handed axes change how a cross product looks, not how it is computed.

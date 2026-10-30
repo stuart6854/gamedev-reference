@@ -2,6 +2,13 @@
 engine: Unity
 version: 6+
 package: AI Navigation 2.x
+uses:
+  - name: Hordes and crowds
+    text: A trickle that rises over time, as in survivor-likes.
+  - name: Top-down survival
+    text: A director that builds tension, peaks, and gives the player a breather.
+  - name: Open worlds
+    text: Zones that wake enemies as the player approaches.
 ---
 
 # Continuous spawning

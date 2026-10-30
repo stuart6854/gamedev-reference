@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Platformers
+    text: Jumps that reach the same height at every frame rate.
+  - name: Multiplayer
+    text: Deterministic steps that clients and server can agree on.
+  - name: Shooters
+    text: Smooth interpolated motion for physics-driven projectiles and bodies.
+---
+
 # Fixed timestep and the accumulator
 
 Running the simulation in steps of a constant size, however long each rendered frame took, and then drawing a pose blended between the last two steps so the motion still looks smooth. This is the loop behind Unity's `FixedUpdate`, Godot's `_physics_process`, and most hand-written engines. The standard write-up is Glenn Fiedler's [Fix Your Timestep!](https://gafferongames.com/post/fix_your_timestep/). This page is the short version, with the parts that usually go wrong.

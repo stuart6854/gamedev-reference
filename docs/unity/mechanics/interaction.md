@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Top-down survival
+    text: Opening doors and holding to search or pick up items.
+  - name: RPGs
+    text: Talking, looting, and using objects with prompts.
+  - name: Life and colony sims
+    text: Interacting with furniture and objects around a home.
 ---
 
 # Interaction

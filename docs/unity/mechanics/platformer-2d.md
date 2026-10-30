@@ -1,6 +1,9 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Platformers
+    text: Variable jumps, slopes, and wall slides on a 2D body.
 ---
 
 # 2D platformer

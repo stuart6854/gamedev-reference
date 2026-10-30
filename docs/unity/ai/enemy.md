@@ -2,6 +2,13 @@
 engine: Unity
 version: 6+
 package: AI Navigation 2.x
+uses:
+  - name: Shooters
+    text: Enemies that patrol, chase, attack, and flee when hurt.
+  - name: Top-down survival
+    text: A simple threat to build on before adding perception.
+  - name: Stealth
+    text: Patrols and searches at the last seen position.
 ---
 
 # Enemy behaviour

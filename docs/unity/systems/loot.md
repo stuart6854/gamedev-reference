@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: Rarity tiers, guaranteed drops, and pity for rare items.
+  - name: Top-down survival
+    text: Containers and enemies that drop what the area should have.
+  - name: Roguelikes
+    text: Seeded drops that replay with the run.
 ---
 
 # Loot tables

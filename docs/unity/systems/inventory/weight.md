@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Top-down survival
+    text: Carry weight that slows the player when overloaded.
+  - name: RPGs
+    text: Encumbrance on top of an ordinary bag.
 ---
 
 # Weight inventory

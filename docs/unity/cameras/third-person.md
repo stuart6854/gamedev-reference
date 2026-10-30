@@ -2,6 +2,11 @@
 engine: Unity
 version: 6+
 package: Cinemachine 3.x
+uses:
+  - name: RPGs
+    text: An orbit camera that pulls in when walls get in the way.
+  - name: Melee action
+    text: A camera that keeps the character framed while fighting.
 ---
 
 # Third-person orbit camera

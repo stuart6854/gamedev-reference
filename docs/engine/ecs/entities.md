@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Hordes and crowds
+    text: Creating and destroying thousands of agents without fragmentation.
+  - name: Life and colony sims
+    text: Many small simulated things with ids that survive saves.
+  - name: Multiplayer
+    text: Command buffers that apply changes at a known point in the frame.
+---
+
 # Entities
 
 An entity is a [handle](../../data-structures/handle-table.md): an index plus a generation, packed into one integer. The world needs to create ids, recycle them, and answer "is this id still alive" in \(O(1)\). It stores no value per entity, so the handle table shrinks to one array of ids and a free list.

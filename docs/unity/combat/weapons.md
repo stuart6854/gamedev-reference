@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Shooters
+    text: Hitscan and projectile guns with fire modes, spread, recoil, and reloads.
+  - name: Top-down survival
+    text: Scarce ammo and reloads that matter.
 ---
 
 # Weapons

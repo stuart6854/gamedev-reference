@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: Gear slots whose stats apply while equipped.
+  - name: Top-down survival
+    text: Wearing armour and holding a weapon in each hand.
 ---
 
 # Equipment

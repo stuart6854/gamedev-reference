@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Open worlds
+    text: Audio, saving, and settings that exist in every scene.
+  - name: RPGs
+    text: Game-wide systems such as quests and inventories reachable from any scene.
 ---
 
 # Bootstrapping and services

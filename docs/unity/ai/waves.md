@@ -2,6 +2,11 @@
 engine: Unity
 version: 6+
 package: AI Navigation 2.x
+uses:
+  - name: Hordes and crowds
+    text: Waves bought from a budget that grows each round.
+  - name: Shooters
+    text: Arena and tower-defence rounds with a clear break between them.
 ---
 
 # Enemy waves

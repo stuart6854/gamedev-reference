@@ -2,6 +2,11 @@
 engine: Unity
 version: 6+
 package: URP 17.x
+uses:
+  - name: Top-down survival
+    text: Outlining the container or door the player can use.
+  - name: RPGs
+    text: Highlighting interactable objects and selected characters.
 ---
 
 # Highlight and outline

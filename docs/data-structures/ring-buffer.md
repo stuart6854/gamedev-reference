@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Melee action
+    text: Input history for fighting-game motions and jump buffering.
+  - name: Multiplayer
+    text: Snapshot buffers for interpolating other players' positions.
+  - name: Shooters
+    text: A rolling frame-time or recoil history with a moving average.
+---
+
 # Ring buffer
 
 A fixed-capacity queue in one array. Pushing writes at the back, popping reads from the front, and both wrap around the end of the array, so nothing moves and nothing allocates after creation. Also called a circular buffer.

@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Hordes and crowds
+    text: Skipping work for agents the camera cannot see.
+  - name: Strategy and tactics
+    text: Off-screen indicators pointing at units and objectives.
+  - name: Top-down survival
+    text: Spawning only outside the view, and checking line of sight, not just the cone.
+---
+
 # Frustum and visibility tests
 
 Is a point on screen? Is this object inside the camera's view volume? Is it actually visible, or behind a wall? And when it is off screen, where should its indicator arrow sit on the edge? The transforms behind these are on the [coordinate spaces](../graphics/coordinate-spaces.md) page.

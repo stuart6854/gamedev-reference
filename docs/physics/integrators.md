@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Platformers
+    text: Choosing the integrator that keeps jump arcs exact.
+  - name: Shooters
+    text: Projectile arcs that land where the maths says.
+  - name: Open worlds
+    text: Vehicles and ropes that stay stable over long sessions.
+---
+
 # Integrators
 
 How one simulation step turns an acceleration into a new velocity and position. The choice decides whether a jump reaches the height you tuned, and whether a spring settles or explodes. It is usually two lines of code, and the order of those two lines is most of the decision.

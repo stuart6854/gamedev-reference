@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Strategy and tactics
+    text: Edge pan, drag pan, rotation, and zoom to the cursor.
+  - name: Base building
+    text: A top-down view for placing and managing structures.
+  - name: Life and colony sims
+    text: A camera for watching and managing a settlement.
 ---
 
 # Top-down strategy camera

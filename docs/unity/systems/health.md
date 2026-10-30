@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: RPGs
+    text: Stats with modifiers, damage types, and resistances per limb.
+  - name: Shooters
+    text: Headshot multipliers through hurtboxes.
+  - name: Top-down survival
+    text: Health, healing, and invulnerability after a hit.
 ---
 
 # Health, damage, and stats

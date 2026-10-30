@@ -1,3 +1,11 @@
+---
+uses:
+  - name: Hordes and crowds
+    text: Systems that read position and velocity of every agent in tight loops.
+  - name: Open worlds
+    text: Large simulations where most entities keep the same components.
+---
+
 # Archetype storage
 
 Entities with exactly the same set of component types share a table. The set is the archetype. Each table has one column per component type, and one row per entity, so every column lines up: row `r` of the position column and row `r` of the velocity column belong to the same entity. A system that reads several components walks several arrays side by side, with no lookups. Unity Entities, flecs, and Bevy's default storage work this way.

@@ -1,3 +1,13 @@
+---
+uses:
+  - name: Hordes and crowds
+    text: Ids for spawned agents that detect when the agent behind them died.
+  - name: RPGs
+    text: Safe references from a quest or a target slot to an object that may be destroyed.
+  - name: Multiplayer
+    text: Small, copyable ids that can be sent over the network.
+---
+
 # Handle table
 
 A table that hands out small handles instead of pointers, and can tell when a handle is stale. A handle is a slot index plus a generation. Removing an object bumps its slot's generation, so every old handle to that slot stops matching, even after the slot is reused. Also called a slot map, or generational index.

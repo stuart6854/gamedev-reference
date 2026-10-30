@@ -1,6 +1,11 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Strategy and tactics
+    text: Box, click, and double-click selection of units.
+  - name: Life and colony sims
+    text: Selecting several colonists to give one order.
 ---
 
 # Drag selection

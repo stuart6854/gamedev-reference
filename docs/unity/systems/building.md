@@ -1,6 +1,13 @@
 ---
 engine: Unity
 version: 6+
+uses:
+  - name: Base building
+    text: Grid and free placement, sockets, and a cost paid from the inventory.
+  - name: Top-down survival
+    text: Barricades and walls built from scavenged materials.
+  - name: Life and colony sims
+    text: Placing furniture and rooms.
 ---
 
 # Building and placement
