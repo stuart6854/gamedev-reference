@@ -25,7 +25,7 @@ A `NavMeshLink` from the same package is the off-mesh connection. The old `OffMe
 
 ## Senses
 
-`CanSee` is true after `Tick` when the target is inside the distance, inside half the view angle, and the ray does not hit a different collider first. A miss (nothing hit) counts as seen. `LostFor` is how long it has been since a successful test, so one frame of a wall does not drop chase.
+`CanSee` is true after `Tick` when the target is inside the distance, inside half the view angle, and the ray to a point **Aim Height** above the target's pivot does not hit a different collider first. Aiming at the pivot, usually the feet, lets a kerb or a low crate hide the whole body. A miss (nothing hit) counts as seen. `LostFor` is how long it has been since a successful test, so one frame of a wall does not drop chase.
 
 This component is the piece the perception page replaces. Do not grow hearing, teams, or a memory of several targets onto it.
 
@@ -41,6 +41,8 @@ public class PlaceholderSenses : MonoBehaviour
     [SerializeField] Transform eyes;
     [SerializeField] float viewDistance = 12f;
     [SerializeField] float viewAngle = 110f;
+    [Tooltip("Height above the target's pivot the ray aims at. The pivot is usually the feet.")]
+    [SerializeField] float aimHeight = 1f;
     [SerializeField] LayerMask blocks = ~0;
 
     Transform _target;
@@ -101,7 +103,7 @@ public class PlaceholderSenses : MonoBehaviour
             return false;
 
         Transform from = eyes != null ? eyes : transform;
-        Vector3 to = _target.position - from.position;
+        Vector3 to = _target.position + Vector3.up * aimHeight - from.position;
         Vector3 flat = Vector3.ProjectOnPlane(to, Vector3.up);
         if (flat.magnitude > viewDistance || flat.sqrMagnitude < 0.0001f)
             return false;
@@ -310,6 +312,7 @@ public class EnemyBrain : StateMachineHost
     PlaceholderSenses _senses;
     StateMachine _machine;
     EnemyContext _context;
+    bool _wasDead;
 
     public override StateMachine Machine => _machine;
 
@@ -353,7 +356,15 @@ public class EnemyBrain : StateMachineHost
         if (health != null && health.IsDead)
         {
             _motor.Stop();
+            _wasDead = true;
             return;
+        }
+
+        if (_wasDead)
+        {
+            // Revived: the agent was stopped on death. Attack stops it again on its own Enter.
+            _wasDead = false;
+            _motor.Resume();
         }
 
         _senses.Tick(Time.deltaTime);
@@ -366,17 +377,38 @@ public class EnemyBrain : StateMachineHost
         if (target == null || attackDamage <= 0f)
             return;
 
-        Vector3 toTarget = target.position - transform.position;
+        // The hurtbox nearest the attacker's chest takes the hit. Taking the first one found
+        // would apply, say, a head multiplier to every swing.
+        Vector3 from = transform.position + Vector3.up;
+        Hurtbox hurtbox = null;
+        Vector3 point = target.position;
+        float best = float.PositiveInfinity;
+        foreach (Hurtbox candidate in target.GetComponentsInChildren<Hurtbox>())
+        {
+            if (!candidate.TryGetComponent(out Collider shape))
+                continue;
+            Vector3 closest = shape is MeshCollider mesh && !mesh.convex
+                ? shape.bounds.ClosestPoint(from)
+                : shape.ClosestPoint(from);
+            float distance = (closest - from).sqrMagnitude;
+            if (distance < best)
+            {
+                best = distance;
+                hurtbox = candidate;
+                point = closest;
+            }
+        }
+
+        Vector3 toTarget = point - from;
         var info = new DamageInfo
         {
             Amount = attackDamage,
             Type = damageType,
             Source = this,
-            Point = target.position,
-            Normal = toTarget.sqrMagnitude > 0.0001f ? toTarget.normalized : transform.forward
+            Point = point,
+            Normal = toTarget.sqrMagnitude > 0.0001f ? -toTarget.normalized : -transform.forward
         };
 
-        Hurtbox hurtbox = target.GetComponentInChildren<Hurtbox>();
         if (hurtbox != null)
         {
             hurtbox.Receive(info);
@@ -633,6 +665,7 @@ public class NavMeshRebuild : MonoBehaviour
 | --- | --- | --- |
 | View Distance | `12` | Metres. Past this the placeholder cannot see. |
 | View Angle | `110` | Full cone, in degrees. The test uses half of it. |
+| Aim Height | `1` | Metres above the target's pivot that the sight ray aims at. |
 | Stopping Distance | `1.4` | Written onto the agent in `Awake`. |
 | Attack Range | `1.8` | Metres. Slightly past the stopping distance so a braked agent can still strike. |
 | Attack Cooldown | `1` | Seconds between `DamageInfo`s. |
@@ -667,4 +700,6 @@ public class NavMeshRebuild : MonoBehaviour
 
     Copy `StateMachine` before `EnemyBrain`, or the brain does not compile. `Health` with no assignment never flees. A missing `Hurtbox` still applies damage through `IDamageable`, and skips limb multipliers. Do not call both.
 
-    A dead `Health` stops the machine and the agent. Do not `Destroy` the body inside `Died` before other listeners run. The health page has the same warning.
+    A melee strike picks the target's hurtbox nearest the attacker. A target with several hurtboxes, such as head and body, takes the multiplier of whichever is closest, not of the first one in the hierarchy.
+
+    A dead `Health` stops the machine and the agent, and a `Revive` resumes the agent. Do not `Destroy` the body inside `Died` before other listeners run. The health page has the same warning.
