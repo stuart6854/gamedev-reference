@@ -34,7 +34,6 @@ Pages that already exist are not listed here.
 
 - Gameplay abilities with cooldowns
 - Timed buffs and debuffs (durations, stacking rules, and refresh on top of the existing stat modifiers)
-- Fog of war
 - Grid tactics (movement range by flood fill, attack ranges, line of sight on a grid, and path cost)
 
 ### Presentation

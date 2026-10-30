@@ -125,6 +125,7 @@ nav = [
       { "Day and night cycle" = "unity/rendering/day-night.md" },
       { "Highlight and outline" = "unity/rendering/highlight-outline.md" },
       { "Post-processing" = "unity/rendering/post-processing.md" },
+      { "Fog of war and vision" = "unity/rendering/vision.md" },
     ] },
   ] },
 ]
