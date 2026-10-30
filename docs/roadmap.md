@@ -46,12 +46,6 @@ Pages that already exist are not listed here.
 - Ragdolls
 - Procedural animation (IK legs that plant and step for spiders and mechs, body height and tilt from foot positions)
 
-### AI
-
-- Utility AI
-- Line of sight and hearing perception
-- Steering behaviours
-
 ### Networking
 
 - Networking concepts: authority models, tick rate, client-side prediction and reconciliation, entity interpolation, and lag compensation

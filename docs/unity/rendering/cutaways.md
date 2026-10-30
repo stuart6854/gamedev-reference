@@ -15,7 +15,7 @@ uses:
 
 # Roof and wall cutaways
 
-With the camera above and behind the player, buildings get in the way: the roof hides everything inside, and the wall nearest the camera hides the player once they step behind it. This page covers both for a 3D top-down or isometric camera in URP:
+With the camera above and behind the player, buildings get in the way: the roof hides everything inside, and the wall nearest the camera hides the player once they step behind it. This page covers both for a 3D top-down or isometric camera in URP. Hiding what the character cannot see is [fog of war and vision](vision.md).
 
 - **Roofs and upper floors** hide when the player is inside, by trigger volume or by height.
 - **Walls in front of the player** dissolve, either in a circle around the player on screen, or object by object when a ray from the camera hits them.

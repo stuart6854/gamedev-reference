@@ -374,7 +374,7 @@ A survivor might have:
 | Flee | Fear, logistic around 0.6. **Interrupts**. | 2 |
 | Idle | Constant 0.1. | 1 |
 
-Perception can feed fear: raise it when a threat is noticed, and on loud noises.
+[Perception](perception.md) can feed fear: raise it on `Noticed`, and on loud `Heard` events.
 
 !!! warning "Common pitfalls"
 
