@@ -40,6 +40,20 @@ version: 6+
 package: Cinemachine 3.x
 ```
 
+## Used-for pills
+
+A page can list what it is useful for. `uses` is a list of entries with a `name` and a one-line `text`:
+
+```yaml
+uses:
+  - name: Zombie hordes
+    text: Gunshots pull every zombie within the noise radius.
+  - name: Stealth
+    text: Guards notice the player faster when they are lit.
+```
+
+Each `name` becomes a grey pill after the version pills, and the entries are listed in a **Used for** box under the title. The text is plain: it is not run through Markdown. Keep the names to genres or features, so the same name reads the same on every page.
+
 For now, engine pages target only the current generation: Unity 6 and later. Unreal 5.x and Godot 4.x will use the same frontmatter when those sections exist. Do not add a page aimed at an older editor.
 
 ## Hidden sections

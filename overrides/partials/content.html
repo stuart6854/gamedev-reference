@@ -1,7 +1,8 @@
 {#-
-  Material's content partial, plus version pills under the page title.
-  The pills come from `engine`, `version`, and `package` in the page
-  frontmatter. Each key takes one value or a list.
+  Material's content partial, plus pills and a "Used for" box under the
+  page title. Version pills come from `engine`, `version`, and `package`
+  in the page frontmatter; each takes one value or a list. Use pills and
+  the box come from `uses`, a list of `name` and `text` entries.
 -#}
 {%- macro pill_list(value, kind) -%}
   {%- if value is not none and value != "" -%}
@@ -11,14 +12,35 @@
     {%- endfor -%}
   {%- endif -%}
 {%- endmacro -%}
+{%- macro use_pills(uses) -%}
+  {%- if uses -%}
+    {%- for use in uses -%}
+      <span class="version-pill version-pill--use">{{ use.name if use is mapping else use }}</span>
+    {%- endfor -%}
+  {%- endif -%}
+{%- endmacro -%}
+{%- macro use_box(uses) -%}
+  {%- if uses -%}
+    <div class="admonition example used-for"><p class="admonition-title">Used for</p><ul>
+    {%- for use in uses -%}
+      {%- if use is mapping -%}
+        <li><strong>{{ use.name }}</strong>{% if use.text %}: {{ use.text }}{% endif %}</li>
+      {%- else -%}
+        <li>{{ use }}</li>
+      {%- endif -%}
+    {%- endfor -%}
+    </ul></div>
+  {%- endif -%}
+{%- endmacro -%}
 {%- set meta = page.meta or {} -%}
-{%- set pills = pill_list(meta.engine, "engine") ~ pill_list(meta.version, "version") ~ pill_list(meta.package, "package") -%}
+{%- set pills = pill_list(meta.engine, "engine") ~ pill_list(meta.version, "version") ~ pill_list(meta.package, "package") ~ use_pills(meta.uses) -%}
+{%- set box = use_box(meta.uses) -%}
 {% include "partials/actions.html" %}
 {% if "<h1" not in page.content %}
   <h1>{{ page.title | d(config.site_name, true)}}</h1>
 {% endif %}
 {% if pills %}
-  {{ page.content | replace("</h1>", "</h1><p class=\"version-pills\">" ~ pills ~ "</p>") }}
+  {{ page.content | replace("</h1>", "</h1><p class=\"version-pills\">" ~ pills ~ "</p>" ~ box) }}
 {% else %}
   {{ page.content }}
 {% endif %}
