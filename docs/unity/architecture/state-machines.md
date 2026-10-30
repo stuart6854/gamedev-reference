@@ -5,7 +5,7 @@ version: 6+
 
 # State machines
 
-A small set of named situations, and the rules for leaving one. Idle, move, jump, and fall are that kind of set. So is patrol, chase, and flee on the [enemy](../ai/enemy.md) page. An [attack combo](../../roadmap.md#combat) will be another user of this machine. It is not written yet.
+A small set of named situations, and the rules for leaving one. Idle, move, jump, and fall are that kind of set. So is patrol, chase, and flee on the [enemy](../ai/enemy.md) page. An [attack combo](../combat/combos.md) is a chain of timed steps, which that page runs with its own small runner.
 
 The [character controller](../mechanics/character-movement.md) still moves the body. This page only classifies what that motion is doing. The same four names apply to [Rigidbody movement](../mechanics/rigidbody-movement.md) and the [2D platformer](../mechanics/platformer-2d.md). Those bodies publish `linearVelocity`. The capsule publishes `CharacterController.velocity`, which Unity 6 did not rename.
 
@@ -16,14 +16,14 @@ The [character controller](../mechanics/character-movement.md) still moves the b
 | Enum and `switch` | Two or three states, and the script will not grow. | Every new state is another arm in every switch. An any-state rule is copy-pasted into each arm. |
 | `IState` and `StateMachine` | The names are reused, or you want Enter and Exit in one place. | You write the predicates. A predicate that writes state will fight the next check. |
 | Nested machine | A phase has its own phases. Air contains jump and fall. | Leaving the outer state exits the inner one. It does not remember it. |
-| Pushdown stack | Pause, stun, or a modal that must return to the same jump. | `Time.timeScale = 0` also stops the tick that would pop, unless that tick uses unscaled time. |
+| Pushdown stack | Pause, stun, or a modal that must return to the same jump. | With `Time.timeScale = 0`, `Update` still runs but `Time.deltaTime` is 0, so anything timed in the paused state needs unscaled time. |
 | Animator `StateMachineBehaviour` | The state is a blend, a clip, or root motion the Animator already cross-fades. | Two states run during a transition. It is a second machine, not a replacement for this one. |
 
 ## Setup
 
 1. On the same object as `CharacterMovement`, add `PlayerPose` and `PlayerStateDriver`. Leave **Pose** empty and the driver finds the pose.
 2. Do not add `PlayerStateEnum` as well. That script is the version the machine replaces.
-3. Add `StateDebugLabel` to a uGUI `Text` if you want the name on screen. **Log Transitions** on the driver prints `Idle -> Move` in the Console.
+3. Add `StateDebugLabel` to a TextMeshPro text if you want the name on screen. **Log Transitions** on the driver prints `Idle -> Move` in the Console.
 4. Call `Pause` and `Resume` from a menu. The sample does not read a key, so it does not fight the controller's input.
 5. The body still needs the controller from the movement page. This driver never calls `Move`.
 
@@ -406,7 +406,7 @@ public abstract class StateMachineHost : MonoBehaviour
 
 Air is a nested machine. Its `Enter` picks jump or fall from the vertical speed, so a walk off a ledge does not flash the jump state. Landing transitions outrank the any-state rule that enters air. Ground speed transitions sit at priority `0`, so they never steal an airborne frame.
 
-These states do not move the capsule. A combo state, when that page exists, would be a sibling of locomotion and would tick its own window. It should not grow another switch inside `CharacterMovement`. Off, placing, and demolish on a ghost are a small enum on the [building](../systems/building.md#build-mode) page. A wheel of pieces belongs on this machine.
+These states do not move the capsule. A combo, as on the [attack combos](../combat/combos.md) page, would be a sibling of locomotion with its own windows. It should not grow another switch inside `CharacterMovement`. Off, placing, and demolish on a ghost are a small enum on the [building](../systems/building.md#build-mode) page. A wheel of pieces belongs on this machine.
 
 ```csharp
 using UnityEngine;
@@ -496,8 +496,9 @@ public class PlayerStateDriver : StateMachineHost
         _locomotion.AddTransition(idle, move, () => pose.HorizontalSpeed > pose.MoveThreshold);
         _locomotion.AddTransition(move, idle, () => pose.HorizontalSpeed <= pose.MoveThreshold);
 
-        bool grounded = pose.Grounded;
-        _locomotion.SetInitial(grounded ? (IState)idle : air);
+        // Start in idle. isGrounded is not valid until the controller's first Move, which runs before
+        // this driver's first Update (order 100), so a body spawned in the air moves to air on that tick.
+        _locomotion.SetInitial(idle);
 
         _paused = new NamedState("Paused");
         _stack = new PushdownMachine();
@@ -611,7 +612,7 @@ public class PushdownMachine
 
 Use a `StateMachineBehaviour` when the clip, the blend, or the root motion is the thing that matters. The gameplay machine should not also be the Animator. Drive parameters from the gameplay state if a clip must follow idle and jump. Do not read the Animator's current name back as the authority for "am I falling", or the two graphs will disagree during a cross-fade.
 
-The behaviour below is the shape a combo window would use. The combo itself is still the [roadmap](../../roadmap.md#combat) entry. The flag lives on a `MonoBehaviour` because the behaviour asset is shared by every Animator that uses the controller. Mutable data on the `StateMachineBehaviour` is shared too.
+The behaviour below is the shape an Animator-driven combo window would use. The [attack combos](../combat/combos.md) page times its windows in data instead, and lists the cross-fade caveat for animation events. The flag lives on a `MonoBehaviour` because the behaviour asset is shared by every Animator that uses the controller. Mutable data on the `StateMachineBehaviour` is shared too.
 
 ```csharp
 using UnityEngine;
@@ -657,26 +658,33 @@ public class AttackWindowBehaviour : StateMachineBehaviour
 
 ## Debugging
 
-Select the driver in Play Mode. The gizmo is the leaf state, or `Paused` while the stack is deeper than the locomotion machine. **Log Transitions** prints one line per change, including the nested air machine. The label is the same string on a uGUI `Text`.
+Select the driver in Play Mode. The gizmo is the leaf state, or `Paused` while the stack is deeper than the locomotion machine. **Log Transitions** prints one line per change, including the nested air machine. The label is the same string on a TextMeshPro text.
 
 ```csharp
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
-/// Shows the host's label. No polling beyond the binding.
+/// Shows the host's label. Writes the text only when it changes.
 /// </summary>
 [DisallowMultipleComponent]
 public class StateDebugLabel : MonoBehaviour
 {
     [SerializeField] StateMachineHost host;
-    [SerializeField] Text label;
+    [SerializeField] TMP_Text label;
+
+    string _shown;
 
     void LateUpdate()
     {
         if (label == null)
             return;
-        label.text = host != null ? host.Label : string.Empty;
+
+        string text = host != null ? host.Label : string.Empty;
+        if (text == _shown)
+            return;
+        _shown = text;
+        label.text = text;
     }
 }
 ```
@@ -699,7 +707,7 @@ public class StateDebugLabel : MonoBehaviour
 
     `CharacterController.velocity` is the right name on the capsule. `linearVelocity` is the Rigidbody name. Swapping them does not compile on the other type.
 
-    The first `Update` can run before the controller has moved. The driver waits until `Start`, then reads the pose. A machine built in `Awake` and ticked in `Update` on order `0` will often begin in fall, because `isGrounded` is still false.
+    `isGrounded` is false until the controller's first `Move`, and `Start` runs before that. A machine that picks its first state from the pose in `Awake` or `Start` begins in fall for a frame. The driver starts in idle, and its first `Update`, at order `100`, runs after the controller has moved.
 
     A predicate that changes the machine is ignored. So is a second transition in the same `Enter`. One change per evaluation. The new state's own rules run on the next `Tick`, which is the same frame, after `Enter`.
 
@@ -709,7 +717,7 @@ public class StateDebugLabel : MonoBehaviour
 
     `Pause` suspends. A hand-rolled `Exit` plus `Enter` for the menu replays the state's `Enter` and, for air, picks jump or fall again.
 
-    `Time.timeScale = 0` freezes `Update`. The menu that calls `Resume` must run on unscaled time, or the stack never pops. This sample does not change `timeScale`.
+    `Time.timeScale = 0` does not stop `Update`; it makes `Time.deltaTime` 0 and stops `FixedUpdate`. A menu can still call `Resume`, but anything the paused state times with `deltaTime` or `WaitForSeconds` never finishes. Use unscaled time there. This sample does not change `timeScale`.
 
     Nested `Exit` exits the inner state. It does not restore it later. The stack is what remembers an in-progress jump.
 
