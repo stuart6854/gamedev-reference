@@ -2,32 +2,34 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (29)
-- [Hordes and crowds](#hordes-and-crowds) (18)
+- [Top-down survival](#top-down-survival) (36)
+- [Hordes and crowds](#hordes-and-crowds) (21)
 - [Stealth](#stealth) (7)
-- [Shooters](#shooters) (26)
-- [Melee action](#melee-action) (7)
-- [Strategy and tactics](#strategy-and-tactics) (15)
-- [RPGs](#rpgs) (24)
+- [Shooters](#shooters) (30)
+- [Melee action](#melee-action) (11)
+- [Strategy and tactics](#strategy-and-tactics) (16)
+- [RPGs](#rpgs) (25)
 - [Roguelikes](#roguelikes) (5)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (8)
 - [Base building](#base-building) (5)
-- [Open worlds](#open-worlds) (12)
-- [Wildlife](#wildlife) (4)
-- [Companions and NPCs](#companions-and-npcs) (4)
+- [Open worlds](#open-worlds) (13)
+- [Wildlife](#wildlife) (5)
+- [Companions and NPCs](#companions-and-npcs) (6)
 - [Multiplayer](#multiplayer) (5)
 
 ## Top-down survival
 
 Scavenging, threats in the dark, and buildings to hide in, seen from above.
 
+- [Animation events and timing](unity/animation/events.md) — Footstep sounds and noise for zombies, from the frames the feet touch down.
 - [Breakable obstacles](unity/ai/navigation/breakable.md) — Zombies that break through a door when it is quicker than the long way round, and barricades that hold them.
 - [Building and placement](unity/systems/building.md) — Barricades and walls built from scavenged materials.
 - [Character movement](unity/mechanics/character-movement.md) — Reliable walking over stairs and slopes for a character on foot.
 - [Continuous spawning](unity/ai/spawning.md) — A director that builds tension, peaks, and gives the player a breather.
 - [Day and night cycle](unity/rendering/day-night.md) — Nights that are dangerous and lamps that switch on at dusk.
 - [Doors and windows](unity/ai/navigation/doors-windows.md) — Survivors open doors and climb through windows, zombies only get in by breaking them.
+- [Driving the Animator from code](unity/animation/scripting.md) — One component that every system calls, so the zombie and the survivor share their animation code.
 - [Enemy behaviour](unity/ai/enemy.md) — A simple threat to build on before adding perception.
 - [Equipment](unity/systems/inventory/equipment.md) — Wearing armour and holding a weapon in each hand.
 - [Fog of war and vision](unity/rendering/vision.md) — Only what the character can see is lit; rooms behind walls go dark, and zombies there are hidden.
@@ -35,13 +37,18 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [Grid inventory](unity/systems/inventory/grid.md) — A backpack where an item's shape is a decision.
 - [Health, damage, and stats](unity/systems/health.md) — Health, healing, and invulnerability after a hit.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — Outlining the container or door the player can use.
+- [IK and aiming](unity/animation/ik.md) — The upper body twists to aim at the cursor while the legs keep walking.
 - [Interaction](unity/mechanics/interaction.md) — Opening doors and holding to search or pick up items.
 - [Large targets](unity/ai/navigation/large-targets.md) — Zombies that surround a car or a barricaded house instead of piling up on one corner.
 - [List inventory](unity/systems/inventory/list.md) — Scavenged items stacked by type.
+- [Locomotion and layers](unity/animation/locomotion.md) — Legs that walk, strafe, and backpedal while the body faces the aim direction.
 - [Loot tables](unity/systems/loot.md) — Containers and enemies that drop what the area should have.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Systems that read each other at startup without null references.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A low-health look and grading that changes with the mood.
+- [Procedural legs](unity/animation/procedural-legs.md) — Crawling mutants that climb over rubble without a clip for every shape of it.
+- [Ragdolls](unity/animation/ragdolls.md) — Zombies that drop where they are shot, pushed the way the bullet went.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — Walking into a house hides its roof and upper floor, and the room stays dark with the roof's shadow.
+- [Root motion](unity/animation/root-motion.md) — In-place locomotion for control, with root motion only for vaults and finishers.
 - [Save system](unity/systems/saving/save-system.md) — Autosave on a timer, blocked while in combat or dead.
 - [Scenes and loading](unity/architecture/scenes.md) — Moving between town and interiors behind a loading screen.
 - [Slots and hotbar](unity/systems/inventory/slots.md) — Quick slots for consumables and tools.
@@ -59,7 +66,9 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Archetype storage](engine/ecs/archetype-storage.md) — Systems that read position and velocity of every agent in tight loops.
 - [Breakable obstacles](unity/ai/navigation/breakable.md) — A crowd that piles onto the one weak wall instead of circling the base.
 - [Continuous spawning](unity/ai/spawning.md) — A trickle that rises over time, as in survivor-likes.
+- [Crowd performance](unity/animation/crowds.md) — Hundreds of animated zombies, with far ones updated less often and the farthest drawn from baked textures.
 - [Damage numbers](unity/combat/damage-numbers.md) — Pooled popups that merge rapid hits on many enemies.
+- [Driving the Animator from code](unity/animation/scripting.md) — Pooled characters reset to idle on reuse instead of finishing their last death animation.
 - [Enemy waves](unity/ai/waves.md) — Waves bought from a budget that grows each round.
 - [Entities](engine/ecs/entities.md) — Creating and destroying thousands of agents without fragmentation.
 - [Formation movement](unity/mechanics/formations.md) — Keeping a squad's shape as it marches.
@@ -69,6 +78,7 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Horde simulation](unity/ai/horde.md) — Thousands of zombies across the map, with full AI only for the few near the player.
 - [Object pooling](unity/architecture/pooling.md) — Enemies and their effects recycled during waves.
 - [Perception](unity/ai/perception.md) — A gunshot pulls every zombie within its radius towards where it was fired.
+- [Ragdolls](unity/animation/ragdolls.md) — Bone colliders that are hurtboxes while alive and a ragdoll when dead.
 - [Sparse set](data-structures/sparse-set.md) — Component storage for thousands of entities with packed iteration.
 - [Sparse-set storage](engine/ecs/sparse-set-storage.md) — Status effects and tags that come and go every few frames.
 - [Spatial hash grid](data-structures/spatial-hash.md) — Each agent finds its neighbours for separation and flocking without testing every other agent.
@@ -91,6 +101,7 @@ Being seen, being heard, and staying out of sight.
 
 Guns, projectiles, aiming, and the enemies that shoot back.
 
+- [Animation events and timing](unity/animation/events.md) — The magazine is refilled on the frame the new one clicks in.
 - [Coordinate spaces](graphics/coordinate-spaces.md) — From a world point to the screen and back, for crosshairs and hit markers.
 - [Enemy behaviour](unity/ai/enemy.md) — Enemies that patrol, chase, attack, and flee when hurt.
 - [Enemy waves](unity/ai/waves.md) — Arena and tower-defence rounds with a clear break between them.
@@ -100,12 +111,15 @@ Guns, projectiles, aiming, and the enemies that shoot back.
 - [Free list and slab pool](data-structures/free-list.md) — Fixed-size blocks for bullets and impacts with no allocation in play.
 - [Health, damage, and stats](unity/systems/health.md) — Headshot multipliers through hurtboxes.
 - [Hit flash](unity/combat/hit-flash.md) — Feedback that a shot connected.
+- [IK and aiming](unity/animation/ik.md) — The off hand stays on the rifle's grip through every animation.
 - [Integrators](physics/integrators.md) — Projectile arcs that land where the maths says.
 - [Interpolation and easing](maths/interpolation.md) — Recoil and camera smoothing that feel the same at 30 and 144 fps.
 - [Intersection tests](maths/intersections.md) — Hitscan against boxes and spheres without colliders, and bullet impacts on triangles.
+- [Locomotion and layers](unity/animation/locomotion.md) — An upper-body layer that holds the weapon while the legs run.
 - [Object pooling](unity/architecture/pooling.md) — Bullets, impacts, and muzzle flashes reused instead of instantiated.
 - [Perception](unity/ai/perception.md) — Turrets and cameras with a narrow cone, a long range, and no hearing.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A red vignette that pulses on damage.
+- [Procedural legs](unity/animation/procedural-legs.md) — Mechs that stomp, with the body leaning over the planted feet.
 - [Quaternions and rotations](maths/quaternions.md) — Turrets and characters that turn towards a target at a fixed rate.
 - [Random distributions and shuffles](maths/random.md) — Weapon spread that clusters at the centre, from a triangular distribution.
 - [Rigidbody movement](unity/mechanics/rigidbody-movement.md) — A body that takes knockback and explosion impulses.
@@ -122,11 +136,15 @@ Guns, projectiles, aiming, and the enemies that shoot back.
 
 Swings, combos, hit feedback, and close-range fights.
 
+- [Animation events and timing](unity/animation/events.md) — The hit lands on the frame the blade connects, not on a timer that drifts from the clip.
 - [Attack combos](unity/combat/combos.md) — Light and heavy chains with hit windows and an input buffer.
+- [Driving the Animator from code](unity/animation/scripting.md) — Attacks started from code with a cross-fade, and triggers that never fire late.
 - [Hit flash](unity/combat/hit-flash.md) — A flash on every landed hit, so blows read clearly.
 - [Large targets](unity/ai/navigation/large-targets.md) — Enemies that spread round a large boss or a big player character.
 - [Quaternions and rotations](maths/quaternions.md) — Aligning to a slope while keeping a facing, and twist limits for bones.
+- [Ragdolls](unity/animation/ragdolls.md) — Knockdowns that ragdoll for a moment, then blend into a get-up.
 - [Ring buffer](data-structures/ring-buffer.md) — Input history for fighting-game motions and jump buffering.
+- [Root motion](unity/animation/root-motion.md) — Lunges and dodges that cover exactly the distance the animator authored.
 - [State machines](unity/architecture/state-machines.md) — Locomotion and attacks kept in separate machines.
 - [Third-person orbit camera](unity/cameras/third-person.md) — A camera that keeps the character framed while fighting.
 
@@ -135,6 +153,7 @@ Swings, combos, hit feedback, and close-range fights.
 RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 
 - [Coordinate spaces](graphics/coordinate-spaces.md) — Turning a mouse position into a world ray for selection and orders.
+- [Crowd performance](unity/animation/crowds.md) — Large armies where most units are too small on screen to need full animation.
 - [Drag selection](unity/mechanics/selection.md) — Box, click, and double-click selection of units.
 - [Fog of war and vision](unity/rendering/vision.md) — Unexplored map is black, explored map is grey, and enemy units show only inside vision.
 - [Formation movement](unity/mechanics/formations.md) — Groups that move in a line, box, or wedge and face the way the player chose.
@@ -166,6 +185,7 @@ Stats, items, loot, and characters that grow.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — Highlighting interactable objects and selected characters.
 - [Interaction](unity/mechanics/interaction.md) — Talking, looting, and using objects with prompts.
 - [List inventory](unity/systems/inventory/list.md) — A sortable bag for crafting materials and loot.
+- [Locomotion and layers](unity/animation/locomotion.md) — One controller for every weapon type, with an override controller swapping the clips.
 - [Loot tables](unity/systems/loot.md) — Rarity tiers, guaranteed drops, and pity for rare items.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Spawned characters that get their data before they enable.
 - [Random distributions and shuffles](maths/random.md) — Weighted loot, fair crit chances with pseudo-random distribution, and bell-curve stats.
@@ -231,6 +251,7 @@ Large maps, streaming, and a world that runs while you are away.
 - [Archetype storage](engine/ecs/archetype-storage.md) — Large simulations where most entities keep the same components.
 - [Bootstrapping and services](unity/architecture/services.md) — Audio, saving, and settings that exist in every scene.
 - [Continuous spawning](unity/ai/spawning.md) — Zones that wake enemies as the player approaches.
+- [Crowd performance](unity/animation/crowds.md) — Townsfolk and wildlife that stop animating when nobody can see them.
 - [Day and night cycle](unity/rendering/day-night.md) — A clock that drives the sun, the sky, and the ambient light.
 - [Horde simulation](unity/ai/horde.md) — Pedestrians and cars exist down every street, but only nearby ones are real.
 - [Integrators](physics/integrators.md) — Vehicles and ropes that stay stable over long sessions.
@@ -247,6 +268,7 @@ Animals, flocks, and herds.
 
 - [Horde simulation](unity/ai/horde.md) — Herds graze and migrate across a large map without a GameObject each.
 - [Perception](unity/ai/perception.md) — Animals hear footsteps and flee before the player is in sight.
+- [Procedural legs](unity/animation/procedural-legs.md) — Spiders and crabs whose feet find the ground on any terrain.
 - [Steering and crowds](unity/ai/steering.md) — Birds, fish, and bats from separation, alignment, and cohesion.
 - [Utility AI](unity/ai/utility.md) — Graze, drink, rest, or flee, with a little randomness so a herd does not move in lockstep.
 
@@ -255,7 +277,9 @@ Animals, flocks, and herds.
 Allies and characters with needs and opinions.
 
 - [Doors and windows](unity/ai/navigation/doors-windows.md) — Followers who take the window when the door is locked.
+- [IK and aiming](unity/animation/ik.md) — Heads that turn to look at the player, and feet that stand on stairs.
 - [Perception](unity/ai/perception.md) — Allies notice threats the player has not seen, and call them out.
+- [Root motion](unity/animation/root-motion.md) — A NavMeshAgent that plans the path while the clips move the feet, with no sliding.
 - [Stuck agents and chokepoints](unity/ai/navigation/stuck.md) — A follower that notices it is stuck and catches up out of sight.
 - [Utility AI](unity/ai/utility.md) — Survivors eat, sleep, scavenge, guard, or flee, chosen by hunger, fatigue, threat, and time of day.
 

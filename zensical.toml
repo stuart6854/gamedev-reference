@@ -98,6 +98,17 @@ nav = [
       { "Weapons" = "unity/combat/weapons.md" },
       { "Attack combos" = "unity/combat/combos.md" },
     ] },
+    { "Animation" = [
+      "unity/animation/index.md",
+      { "Locomotion and layers" = "unity/animation/locomotion.md" },
+      { "Driving the Animator from code" = "unity/animation/scripting.md" },
+      { "Animation events and timing" = "unity/animation/events.md" },
+      { "Root motion" = "unity/animation/root-motion.md" },
+      { "IK and aiming" = "unity/animation/ik.md" },
+      { "Ragdolls" = "unity/animation/ragdolls.md" },
+      { "Procedural legs" = "unity/animation/procedural-legs.md" },
+      { "Crowd performance" = "unity/animation/crowds.md" },
+    ] },
     { "AI" = [
       "unity/ai/index.md",
       { "Enemy behaviour" = "unity/ai/enemy.md" },
