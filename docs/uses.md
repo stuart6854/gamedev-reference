@@ -2,18 +2,18 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (40)
-- [Hordes and crowds](#hordes-and-crowds) (23)
-- [Stealth](#stealth) (7)
+- [Top-down survival](#top-down-survival) (44)
+- [Hordes and crowds](#hordes-and-crowds) (24)
+- [Stealth](#stealth) (8)
 - [Shooters](#shooters) (31)
 - [Melee action](#melee-action) (11)
 - [Strategy and tactics](#strategy-and-tactics) (19)
-- [RPGs](#rpgs) (27)
+- [RPGs](#rpgs) (29)
 - [Roguelikes](#roguelikes) (5)
 - [Platformers](#platformers) (7)
-- [Life and colony sims](#life-and-colony-sims) (8)
-- [Base building](#base-building) (6)
-- [Open worlds](#open-worlds) (16)
+- [Life and colony sims](#life-and-colony-sims) (10)
+- [Base building](#base-building) (7)
+- [Open worlds](#open-worlds) (17)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
 - [Multiplayer](#multiplayer) (6)
@@ -43,8 +43,11 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [List inventory](unity/systems/inventory/list.md) — Scavenged items stacked by type.
 - [Locomotion and layers](unity/animation/locomotion.md) — Legs that walk, strafe, and backpedal while the body faces the aim direction.
 - [Loot tables](unity/systems/loot.md) — Containers and enemies that drop what the area should have.
+- [Lootable containers](unity/systems/inventory/containers.md) — Cupboards, car boots, and corpses that take time to search, roll their loot on first look, and stay empty once looted.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — A window that lists every door and container in the scene, with a click to select each.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Systems that read each other at startup without null references.
+- [Needs and effects](unity/systems/needs.md) — Hunger, thirst, and fatigue that drain with game time, bleeding that stacks per wound, and an infection that runs its course.
+- [Noise sources](unity/ai/noise.md) — A gunshot that pulls the street's zombies, a car alarm that keeps pulling them, and footsteps that give the player away.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A low-health look and grading that changes with the mood.
 - [Procedural legs](unity/animation/procedural-legs.md) — Crawling mutants that climb over rubble without a clip for every shape of it.
 - [Profiler walkthrough](unity/tools/profiler.md) — Hunting the hitch when a new chunk streams in or a horde wakes up.
@@ -55,6 +58,7 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [Save system](unity/systems/saving/save-system.md) — Autosave on a timer, blocked while in combat or dead.
 - [Scenes and loading](unity/architecture/scenes.md) — Moving between town and interiors behind a loading screen.
 - [Slots and hotbar](unity/systems/inventory/slots.md) — Quick slots for consumables and tools.
+- [Timed actions](unity/systems/timed-actions.md) — Searching, bandaging, crafting, and barricading as progress bars that walking slows or cancels.
 - [Top-down movement](unity/mechanics/top-down.md) — Moving one way while aiming another, with mouse or twin-stick aim.
 - [Validation](unity/tools/editor/validation.md) — Doors without links and containers without loot found before a playtest, not during one.
 - [Vectors, dot and cross products](maths/vectors.md) — The 2D perp dot says whether a threat is to the left or right of the player.
@@ -81,6 +85,7 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Handle table](data-structures/handle-table.md) — Ids for spawned agents that detect when the agent behind them died.
 - [Horde simulation](unity/ai/horde.md) — Thousands of zombies across the map, with full AI only for the few near the player.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — Spawn points placed and moved by dragging handles in the Scene view.
+- [Noise sources](unity/ai/noise.md) — Zombies bashing on a door making the noise that brings more zombies.
 - [Object pooling](unity/architecture/pooling.md) — Enemies and their effects recycled during waves.
 - [Perception](unity/ai/perception.md) — A gunshot pulls every zombie within its radius towards where it was fired.
 - [Profiler walkthrough](unity/tools/profiler.md) — Finding which of thousands of agents' systems costs the most, with a marker per system.
@@ -99,6 +104,7 @@ Being seen, being heard, and staying out of sight.
 - [Enemy behaviour](unity/ai/enemy.md) — Patrols and searches at the last seen position.
 - [First-person camera](unity/cameras/first-person.md) — First-person exploration with a body that turns with the view.
 - [Fog of war and vision](unity/rendering/vision.md) — The player sees the guards' view cones and knows what is out of sight.
+- [Noise sources](unity/ai/noise.md) — Walking, running, and crouching footsteps, louder on gravel and quieter on carpet, shown as a ring around the player.
 - [Perception](unity/ai/perception.md) — Guards fill an awareness meter faster when the player is close, lit, or standing up.
 - [Spatial hash grid](data-structures/spatial-hash.md) — A noise or a sight check only looks at the agents in the cells around it.
 - [Vectors, dot and cross products](maths/vectors.md) — A dot product against a view direction is the cone test behind every guard's sight.
@@ -198,7 +204,9 @@ Stats, items, loot, and characters that grow.
 - [List inventory](unity/systems/inventory/list.md) — A sortable bag for crafting materials and loot.
 - [Locomotion and layers](unity/animation/locomotion.md) — One controller for every weapon type, with an override controller swapping the clips.
 - [Loot tables](unity/systems/loot.md) — Rarity tiers, guaranteed drops, and pity for rare items.
+- [Lootable containers](unity/systems/inventory/containers.md) — Chests that need a key, or a crowbar and some noise.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Spawned characters that get their data before they enable.
+- [Needs and effects](unity/systems/needs.md) — Buffs and debuffs with durations and stacking rules, on top of stat modifiers.
 - [Random distributions and shuffles](maths/random.md) — Weighted loot, fair crit chances with pseudo-random distribution, and bell-curve stats.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — In isometric RPGs, walls between the camera and the party dissolve, so the party is never hidden.
 - [Save system](unity/systems/saving/save-system.md) — Several manual slots plus an autosave, each with a date and play time.
@@ -242,7 +250,9 @@ Needs, schedules, and building a place to live.
 - [Drag selection](unity/mechanics/selection.md) — Selecting several colonists to give one order.
 - [Entities](engine/ecs/entities.md) — Many small simulated things with ids that survive saves.
 - [Interaction](unity/mechanics/interaction.md) — Interacting with furniture and objects around a home.
+- [Needs and effects](unity/systems/needs.md) — Needs that drain faster with work and set a character's mood through thresholds.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — Upper floors hide while the player works on the floor below.
+- [Timed actions](unity/systems/timed-actions.md) — A queue of chores a character works through, cancelled from the front or cleared.
 - [Top-down strategy camera](unity/cameras/rts.md) — A camera for watching and managing a settlement.
 - [Utility AI](unity/ai/utility.md) — Many needs compete smoothly, without a hand-written rule for every combination.
 
@@ -254,6 +264,7 @@ Placing, upgrading, and defending structures.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
 - [Command pattern](unity/architecture/commands.md) — Undo and redo for placing, rotating, and demolishing pieces.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
+- [Timed actions](unity/systems/timed-actions.md) — Construction that takes time, queued piece by piece, and stops when the builder is hit.
 - [Top-down strategy camera](unity/cameras/rts.md) — A top-down view for placing and managing structures.
 - [World state](unity/systems/saving/world-state.md) — Placed pieces are spawned objects, saved with their prefab key and position.
 
@@ -269,6 +280,7 @@ Large maps, streaming, and a world that runs while you are away.
 - [Horde simulation](unity/ai/horde.md) — Pedestrians and cars exist down every street, but only nearby ones are real.
 - [Integrators](physics/integrators.md) — Vehicles and ropes that stay stable over long sessions.
 - [Interpolation and easing](maths/interpolation.md) — Day and night colours, fades, and remapped values from one lerp.
+- [Lootable containers](unity/systems/inventory/containers.md) — Thousands of containers that cost nothing until someone opens one.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — Dropping hundreds of props onto the terrain with one shortcut.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — Local volumes for caves, underwater, and interiors.
 - [Profiler walkthrough](unity/tools/profiler.md) — Garbage collection spikes from allocations spread across hundreds of scripts.

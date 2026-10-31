@@ -6,6 +6,7 @@ Written:
 
 - [Enemy behaviour](enemy.md) — patrol, chase, attack, search, and flee on a `NavMeshAgent`, with simple sight.
 - [Perception](perception.md) — sight cones with several aim points, noise events muffled by walls, an awareness meter, and memory of the last known position.
+- [Noise sources](noise.md) — one call for perceivers and the horde, a loudness table, footsteps by gait and surface, impacts, damage and breaking, alarms, and noise rings for the player.
 - [Steering and crowds](steering.md) — seek, arrive, flee, pursue, wander, and separation, a flow field for one goal, and a crowd that moves hundreds of agents.
 - [Utility AI](utility.md) — actions scored from considerations and response curves, compensation, momentum and commitment, and a needs example.
 - [Enemy waves](waves.md) — off-screen spawn points, an alive cap, and authored or budget-bought waves.

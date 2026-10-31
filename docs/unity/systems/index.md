@@ -5,9 +5,11 @@ Shared runtime pieces: numbers other behaviours read, and the messages that chan
 Written:
 
 - [Health, damage, and stats](health.md) — health pool, damage types, hitboxes, and a stat sheet with modifiers.
-- [Inventory](inventory/index.md) — a shared item, then a list, a grid, slots and a hotbar, weight, and equipment.
+- [Inventory](inventory/index.md) — a shared item, then a list, a grid, slots and a hotbar, weight, equipment, and lootable containers.
 - [Building and placement](building.md) — grid and free placement, a ghost, sockets, and a cost paid from the inventory or a float variable.
 - [Loot tables](loot.md) — weighted entries, nested tables for rarity tiers, guaranteed drops, hard and soft pity, and a dropper that fills a bag on death.
+- [Timed actions](timed-actions.md) — progress-bar actions with a queue, per-action rules for moving and damage, and action speed from stats.
+- [Needs and effects](needs.md) — hunger, thirst, and fatigue on the game clock with threshold modifiers, and timed effects with stacking rules, ticks, cures, and expiry.
 - [Saving](saving/index.md) — JSON save slots with safe writes and autosave, world state for doors, containers, and streamed scenes, and migrations for old saves.
 
 Firing that spends this health is [Weapons](../combat/weapons.md), under Combat.
