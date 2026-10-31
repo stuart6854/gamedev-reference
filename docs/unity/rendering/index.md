@@ -7,6 +7,7 @@ Written:
 - [Day and night cycle](day-night.md) — a game clock with dusk and dawn events, one light as sun and moon, curves for colour and intensity, gradient ambient, fog, and a procedural sky.
 - [Highlight and outline](highlight-outline.md) — inverted hull, a stencil outline through Render Objects, a screen-space edge, and a fresnel highlight. Focus calls it from [interaction](../mechanics/interaction.md).
 - [Post-processing](post-processing.md) — URP volumes and how they blend, the common effects, and driving them from gameplay by weight or by editing a profile.
+- [Particles](particles.md) — the Particle System or VFX Graph, the settings that matter, impacts emitted into shared systems, combat, weather, fire, feedback auras, trails, and VFX Graph from code.
 - [Roof and wall cutaways](cutaways.md) — interior volumes that hide roofs while keeping their shadows, a dithered cutout circle around the player, and ray-faded occluders.
 - [Fog of war and vision](vision.md) — grid shadowcasting with a view cone, explored memory, a fog texture read by a full-screen pass, and hiding units outside vision.
 

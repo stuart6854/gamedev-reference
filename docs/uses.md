@@ -2,18 +2,18 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (44)
-- [Hordes and crowds](#hordes-and-crowds) (24)
+- [Top-down survival](#top-down-survival) (45)
+- [Hordes and crowds](#hordes-and-crowds) (25)
 - [Stealth](#stealth) (8)
-- [Shooters](#shooters) (31)
-- [Melee action](#melee-action) (11)
+- [Shooters](#shooters) (33)
+- [Melee action](#melee-action) (12)
 - [Strategy and tactics](#strategy-and-tactics) (20)
-- [RPGs](#rpgs) (29)
+- [RPGs](#rpgs) (30)
 - [Roguelikes](#roguelikes) (6)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (10)
 - [Base building](#base-building) (8)
-- [Open worlds](#open-worlds) (17)
+- [Open worlds](#open-worlds) (18)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
 - [Multiplayer](#multiplayer) (6)
@@ -48,6 +48,7 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Systems that read each other at startup without null references.
 - [Needs and effects](unity/systems/needs.md) — Hunger, thirst, and fatigue that drain with game time, bleeding that stacks per wound, and an infection that runs its course.
 - [Noise sources](unity/ai/noise.md) — A gunshot that pulls the street's zombies, a car alarm that keeps pulling them, and footsteps that give the player away.
+- [Particles in Unity](unity/rendering/particles.md) — Rain that follows the camera, fire and smoke, blood that stays where it fell, and footstep dust.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A low-health look and grading that changes with the mood.
 - [Procedural legs](unity/animation/procedural-legs.md) — Crawling mutants that climb over rubble without a clip for every shape of it.
 - [Profiler walkthrough](unity/tools/profiler.md) — Hunting the hitch when a new chunk streams in or a horde wakes up.
@@ -87,6 +88,7 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — Spawn points placed and moved by dragging handles in the Scene view.
 - [Noise sources](unity/ai/noise.md) — Zombies bashing on a door making the noise that brings more zombies.
 - [Object pooling](unity/architecture/pooling.md) — Enemies and their effects recycled during waves.
+- [Particle systems](graphics/particles.md) — Thousands of particles simulated on the GPU for swarms, ash, and blood mist.
 - [Perception](unity/ai/perception.md) — A gunshot pulls every zombie within its radius towards where it was fired.
 - [Profiler walkthrough](unity/tools/profiler.md) — Finding which of thousands of agents' systems costs the most, with a marker per system.
 - [Ragdolls](unity/animation/ragdolls.md) — Bone colliders that are hurtboxes while alive and a ragdoll when dead.
@@ -129,6 +131,8 @@ Guns, projectiles, aiming, and the enemies that shoot back.
 - [Intersection tests](maths/intersections.md) — Hitscan against boxes and spheres without colliders, and bullet impacts on triangles.
 - [Locomotion and layers](unity/animation/locomotion.md) — An upper-body layer that holds the weapon while the legs run.
 - [Object pooling](unity/architecture/pooling.md) — Bullets, impacts, and muzzle flashes reused instead of instantiated.
+- [Particle systems](graphics/particles.md) — Muzzle flashes, sparks, and smoke from a pool that never allocates.
+- [Particles in Unity](unity/rendering/particles.md) — Impacts by surface from one shared system per effect, muzzle flashes, and shell casings that stay on the floor.
 - [Perception](unity/ai/perception.md) — Turrets and cameras with a narrow cone, a long range, and no hearing.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A red vignette that pulses on damage.
 - [Procedural legs](unity/animation/procedural-legs.md) — Mechs that stomp, with the body leaning over the planted feet.
@@ -154,6 +158,7 @@ Swings, combos, hit feedback, and close-range fights.
 - [Driving the Animator from code](unity/animation/scripting.md) — Attacks started from code with a cross-fade, and triggers that never fire late.
 - [Hit flash](unity/combat/hit-flash.md) — A flash on every landed hit, so blows read clearly.
 - [Large targets](unity/ai/navigation/large-targets.md) — Enemies that spread round a large boss or a big player character.
+- [Particles in Unity](unity/rendering/particles.md) — Sword trails switched on for the swing's hit window.
 - [Quaternions and rotations](maths/quaternions.md) — Aligning to a slope while keeping a facing, and twist limits for bones.
 - [Ragdolls](unity/animation/ragdolls.md) — Knockdowns that ragdoll for a moment, then blend into a get-up.
 - [Ring buffer](data-structures/ring-buffer.md) — Input history for fighting-game motions and jump buffering.
@@ -208,6 +213,7 @@ Stats, items, loot, and characters that grow.
 - [Lootable containers](unity/systems/inventory/containers.md) — Chests that need a key, or a crowbar and some noise.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Spawned characters that get their data before they enable.
 - [Needs and effects](unity/systems/needs.md) — Buffs and debuffs with durations and stacking rules, on top of stat modifiers.
+- [Particles in Unity](unity/rendering/particles.md) — Heal and buff auras that start and stop with the effect they show.
 - [Random distributions and shuffles](maths/random.md) — Weighted loot, fair crit chances with pseudo-random distribution, and bell-curve stats.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — In isometric RPGs, walls between the camera and the party dissolve, so the party is never hidden.
 - [Save system](unity/systems/saving/save-system.md) — Several manual slots plus an autosave, each with a date and play time.
@@ -285,6 +291,7 @@ Large maps, streaming, and a world that runs while you are away.
 - [Interpolation and easing](maths/interpolation.md) — Day and night colours, fades, and remapped values from one lerp.
 - [Lootable containers](unity/systems/inventory/containers.md) — Thousands of containers that cost nothing until someone opens one.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — Dropping hundreds of props onto the terrain with one shortcut.
+- [Particle systems](graphics/particles.md) — Weather around the camera, with only a screen's worth of particles alive.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — Local volumes for caves, underwater, and interiors.
 - [Profiler walkthrough](unity/tools/profiler.md) — Garbage collection spikes from allocations spread across hundreds of scripts.
 - [Save system](unity/systems/saving/save-system.md) — One save that names the level to load, then puts the player back.

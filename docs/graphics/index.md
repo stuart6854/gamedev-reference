@@ -6,6 +6,7 @@ Planned topics:
 
 - Coordinate spaces and the transformation pipeline. Written: [Coordinate spaces](coordinate-spaces.md).
 - Building meshes in code: planes, cubes, spheres, cylinders, cones, capsules, tori, discs, and rings. Written: [Primitive generation](primitives.md).
+- How particle systems work: pools, emission, simulation, billboards, blending and sorting, and CPU against GPU. Written: [Particle systems](particles.md).
 - Shading models, normal maps, and the difference between a light direction in world space and in tangent space.
 - Colour, gamma, and tone mapping.
 - Shadow maps and why the depth format dominates their quality.
