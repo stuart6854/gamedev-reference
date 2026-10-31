@@ -7,12 +7,12 @@ Pages grouped by what they are useful for. Each page lists its uses under its ti
 - [Stealth](#stealth) (8)
 - [Shooters](#shooters) (31)
 - [Melee action](#melee-action) (11)
-- [Strategy and tactics](#strategy-and-tactics) (19)
+- [Strategy and tactics](#strategy-and-tactics) (20)
 - [RPGs](#rpgs) (29)
-- [Roguelikes](#roguelikes) (5)
+- [Roguelikes](#roguelikes) (6)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (10)
-- [Base building](#base-building) (7)
+- [Base building](#base-building) (8)
 - [Open worlds](#open-worlds) (17)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
@@ -176,6 +176,7 @@ RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 - [Inspectors and property drawers](unity/tools/editor/inspectors.md) — Unit data that warns when a field is missing, instead of failing at runtime.
 - [Intersection tests](maths/intersections.md) — Clicking the ground plane under the cursor, and picking units by their bounds.
 - [Large targets](unity/ai/navigation/large-targets.md) — Units that attack a building from every side, each from its own spot.
+- [Primitive generation](graphics/primitives.md) — Range rings, selection discs, and area markers generated to the exact radius.
 - [Quaternions and rotations](maths/quaternions.md) — Units that rotate to face a move order without snapping.
 - [Rebinding](unity/input/rebinding.md) — Long lists of hotkeys that players expect to set themselves.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — A see-through circle around the selected unit shows it behind cover.
@@ -225,6 +226,7 @@ Runs, grids, randomness, and remembered maps.
 
 - [Fog of war and vision](unity/rendering/vision.md) — Grid field of view, with remembered tiles drawn dimmed.
 - [Loot tables](unity/systems/loot.md) — Seeded drops that replay with the run.
+- [Primitive generation](graphics/primitives.md) — Procedural props and levels made from parts that are generated, not imported.
 - [Random distributions and shuffles](maths/random.md) — Seeded runs that replay exactly, shuffle bags, and points spread over a map.
 - [Sparse set](data-structures/sparse-set.md) — Fast sets of entity ids with constant-time add, remove, and clear.
 - [Sparse-set storage](engine/ecs/sparse-set-storage.md) — Many entity types with unusual component combinations.
@@ -264,6 +266,7 @@ Placing, upgrading, and defending structures.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
 - [Command pattern](unity/architecture/commands.md) — Undo and redo for placing, rotating, and demolishing pieces.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
+- [Primitive generation](graphics/primitives.md) — Walls, floors, and pipes built at any size and subdivision, with colliders that match.
 - [Timed actions](unity/systems/timed-actions.md) — Construction that takes time, queued piece by piece, and stops when the builder is hit.
 - [Top-down strategy camera](unity/cameras/rts.md) — A top-down view for placing and managing structures.
 - [World state](unity/systems/saving/world-state.md) — Placed pieces are spawned objects, saved with their prefab key and position.
