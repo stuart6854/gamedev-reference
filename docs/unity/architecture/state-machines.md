@@ -619,7 +619,7 @@ public class PushdownMachine
 
 Use a `StateMachineBehaviour` when the clip, the blend, or the root motion is the thing that matters. The gameplay machine should not also be the Animator. Drive parameters from the gameplay state if a clip must follow idle and jump. Do not read the Animator's current name back as the authority for "am I falling", or the two graphs will disagree during a cross-fade.
 
-The behaviour below is the shape an Animator-driven combo window would use. The [attack combos](../combat/combos.md) page times its windows in data instead, and lists the cross-fade caveat for animation events. The flag lives on a `MonoBehaviour` because the behaviour asset is shared by every Animator that uses the controller. Mutable data on the `StateMachineBehaviour` is shared too.
+The behaviour below is the shape an Animator-driven combo window would use. The [attack combos](../combat/combos.md) page times its windows in data instead, and lists the cross-fade caveat for animation events. The flag lives on a `MonoBehaviour` so other scripts can read it. Each Animator gets its own instance of the behaviour by default, but `[SharedBetweenAnimators]` makes one instance serve every Animator, and then its fields are shared too.
 
 ```csharp
 using UnityEngine;
@@ -730,6 +730,6 @@ public class StateDebugLabel : MonoBehaviour
 
     During an Animator cross-fade, `OnStateEnter` of the next clip can run before `OnStateExit` of the previous one, and both `OnStateUpdate` calls run while the weights move. A window that opens in `Enter` and closes in `Exit` flickers. Disabling the object inside `OnStateEnter` skips `OnStateExit`, so the flag stays open.
 
-    The `StateMachineBehaviour` instance is the asset on the controller. Do not store a per-character timer on it. Write a `MonoBehaviour` on the Animator, as `ComboWindow` does.
+    A `StateMachineBehaviour` marked `[SharedBetweenAnimators]` is one instance for every Animator. Do not store a per-character timer on one. Keeping per-character state on a `MonoBehaviour` on the Animator, as `ComboWindow` does, is safe either way.
 
     These states must not call `CharacterController.Move`. The movement script already did. A second displacement in `Tick` stacks on top of it.

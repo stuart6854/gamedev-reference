@@ -41,11 +41,6 @@ Pages that already exist are not listed here.
 - Water shaders
 - URP renderer features
 
-### Animation
-
-- Ragdolls
-- Procedural animation (IK legs that plant and step for spiders and mechs, body height and tilt from foot positions)
-
 ### Networking
 
 - Networking concepts: authority models, tick rate, client-side prediction and reconciliation, entity interpolation, and lag compensation
@@ -80,11 +75,6 @@ Not committed. These stay here until one of them is promoted into Planned, or wr
 
 - Checkpoints and respawn
 - Minimap
-
-### Animation
-
-- Animation Rigging foot IK and look-at
-- Root motion
 
 ### AI
 
