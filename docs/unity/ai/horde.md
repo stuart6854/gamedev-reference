@@ -56,7 +56,7 @@ Noise.Emit(muzzle.position, 40f, gameObject);
 horde.Attract(muzzle.position, 120f);
 ```
 
-Large meta-events, such as a helicopter passing over, call `Attract` with a radius of hundreds of metres, and the far population slowly migrates. With no goal, a record wanders: its heading drifts by a random amount each step.
+[Noise sources](noise.md) wraps both calls in one, with a loudness table. Large meta-events, such as a helicopter passing over, call `Attract` with a radius of hundreds of metres, and the far population slowly migrates. With no goal, a record wanders: its heading drifts by a random amount each step.
 
 ## Persistence
 
