@@ -11,3 +11,4 @@ Written:
 - [Shared variables](variables.md) — a `ScriptableObject` value, a constant-or-variable reference, and a runtime set.
 - [State machines](state-machines.md) — enum, class states, predicate transitions, a nested machine, and a pause stack.
 - [Object pooling](pooling.md) — `ObjectPool<T>`, a prefab registry, and effects that return themselves.
+- [Command pattern](commands.md) — undo and redo with a history, merging, shared handles for recreated objects, building commands, composites, and queues.

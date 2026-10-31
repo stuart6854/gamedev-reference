@@ -71,6 +71,11 @@ nav = [
       { "Shared variables" = "unity/architecture/variables.md" },
       { "State machines" = "unity/architecture/state-machines.md" },
       { "Object pooling" = "unity/architecture/pooling.md" },
+      { "Command pattern" = "unity/architecture/commands.md" },
+    ] },
+    { "Input" = [
+      "unity/input/index.md",
+      { "Rebinding" = "unity/input/rebinding.md" },
     ] },
     { "Mechanics" = [
       "unity/mechanics/index.md",
@@ -157,6 +162,16 @@ nav = [
       { "Post-processing" = "unity/rendering/post-processing.md" },
       { "Roof and wall cutaways" = "unity/rendering/cutaways.md" },
       { "Fog of war and vision" = "unity/rendering/vision.md" },
+    ] },
+    { "Tools" = [
+      "unity/tools/index.md",
+      { "Editor tooling" = [
+        "unity/tools/editor/index.md",
+        { "Inspectors and property drawers" = "unity/tools/editor/inspectors.md" },
+        { "Menus, windows, and handles" = "unity/tools/editor/windows.md" },
+        { "Validation" = "unity/tools/editor/validation.md" },
+      ] },
+      { "Profiler walkthrough" = "unity/tools/profiler.md" },
     ] },
   ] },
 ]

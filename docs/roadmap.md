@@ -25,10 +25,6 @@ Pages that already exist are not listed here.
 
 - Lock-on targeting (target selection and cycling, breaking lock on distance or sight, strafing around the target, and the camera framing player and target)
 
-### Architecture
-
-- Command pattern (undo and redo, for building and editor-style tools)
-
 ### Game systems
 
 - Gameplay abilities with cooldowns
@@ -51,12 +47,6 @@ Pages that already exist are not listed here.
 - Bézier curves and splines (Unity Splines package)
 - Spline-based meshes (roads, fences, pipes, and rails extruded or instanced along a spline in the editor)
 - Hex grids (axial and cube coordinates, neighbours, distance, rounding, and world conversion)
-
-### Editor
-
-- Custom inspectors
-- Property drawers
-- Other editor extensions
 
 ### Interface
 
@@ -106,14 +96,12 @@ Not committed. These stay here until one of them is promoted into Planned, or wr
 
 ### Game flow
 
-- Input rebinding UI
 - Localisation
 - Addressables
 - Audio manager
 
 ### Performance
 
-- Profiler walkthrough
 - Jobs and Burst
 - GPU instancing
 - ECS intro

@@ -231,7 +231,7 @@ Keep this editor in an Editor folder if the runtime assembly cannot see `UnityEd
 
 A `FloatReference` is either a constant, typed on the component, or a `FloatVariable` asset. The component that fires a shot, or a bar filling from a stand-in number, does not care which. Gameplay that changes the number should `Set` the variable. Setting the constant writes a serialised field on the scene object.
 
-`Reference<float>` as a field type is unreliable in the inspector. Use the concrete subclass. The drawer is the small toggle in front of the value. A proper treatment of drawers, including height, prefab overrides, and lists, is still [Property drawers](../../roadmap.md#editor) on the roadmap. This one only switches the two stored fields.
+`Reference<float>` as a field type is unreliable in the inspector. Use the concrete subclass. The drawer is the small toggle in front of the value. A proper treatment of drawers, including height, prefab overrides, and lists, is covered on [inspectors and property drawers](../tools/editor/inspectors.md#property-drawer-for-a-type). This one only switches the two stored fields.
 
 ```csharp
 using System;

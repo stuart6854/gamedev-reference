@@ -2,21 +2,21 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (36)
-- [Hordes and crowds](#hordes-and-crowds) (21)
+- [Top-down survival](#top-down-survival) (40)
+- [Hordes and crowds](#hordes-and-crowds) (23)
 - [Stealth](#stealth) (7)
-- [Shooters](#shooters) (30)
+- [Shooters](#shooters) (31)
 - [Melee action](#melee-action) (11)
-- [Strategy and tactics](#strategy-and-tactics) (16)
-- [RPGs](#rpgs) (25)
+- [Strategy and tactics](#strategy-and-tactics) (19)
+- [RPGs](#rpgs) (27)
 - [Roguelikes](#roguelikes) (5)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (8)
-- [Base building](#base-building) (5)
-- [Open worlds](#open-worlds) (13)
+- [Base building](#base-building) (6)
+- [Open worlds](#open-worlds) (16)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
-- [Multiplayer](#multiplayer) (5)
+- [Multiplayer](#multiplayer) (6)
 
 ## Top-down survival
 
@@ -43,16 +43,20 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [List inventory](unity/systems/inventory/list.md) — Scavenged items stacked by type.
 - [Locomotion and layers](unity/animation/locomotion.md) — Legs that walk, strafe, and backpedal while the body faces the aim direction.
 - [Loot tables](unity/systems/loot.md) — Containers and enemies that drop what the area should have.
+- [Menus, windows, and handles](unity/tools/editor/windows.md) — A window that lists every door and container in the scene, with a click to select each.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Systems that read each other at startup without null references.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A low-health look and grading that changes with the mood.
 - [Procedural legs](unity/animation/procedural-legs.md) — Crawling mutants that climb over rubble without a clip for every shape of it.
+- [Profiler walkthrough](unity/tools/profiler.md) — Hunting the hitch when a new chunk streams in or a horde wakes up.
 - [Ragdolls](unity/animation/ragdolls.md) — Zombies that drop where they are shot, pushed the way the bullet went.
+- [Rebinding](unity/input/rebinding.md) — A controls menu where players move every action, including the WASD keys one at a time.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — Walking into a house hides its roof and upper floor, and the room stays dark with the roof's shadow.
 - [Root motion](unity/animation/root-motion.md) — In-place locomotion for control, with root motion only for vaults and finishers.
 - [Save system](unity/systems/saving/save-system.md) — Autosave on a timer, blocked while in combat or dead.
 - [Scenes and loading](unity/architecture/scenes.md) — Moving between town and interiors behind a loading screen.
 - [Slots and hotbar](unity/systems/inventory/slots.md) — Quick slots for consumables and tools.
 - [Top-down movement](unity/mechanics/top-down.md) — Moving one way while aiming another, with mouse or twin-stick aim.
+- [Validation](unity/tools/editor/validation.md) — Doors without links and containers without loot found before a playtest, not during one.
 - [Vectors, dot and cross products](maths/vectors.md) — The 2D perp dot says whether a threat is to the left or right of the player.
 - [Versioning saves](unity/systems/saving/versioning.md) — Early-access updates that change items and the map under existing worlds.
 - [Weapons](unity/combat/weapons.md) — Scarce ammo and reloads that matter.
@@ -76,8 +80,10 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Frustum and visibility tests](maths/frustum.md) — Skipping work for agents the camera cannot see.
 - [Handle table](data-structures/handle-table.md) — Ids for spawned agents that detect when the agent behind them died.
 - [Horde simulation](unity/ai/horde.md) — Thousands of zombies across the map, with full AI only for the few near the player.
+- [Menus, windows, and handles](unity/tools/editor/windows.md) — Spawn points placed and moved by dragging handles in the Scene view.
 - [Object pooling](unity/architecture/pooling.md) — Enemies and their effects recycled during waves.
 - [Perception](unity/ai/perception.md) — A gunshot pulls every zombie within its radius towards where it was fired.
+- [Profiler walkthrough](unity/tools/profiler.md) — Finding which of thousands of agents' systems costs the most, with a marker per system.
 - [Ragdolls](unity/animation/ragdolls.md) — Bone colliders that are hurtboxes while alive and a ragdoll when dead.
 - [Sparse set](data-structures/sparse-set.md) — Component storage for thousands of entities with packed iteration.
 - [Sparse-set storage](engine/ecs/sparse-set-storage.md) — Status effects and tags that come and go every few frames.
@@ -122,6 +128,7 @@ Guns, projectiles, aiming, and the enemies that shoot back.
 - [Procedural legs](unity/animation/procedural-legs.md) — Mechs that stomp, with the body leaning over the planted feet.
 - [Quaternions and rotations](maths/quaternions.md) — Turrets and characters that turn towards a target at a fixed rate.
 - [Random distributions and shuffles](maths/random.md) — Weapon spread that clusters at the centre, from a triangular distribution.
+- [Rebinding](unity/input/rebinding.md) — Separate keyboard and gamepad bindings, with duplicates swapped instead of doubled up.
 - [Rigidbody movement](unity/mechanics/rigidbody-movement.md) — A body that takes knockback and explosion impulses.
 - [Ring buffer](data-structures/ring-buffer.md) — A rolling frame-time or recoil history with a moving average.
 - [Slots and hotbar](unity/systems/inventory/slots.md) — A hotbar that selects weapons with number keys.
@@ -152,6 +159,7 @@ Swings, combos, hit feedback, and close-range fights.
 
 RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 
+- [Command pattern](unity/architecture/commands.md) — Unit orders queued as commands, shown as waypoints, and cancelled one at a time.
 - [Coordinate spaces](graphics/coordinate-spaces.md) — Turning a mouse position into a world ray for selection and orders.
 - [Crowd performance](unity/animation/crowds.md) — Large armies where most units are too small on screen to need full animation.
 - [Drag selection](unity/mechanics/selection.md) — Box, click, and double-click selection of units.
@@ -159,9 +167,11 @@ RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 - [Formation movement](unity/mechanics/formations.md) — Groups that move in a line, box, or wedge and face the way the player chose.
 - [Frustum and visibility tests](maths/frustum.md) — Off-screen indicators pointing at units and objectives.
 - [Horde simulation](unity/ai/horde.md) — Off-screen battles resolve cheaply while on-screen ones get full detail.
+- [Inspectors and property drawers](unity/tools/editor/inspectors.md) — Unit data that warns when a field is missing, instead of failing at runtime.
 - [Intersection tests](maths/intersections.md) — Clicking the ground plane under the cursor, and picking units by their bounds.
 - [Large targets](unity/ai/navigation/large-targets.md) — Units that attack a building from every side, each from its own spot.
 - [Quaternions and rotations](maths/quaternions.md) — Units that rotate to face a move order without snapping.
+- [Rebinding](unity/input/rebinding.md) — Long lists of hotkeys that players expect to set themselves.
 - [Roof and wall cutaways](unity/rendering/cutaways.md) — A see-through circle around the selected unit shows it behind cover.
 - [Shared variables](unity/architecture/variables.md) — Live counts of units or enemies from a runtime set.
 - [Steering and crowds](unity/ai/steering.md) — A selected group spreads out at the destination instead of fighting over one point.
@@ -183,6 +193,7 @@ Stats, items, loot, and characters that grow.
 - [Handle table](data-structures/handle-table.md) — Safe references from a quest or a target slot to an object that may be destroyed.
 - [Health, damage, and stats](unity/systems/health.md) — Stats with modifiers, damage types, and resistances per limb.
 - [Highlight and outline](unity/rendering/highlight-outline.md) — Highlighting interactable objects and selected characters.
+- [Inspectors and property drawers](unity/tools/editor/inspectors.md) — Item and loot assets with min-max ranges and read-only computed values.
 - [Interaction](unity/mechanics/interaction.md) — Talking, looting, and using objects with prompts.
 - [List inventory](unity/systems/inventory/list.md) — A sortable bag for crafting materials and loot.
 - [Locomotion and layers](unity/animation/locomotion.md) — One controller for every weapon type, with an override controller swapping the clips.
@@ -196,6 +207,7 @@ Stats, items, loot, and characters that grow.
 - [Spatial hash grid](data-structures/spatial-hash.md) — An explosion or a spell finds everything within its radius.
 - [Third-person orbit camera](unity/cameras/third-person.md) — An orbit camera that pulls in when walls get in the way.
 - [uGUI and UI Toolkit](unity/ui/choosing.md) — Menus, inventories, and HUDs kept separate from game state.
+- [Validation](unity/tools/editor/validation.md) — Item and loot assets checked for empty ids, duplicates, and broken tables.
 - [Versioning saves](unity/systems/saving/versioning.md) — Long games where players keep saves across many patches.
 - [Weight inventory](unity/systems/inventory/weight.md) — Encumbrance on top of an ordinary bag.
 
@@ -240,6 +252,7 @@ Placing, upgrading, and defending structures.
 
 - [Breakable obstacles](unity/ai/navigation/breakable.md) — Player walls with health, which raiders break when there is no gate open.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
+- [Command pattern](unity/architecture/commands.md) — Undo and redo for placing, rotating, and demolishing pieces.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
 - [Top-down strategy camera](unity/cameras/rts.md) — A top-down view for placing and managing structures.
 - [World state](unity/systems/saving/world-state.md) — Placed pieces are spawned objects, saved with their prefab key and position.
@@ -256,10 +269,13 @@ Large maps, streaming, and a world that runs while you are away.
 - [Horde simulation](unity/ai/horde.md) — Pedestrians and cars exist down every street, but only nearby ones are real.
 - [Integrators](physics/integrators.md) — Vehicles and ropes that stay stable over long sessions.
 - [Interpolation and easing](maths/interpolation.md) — Day and night colours, fades, and remapped values from one lerp.
+- [Menus, windows, and handles](unity/tools/editor/windows.md) — Dropping hundreds of props onto the terrain with one shortcut.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — Local volumes for caves, underwater, and interiors.
+- [Profiler walkthrough](unity/tools/profiler.md) — Garbage collection spikes from allocations spread across hundreds of scripts.
 - [Save system](unity/systems/saving/save-system.md) — One save that names the level to load, then puts the player back.
 - [Scenes and loading](unity/architecture/scenes.md) — A persistent core with levels and chunks loaded on top.
 - [Steering and crowds](unity/ai/steering.md) — Pedestrians follow a flow field through streets and avoid each other.
+- [Validation](unity/tools/editor/validation.md) — Hundreds of hand-placed props checked for missing references before every build.
 - [World state](unity/systems/saving/world-state.md) — Chunks that unload keep their state in memory, then in the save.
 
 ## Wildlife
@@ -287,6 +303,7 @@ Allies and characters with needs and opinions.
 
 Several players, one world.
 
+- [Command pattern](unity/architecture/commands.md) — Inputs sent as small command records instead of state.
 - [Entities](engine/ecs/entities.md) — Command buffers that apply changes at a known point in the frame.
 - [Fixed timestep and the accumulator](physics/fixed-timestep.md) — Deterministic steps that clients and server can agree on.
 - [Handle table](data-structures/handle-table.md) — Small, copyable ids that can be sent over the network.
