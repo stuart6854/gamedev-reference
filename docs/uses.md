@@ -2,12 +2,12 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (45)
+- [Top-down survival](#top-down-survival) (46)
 - [Hordes and crowds](#hordes-and-crowds) (25)
 - [Stealth](#stealth) (8)
-- [Shooters](#shooters) (33)
+- [Shooters](#shooters) (34)
 - [Melee action](#melee-action) (12)
-- [Strategy and tactics](#strategy-and-tactics) (20)
+- [Strategy and tactics](#strategy-and-tactics) (21)
 - [RPGs](#rpgs) (30)
 - [Roguelikes](#roguelikes) (6)
 - [Platformers](#platformers) (7)
@@ -25,6 +25,7 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [Animation events and timing](unity/animation/events.md) — Footstep sounds and noise for zombies, from the frames the feet touch down.
 - [Breakable obstacles](unity/ai/navigation/breakable.md) — Zombies that break through a door when it is quicker than the long way round, and barricades that hold them.
 - [Building and placement](unity/systems/building.md) — Barricades and walls built from scavenged materials.
+- [Bullet tracers](unity/combat/tracers.md) — Seeing where the gunfire is going from above, including the zombies' side of the fight.
 - [Character movement](unity/mechanics/character-movement.md) — Reliable walking over stairs and slopes for a character on foot.
 - [Continuous spawning](unity/ai/spawning.md) — A director that builds tension, peaks, and gives the player a breather.
 - [Day and night cycle](unity/rendering/day-night.md) — Nights that are dangerous and lamps that switch on at dusk.
@@ -116,6 +117,7 @@ Being seen, being heard, and staying out of sight.
 Guns, projectiles, aiming, and the enemies that shoot back.
 
 - [Animation events and timing](unity/animation/events.md) — The magazine is refilled on the frame the new one clicks in.
+- [Bullet tracers](unity/combat/tracers.md) — Tracer rounds every few shots, visible streaks for hitscan guns, and trails on slow projectiles.
 - [Coordinate spaces](graphics/coordinate-spaces.md) — From a world point to the screen and back, for crosshairs and hit markers.
 - [Enemy behaviour](unity/ai/enemy.md) — Enemies that patrol, chase, attack, and flee when hurt.
 - [Enemy waves](unity/ai/waves.md) — Arena and tower-defence rounds with a clear break between them.
@@ -170,6 +172,7 @@ Swings, combos, hit feedback, and close-range fights.
 
 RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 
+- [Bullet tracers](unity/combat/tracers.md) — Lines of fire across the battlefield, from one shared particle system for every unit.
 - [Command pattern](unity/architecture/commands.md) — Unit orders queued as commands, shown as waypoints, and cancelled one at a time.
 - [Coordinate spaces](graphics/coordinate-spaces.md) — Turning a mouse position into a world ray for selection and orders.
 - [Crowd performance](unity/animation/crowds.md) — Large armies where most units are too small on screen to need full animation.
