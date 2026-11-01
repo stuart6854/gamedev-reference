@@ -8,7 +8,7 @@ Written, by group. Each group's index lists its pages:
 - [Input](input/index.md) — rebinding controls at runtime, with duplicates, composites, and saved overrides.
 - [Mechanics](mechanics/index.md) — the four movement controllers, interaction, drag selection, and formation movement.
 - [Cameras](cameras/index.md) — first-person, third-person orbit, and top-down strategy cameras.
-- [Combat](combat/index.md) — hit flash, damage numbers, weapons, and attack combos.
+- [Combat](combat/index.md) — hit flash, damage numbers, weapons, bullet tracers, and attack combos.
 - [Animation](animation/index.md) — locomotion blend trees and layers, driving the Animator from code, events, root motion, IK and aiming, ragdolls, procedural legs, and crowd performance.
 - [AI](ai/index.md) — enemy behaviour, perception, noise sources, steering and crowds, utility AI, waves and spawning, horde simulation, and navigation scenarios.
 - [Systems](systems/index.md) — health and stats, inventory and containers, building, loot tables, timed actions, needs and effects, and saving.

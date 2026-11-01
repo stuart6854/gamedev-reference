@@ -257,7 +257,7 @@ public class EffectAuras : MonoBehaviour
 | **Line Renderer** | A line between known points: a laser, a rope, an aim line, a range circle. | You set the points with `SetPositions`. |
 | **Trails** module on a Particle System | Trails behind many particles: sparks, fireworks, magic missiles. | One strip per particle, or ribbons connecting particles in order. |
 
-**Pooled projectiles** keep their trail from the last shot unless it is cleared. Call `trail.Clear()` when the projectile is taken from the pool, after it is moved to the muzzle, or the first frame draws a streak from where it last died.
+[Bullet tracers](../combat/tracers.md) covers hitscan streaks and projectile trails in full. **Pooled projectiles** keep their trail from the last shot unless it is cleared. Call `trail.Clear()` when the projectile is taken from the pool, after it is moved to the muzzle, or the first frame draws a streak from where it last died.
 
 **Sword swings.** A `TrailRenderer` on an empty at the blade tip, with **Emitting** off. Turn it on and off with the swing's hit window, from the same [animation events](../animation/events.md#a-relay-on-the-model) that open and close the hit box:
 
