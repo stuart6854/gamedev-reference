@@ -1,6 +1,6 @@
 [project]
 site_name = "Game development reference"
-site_description = "Personal notes on maths, data structures, graphics, physics, gameplay, Unity, and engine architecture."
+site_description = "Personal notes on maths, data structures, graphics, physics, gameplay, Unity, C#, and engine architecture."
 site_author = "Stuart"
 site_url = "https://stuart6854.github.io/gamedev-reference/"
 repo_url = "https://github.com/stuart6854/gamedev-reference"
@@ -73,6 +73,17 @@ nav = [
       { "Tabs, splits, and docking" = "engine/ui/docking.md" },
       { "Design and architecture" = "engine/ui/architecture.md" },
       { "Style sheets" = "engine/ui/stylesheets.md" },
+    ] },
+  ] },
+  { "C#" = [
+    "csharp/index.md",
+    { "Roslyn analysers and generators" = [
+      "csharp/roslyn/index.md",
+      { "Source generators" = "csharp/roslyn/source-generators.md" },
+      { "Generator examples" = "csharp/roslyn/generator-examples.md" },
+      { "Analysers" = "csharp/roslyn/analyzers.md" },
+      { "Code fixes" = "csharp/roslyn/code-fixes.md" },
+      { "Testing" = "csharp/roslyn/testing.md" },
     ] },
   ] },
   { "Unity" = [
