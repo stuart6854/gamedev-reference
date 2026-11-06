@@ -65,10 +65,12 @@ nav = [
       "engine/ui/index.md",
       { "Widget tree" = "engine/ui/widget-tree.md" },
       { "Layout" = "engine/ui/layout.md" },
+      { "Flexbox layout" = "engine/ui/flexbox.md" },
       { "Input and focus" = "engine/ui/input.md" },
       { "Common elements" = "engine/ui/elements.md" },
       { "Tabs, splits, and docking" = "engine/ui/docking.md" },
       { "Design and architecture" = "engine/ui/architecture.md" },
+      { "Style sheets" = "engine/ui/stylesheets.md" },
     ] },
   ] },
   { "Unity" = [

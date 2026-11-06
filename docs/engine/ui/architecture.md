@@ -120,6 +120,8 @@ pop():
 
 ## Styling
 
+[Style sheets](stylesheets.md) builds this section into a CSS subset with selectors, a cascade, variables, and transitions.
+
 Keep visual values (colours, fonts, padding, sizes, sounds) out of widget code, in style rules:
 
 ```text

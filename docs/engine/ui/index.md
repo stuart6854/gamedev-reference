@@ -32,7 +32,9 @@ Input is dispatched against last frame's layout, which is what the player was lo
 
 - [Widget tree](widget-tree.md) — the widget record, invalidation, visibility, layers, and changing the tree while it is being walked.
 - [Layout](layout.md) — measure and arrange, sizing rules, stacks, wrapping text, anchors, and pixel snapping.
+- [Flexbox layout](flexbox.md) — the Yoga subset of CSS flexbox: base sizes, lines, growing and shrinking, alignment, absolute children, and caching.
 - [Input and focus](input.md) — hit testing, event routing, hover and press, pointer capture, dragging, keyboard focus, and gamepad navigation.
 - [Common elements](elements.md) — buttons, toggles, sliders, text fields, scroll views, virtualised lists, popups, and tooltips.
 - [Tabs, splits, and docking](docking.md) — tab views, split panes, and a dock tree with drop zones and saved layouts.
 - [Design and architecture](architecture.md) — keeping UI apart from game state, view models and bindings, the screen stack, styling, scaling, and animation.
+- [Style sheets](stylesheets.md) — a CSS subset: tokenizing and parsing, selector matching, the cascade, computed values, variables, and transitions.
