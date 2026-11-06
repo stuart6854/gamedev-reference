@@ -24,7 +24,7 @@ Each section's index lists what is written there.
 - [Data structures](data-structures/index.md) — containers the standard libraries leave out, sparse sets, handle tables, ring buffers, free lists, and spatial hash grids.
 - [Graphics](graphics/index.md) — the coordinate spaces from object space to the screen.
 - [Physics](physics/index.md) — the fixed timestep and integrators.
-- [Engine architecture](engine/index.md) — how an entity component system stores entities and components.
+- [Engine architecture](engine/index.md) — how an entity component system stores entities and components, and how a retained-mode UI is built.
 - [Unity](unity/index.md) — the bulk of the site: cameras, controllers, systems, architecture, AI, combat, and rendering for Unity 6.
 
 Gameplay and AI, and optimisation, join this list when their first page is written.
