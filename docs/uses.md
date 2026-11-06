@@ -2,18 +2,18 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (46)
+- [Top-down survival](#top-down-survival) (47)
 - [Hordes and crowds](#hordes-and-crowds) (25)
 - [Stealth](#stealth) (8)
 - [Shooters](#shooters) (34)
 - [Melee action](#melee-action) (12)
-- [Strategy and tactics](#strategy-and-tactics) (23)
+- [Strategy and tactics](#strategy-and-tactics) (24)
 - [RPGs](#rpgs) (32)
 - [Roguelikes](#roguelikes) (6)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (11)
-- [Base building](#base-building) (8)
-- [Open worlds](#open-worlds) (18)
+- [Base building](#base-building) (9)
+- [Open worlds](#open-worlds) (19)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
 - [Multiplayer](#multiplayer) (6)
@@ -33,6 +33,7 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [Driving the Animator from code](unity/animation/scripting.md) — One component that every system calls, so the zombie and the survivor share their animation code.
 - [Enemy behaviour](unity/ai/enemy.md) — A simple threat to build on before adding perception.
 - [Equipment](unity/systems/inventory/equipment.md) — Wearing armour and holding a weapon in each hand.
+- [Fog](graphics/fog.md) — Murky atmosphere that limits how far the player can read the map.
 - [Fog of war and vision](unity/rendering/vision.md) — Only what the character can see is lit; rooms behind walls go dark, and zombies there are hidden.
 - [Frustum and visibility tests](maths/frustum.md) — Spawning only outside the view, and checking line of sight, not just the cone.
 - [Grid inventory](unity/systems/inventory/grid.md) — A backpack where an item's shape is a decision.
@@ -182,6 +183,7 @@ RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 - [Fog of war and vision](unity/rendering/vision.md) — Unexplored map is black, explored map is grey, and enemy units show only inside vision.
 - [Formation movement](unity/mechanics/formations.md) — Groups that move in a line, box, or wedge and face the way the player chose.
 - [Frustum and visibility tests](maths/frustum.md) — Off-screen indicators pointing at units and objectives.
+- [Ground grid](graphics/grid.md) — A map grid that stays crisp from close up to a zoomed-out overview.
 - [Horde simulation](unity/ai/horde.md) — Off-screen battles resolve cheaply while on-screen ones get full detail.
 - [Inspectors and property drawers](unity/tools/editor/inspectors.md) — Unit data that warns when a field is missing, instead of failing at runtime.
 - [Intersection tests](maths/intersections.md) — Clicking the ground plane under the cursor, and picking units by their bounds.
@@ -279,6 +281,7 @@ Placing, upgrading, and defending structures.
 - [Breakable obstacles](unity/ai/navigation/breakable.md) — Player walls with health, which raiders break when there is no gate open.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
 - [Command pattern](unity/architecture/commands.md) — Undo and redo for placing, rotating, and demolishing pieces.
+- [Ground grid](graphics/grid.md) — A placement grid on the ground that shows where pieces will snap.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
 - [Primitive generation](graphics/primitives.md) — Walls, floors, and pipes built at any size and subdivision, with colliders that match.
 - [Timed actions](unity/systems/timed-actions.md) — Construction that takes time, queued piece by piece, and stops when the builder is hit.
@@ -294,6 +297,7 @@ Large maps, streaming, and a world that runs while you are away.
 - [Continuous spawning](unity/ai/spawning.md) — Zones that wake enemies as the player approaches.
 - [Crowd performance](unity/animation/crowds.md) — Townsfolk and wildlife that stop animating when nobody can see them.
 - [Day and night cycle](unity/rendering/day-night.md) — A clock that drives the sun, the sky, and the ambient light.
+- [Fog](graphics/fog.md) — Hiding the draw distance, and height fog that pools in valleys.
 - [Horde simulation](unity/ai/horde.md) — Pedestrians and cars exist down every street, but only nearby ones are real.
 - [Integrators](physics/integrators.md) — Vehicles and ropes that stay stable over long sessions.
 - [Interpolation and easing](maths/interpolation.md) — Day and night colours, fades, and remapped values from one lerp.

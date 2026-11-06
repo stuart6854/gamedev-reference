@@ -47,6 +47,8 @@ nav = [
     { "Coordinate spaces" = "graphics/coordinate-spaces.md" },
     { "Primitive generation" = "graphics/primitives.md" },
     { "Particle systems" = "graphics/particles.md" },
+    { "Ground grid" = "graphics/grid.md" },
+    { "Fog" = "graphics/fog.md" },
   ] },
   { "Physics" = [
     "physics/index.md",
