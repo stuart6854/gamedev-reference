@@ -1,4 +1,4 @@
-# C#
+# C\#
 
 Notes on the C# language and its tooling that are not tied to an engine. Unity-specific setup is covered on each page where it differs.
 
