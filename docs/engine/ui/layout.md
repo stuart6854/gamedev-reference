@@ -50,7 +50,7 @@ measure(w, available):                   // available may be INFINITY on either 
 
 ## Stacks
 
-A stack places its children in a row or a column. It is the container behind most game UI: a menu is a column of buttons, a HUD bar is a row of icons.
+A stack places its children in a row or a column. It is the container behind most game UI: a menu is a column of buttons, a HUD bar is a row of icons. [Flexbox layout](flexbox.md) is the fuller version of the same idea, with shrinking, wrapping, and per-item alignment.
 
 ```text
 Stack {
