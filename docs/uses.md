@@ -7,11 +7,11 @@ Pages grouped by what they are useful for. Each page lists its uses under its ti
 - [Stealth](#stealth) (8)
 - [Shooters](#shooters) (34)
 - [Melee action](#melee-action) (12)
-- [Strategy and tactics](#strategy-and-tactics) (21)
-- [RPGs](#rpgs) (30)
+- [Strategy and tactics](#strategy-and-tactics) (23)
+- [RPGs](#rpgs) (32)
 - [Roguelikes](#roguelikes) (6)
 - [Platformers](#platformers) (7)
-- [Life and colony sims](#life-and-colony-sims) (10)
+- [Life and colony sims](#life-and-colony-sims) (11)
 - [Base building](#base-building) (8)
 - [Open worlds](#open-worlds) (18)
 - [Wildlife](#wildlife) (5)
@@ -174,8 +174,10 @@ RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 
 - [Bullet tracers](unity/combat/tracers.md) — Lines of fire across the battlefield, from one shared particle system for every unit.
 - [Command pattern](unity/architecture/commands.md) — Unit orders queued as commands, shown as waypoints, and cancelled one at a time.
+- [Common elements](engine/ui/elements.md) — Dense panels, tooltips on everything, and dropdowns for orders.
 - [Coordinate spaces](graphics/coordinate-spaces.md) — Turning a mouse position into a world ray for selection and orders.
 - [Crowd performance](unity/animation/crowds.md) — Large armies where most units are too small on screen to need full animation.
+- [Design and architecture](engine/ui/architecture.md) — Many panels reading the same simulation, layered menus, and a HUD that must stay responsive.
 - [Drag selection](unity/mechanics/selection.md) — Box, click, and double-click selection of units.
 - [Fog of war and vision](unity/rendering/vision.md) — Unexplored map is black, explored map is grey, and enemy units show only inside vision.
 - [Formation movement](unity/mechanics/formations.md) — Groups that move in a line, box, or wedge and face the way the player chose.
@@ -201,7 +203,9 @@ Stats, items, loot, and characters that grow.
 - [Attack combos](unity/combat/combos.md) — Weapon combos with damage types and hurtboxes.
 - [Bootstrapping and services](unity/architecture/services.md) — Game-wide systems such as quests and inventories reachable from any scene.
 - [Character movement](unity/mechanics/character-movement.md) — Third-person movement relative to the camera.
+- [Common elements](engine/ui/elements.md) — Inventory grids, stat sliders, and long item lists that need virtualising.
 - [Damage numbers](unity/combat/damage-numbers.md) — Floating numbers coloured by damage type.
+- [Design and architecture](engine/ui/architecture.md) — Inventory, character, and quest screens that mirror large amounts of game state.
 - [Equipment](unity/systems/inventory/equipment.md) — Gear slots whose stats apply while equipped.
 - [Event systems](unity/architecture/events.md) — Quests, achievements, and UI reacting to deaths and pickups.
 - [Grid inventory](unity/systems/inventory/grid.md) — Tetris-style loot screens.
@@ -258,6 +262,7 @@ Needs, schedules, and building a place to live.
 
 - [Building and placement](unity/systems/building.md) — Placing furniture and rooms.
 - [Day and night cycle](unity/rendering/day-night.md) — Schedules tied to the time of day.
+- [Design and architecture](engine/ui/architecture.md) — Needs bars, colonist panels, and notifications driven by a constantly changing simulation.
 - [Drag selection](unity/mechanics/selection.md) — Selecting several colonists to give one order.
 - [Entities](engine/ecs/entities.md) — Many small simulated things with ids that survive saves.
 - [Interaction](unity/mechanics/interaction.md) — Interacting with furniture and objects around a home.

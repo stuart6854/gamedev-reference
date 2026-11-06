@@ -61,6 +61,15 @@ nav = [
       { "Sparse-set storage" = "engine/ecs/sparse-set-storage.md" },
       { "Archetype storage" = "engine/ecs/archetype-storage.md" },
     ] },
+    { "UI" = [
+      "engine/ui/index.md",
+      { "Widget tree" = "engine/ui/widget-tree.md" },
+      { "Layout" = "engine/ui/layout.md" },
+      { "Input and focus" = "engine/ui/input.md" },
+      { "Common elements" = "engine/ui/elements.md" },
+      { "Tabs, splits, and docking" = "engine/ui/docking.md" },
+      { "Design and architecture" = "engine/ui/architecture.md" },
+    ] },
   ] },
   { "Unity" = [
     "unity/index.md",
