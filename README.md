@@ -2,7 +2,7 @@
 
 <https://stuart6854.github.io/gamedev-reference/>
 
-Personal reference site for game-development notes: maths, graphics, physics, gameplay, Unity, engine architecture, and optimisation. Built with [Zensical](https://zensical.org/). The configuration is `zensical.toml`.
+Personal reference site for game-development notes: maths, graphics, physics, gameplay, Unity, C#, engine architecture, and optimisation. Built with [Zensical](https://zensical.org/). The configuration is `zensical.toml`.
 
 ## Preview locally
 

@@ -22,9 +22,10 @@ Each section's index lists what is written there.
 
 - [Maths](maths/index.md) — vectors, quaternions, interpolation and damping, randomness, intersection tests, and frustum tests.
 - [Data structures](data-structures/index.md) — containers the standard libraries leave out, sparse sets, handle tables, ring buffers, free lists, and spatial hash grids.
-- [Graphics](graphics/index.md) — the coordinate spaces from object space to the screen.
+- [Graphics](graphics/index.md) — coordinate spaces, primitive meshes, particles, a shader ground grid, and fog.
 - [Physics](physics/index.md) — the fixed timestep and integrators.
 - [Engine architecture](engine/index.md) — how an entity component system stores entities and components, and how a retained-mode UI is built.
+- [C#](csharp/index.md) — Roslyn analysers, source generators, code fixes, and testing them.
 - [Unity](unity/index.md) — the bulk of the site: cameras, controllers, systems, architecture, AI, combat, and rendering for Unity 6.
 
 Gameplay and AI, and optimisation, join this list when their first page is written.
