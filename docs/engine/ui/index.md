@@ -38,3 +38,4 @@ Input is dispatched against last frame's layout, which is what the player was lo
 - [Tabs, splits, and docking](docking.md) — tab views, split panes, and a dock tree with drop zones and saved layouts.
 - [Design and architecture](architecture.md) — keeping UI apart from game state, view models and bindings, the screen stack, styling, scaling, and animation.
 - [Style sheets](stylesheets.md) — a CSS subset: tokenizing and parsing, selector matching, the cascade, computed values, variables, and transitions.
+- [Dear ImGui](dear-imgui.md) — the immediate-mode library for tools: begin and end rules, left, right, and centred alignment, columns with tables, side-by-side panels, IDs, styling, and common widgets.
