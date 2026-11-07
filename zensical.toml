@@ -71,6 +71,20 @@ nav = [
       { "Resources and handles" = "engine/patterns/resources.md" },
       { "Modules and plugins" = "engine/patterns/modules.md" },
     ] },
+    { "Serialisation" = [
+      "engine/serialisation/index.md",
+      { "Reflection" = "engine/serialisation/reflection.md" },
+      { "Formats" = "engine/serialisation/formats.md" },
+      { "Versioning" = "engine/serialisation/versioning.md" },
+      { "References and load-in-place" = "engine/serialisation/references.md" },
+    ] },
+    { "Content pipeline" = [
+      "engine/content/index.md",
+      { "Import and cook" = "engine/content/import-cook.md" },
+      { "Dependencies and incremental builds" = "engine/content/incremental.md" },
+      { "Packaging" = "engine/content/packaging.md" },
+      { "Editor workflow" = "engine/content/editor-workflow.md" },
+    ] },
     { "UI" = [
       "engine/ui/index.md",
       { "Widget tree" = "engine/ui/widget-tree.md" },
