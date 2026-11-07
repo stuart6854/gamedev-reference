@@ -64,6 +64,13 @@ nav = [
       { "Sparse-set storage" = "engine/ecs/sparse-set-storage.md" },
       { "Archetype storage" = "engine/ecs/archetype-storage.md" },
     ] },
+    { "Patterns" = [
+      "engine/patterns/index.md",
+      { "The frame" = "engine/patterns/frame.md" },
+      { "Subsystems and messaging" = "engine/patterns/subsystems.md" },
+      { "Resources and handles" = "engine/patterns/resources.md" },
+      { "Modules and plugins" = "engine/patterns/modules.md" },
+    ] },
     { "UI" = [
       "engine/ui/index.md",
       { "Widget tree" = "engine/ui/widget-tree.md" },
