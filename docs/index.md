@@ -25,7 +25,7 @@ Each section's index lists what is written there.
 - [Graphics](graphics/index.md) — coordinate spaces, primitive meshes, particles, a shader ground grid, and fog.
 - [Physics](physics/index.md) — the fixed timestep and integrators.
 - [Engine architecture](engine/index.md) — how an entity component system stores entities and components, and how a retained-mode UI is built.
-- [C#](csharp/index.md) — performance techniques, and Roslyn analysers, source generators, and code fixes.
+- [C#](csharp/index.md) — Roslyn analysers, source generators, code fixes, and testing them.
 - [Unity](unity/index.md) — the bulk of the site: cameras, controllers, systems, architecture, AI, combat, and rendering for Unity 6.
 
 Gameplay and AI, and optimisation, join this list when their first page is written.
