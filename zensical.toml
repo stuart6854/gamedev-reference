@@ -86,6 +86,11 @@ nav = [
       { "Code fixes" = "csharp/roslyn/code-fixes.md" },
       { "Testing" = "csharp/roslyn/testing.md" },
     ] },
+    { "Assemblies and load contexts" = [
+      "csharp/assemblies/index.md",
+      { "Plugins" = "csharp/assemblies/plugins.md" },
+      { "Hosting from C++" = "csharp/assemblies/hosting.md" },
+    ] },
   ] },
   { "Unity" = [
     "unity/index.md",
