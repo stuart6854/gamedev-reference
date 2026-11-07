@@ -75,6 +75,11 @@ nav = [
       { "Design and architecture" = "engine/ui/architecture.md" },
       { "Style sheets" = "engine/ui/stylesheets.md" },
     ] },
+    { "Unit testing" = [
+      "engine/testing/index.md",
+      { "C# testing" = "engine/testing/csharp.md" },
+      { "C++ testing" = "engine/testing/cpp.md" },
+    ] },
   ] },
   { "C#" = [
     "csharp/index.md",

@@ -10,3 +10,4 @@ Planned topics:
 - Jobs, batches, and the layout consequences of writing them.
 - Serialisation, content pipelines, and the difference between authoring data and runtime data.
 - Tools that edit the same data the game reads.
+- Testing game and engine code. Written: [Unit testing](testing/index.md), with pages on [C# testing](testing/csharp.md) and [C++ testing](testing/cpp.md).
