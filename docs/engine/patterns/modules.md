@@ -90,7 +90,7 @@ reload(plugin):
 - **Nothing may keep a pointer into the old library**: function pointers in event listeners, vtables of objects it created, strings in its read-only data. Unregistering everything in `shutdown` is what makes unloading safe.
 - **Copy before loading**, because Windows locks a loaded DLL and the compiler cannot overwrite it. The PDB is locked too; give the copied DLL a fresh PDB path, or debugging breaks after the first reload.
 
-For C# game code, a collectible `AssemblyLoadContext` plays the same role; see the C# section.
+For C# game code, a collectible `AssemblyLoadContext` plays the same role; see [hosting from C++](../../csharp/assemblies/hosting.md#reloading-scripts).
 
 ## Editor and runtime
 

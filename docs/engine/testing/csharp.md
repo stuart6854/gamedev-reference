@@ -164,4 +164,4 @@ NUnit, unlike xUnit, uses **one instance** of a test class for all its tests. Re
 
 ## Allocation and performance checks
 
-"This method does not allocate" can be a test: warm the method up, then compare `GC.GetAllocatedBytesForCurrentThread()` before and after calling it many times, and assert the difference is 0. Keep timing out of unit tests: the time a test takes varies with the machine and its load, so timing assertions fail at random. Benchmarks belong in a separate benchmark project.
+"This method does not allocate" can be a test: warm the method up, then compare `GC.GetAllocatedBytesForCurrentThread()` before and after calling it many times, and assert the difference is 0, as in [allocation tests](../../csharp/performance/measuring.md#allocation-tests). Keep timing out of unit tests: the time a test takes varies with the machine and its load, so timing assertions fail at random. Benchmarks belong in a separate benchmark project.
