@@ -64,7 +64,7 @@ Unreal's Derived Data Cache and Unity's Accelerator work this way.
 
 ## Building in parallel
 
-The dependencies form a graph: textures before the materials that bake them, meshes and materials before the levels that bake lighting with them. Cook in dependency order, with everything whose inputs are ready running in parallel, using the same ideas as a job graph, across processes or machines.
+The dependencies form a graph: textures before the materials that bake them, meshes and materials before the levels that bake lighting with them. Cook in dependency order, with everything whose inputs are ready running in parallel, using the same ideas as a [job graph](../jobs/dependencies.md), across processes or machines.
 
 Cookers often use a lot of memory or call external compilers. Run them in separate worker processes, so a crash in one (a corrupt FBX that crashes the importer) fails that asset with a clear error instead of the whole build.
 
