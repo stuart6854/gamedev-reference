@@ -64,6 +64,13 @@ nav = [
       { "Sparse-set storage" = "engine/ecs/sparse-set-storage.md" },
       { "Archetype storage" = "engine/ecs/archetype-storage.md" },
     ] },
+    { "Job system" = [
+      "engine/jobs/index.md",
+      { "Scheduler" = "engine/jobs/scheduler.md" },
+      { "Dependencies and job graphs" = "engine/jobs/dependencies.md" },
+      { "Parallel for and data layout" = "engine/jobs/parallel-for.md" },
+      { "Fibers" = "engine/jobs/fibers.md" },
+    ] },
     { "Patterns" = [
       "engine/patterns/index.md",
       { "The frame" = "engine/patterns/frame.md" },
