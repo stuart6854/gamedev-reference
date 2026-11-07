@@ -11,6 +11,7 @@ Written:
 - [Ring buffer](ring-buffer.md) — a fixed-capacity queue that rejects or overwrites when full, power-of-two masking, input history, moving averages, snapshots, and a lock-free queue between two threads.
 - [Free list and slab pool](free-list.md) — fixed-size blocks linked through their own free bytes, lazy init, index links, slabs that keep pointers stable, size classes, and catching use after free.
 - [Spatial hash grid](spatial-hash.md) — cells keyed by a hash, choosing a cell size, rebuilding with a counting sort, radius queries, and a C# reference implementation.
+- [Bit manipulation](bits.md) — flags and masks, shift pitfalls, layer and collision masks, packing fields into integers, Morton codes, bit tricks and intrinsics, and bitsets.
 
 The [entity component system](../engine/ecs/index.md) pages build an ECS from the sparse set, the handle table, and a free list.
 

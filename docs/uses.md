@@ -7,16 +7,16 @@ Pages grouped by what they are useful for. Each page lists its uses under its ti
 - [Stealth](#stealth) (8)
 - [Shooters](#shooters) (34)
 - [Melee action](#melee-action) (12)
-- [Strategy and tactics](#strategy-and-tactics) (24)
+- [Strategy and tactics](#strategy-and-tactics) (25)
 - [RPGs](#rpgs) (32)
 - [Roguelikes](#roguelikes) (6)
 - [Platformers](#platformers) (7)
 - [Life and colony sims](#life-and-colony-sims) (11)
-- [Base building](#base-building) (9)
+- [Base building](#base-building) (10)
 - [Open worlds](#open-worlds) (19)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
-- [Multiplayer](#multiplayer) (6)
+- [Multiplayer](#multiplayer) (7)
 
 ## Top-down survival
 
@@ -173,6 +173,7 @@ Swings, combos, hit feedback, and close-range fights.
 
 RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 
+- [Bit manipulation](data-structures/bits.md) — Visited and visible sets for flood fills and line of sight over large grids.
 - [Bullet tracers](unity/combat/tracers.md) — Lines of fire across the battlefield, from one shared particle system for every unit.
 - [Command pattern](unity/architecture/commands.md) — Unit orders queued as commands, shown as waypoints, and cancelled one at a time.
 - [Common elements](engine/ui/elements.md) — Dense panels, tooltips on everything, and dropdowns for orders.
@@ -278,6 +279,7 @@ Needs, schedules, and building a place to live.
 
 Placing, upgrading, and defending structures.
 
+- [Bit manipulation](data-structures/bits.md) — Tile data packed into one integer per cell, and bitsets of occupied cells.
 - [Breakable obstacles](unity/ai/navigation/breakable.md) — Player walls with health, which raiders break when there is no gate open.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
 - [Command pattern](unity/architecture/commands.md) — Undo and redo for placing, rotating, and demolishing pieces.
@@ -337,6 +339,7 @@ Allies and characters with needs and opinions.
 
 Several players, one world.
 
+- [Bit manipulation](data-structures/bits.md) — Packing state into as few bits as possible before it goes over the network.
 - [Command pattern](unity/architecture/commands.md) — Inputs sent as small command records instead of state.
 - [Entities](engine/ecs/entities.md) — Command buffers that apply changes at a known point in the frame.
 - [Fixed timestep and the accumulator](physics/fixed-timestep.md) — Deterministic steps that clients and server can agree on.
