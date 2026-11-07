@@ -253,6 +253,74 @@ if (begin_properties("transform"))
 
 The `##` labels hide the widget's own label while keeping its ID unique; see [IDs](#ids-and-state). Driving this from [reflection](../serialisation/reflection.md) data gives a generic inspector for every type.
 
+### Toolbars and status bars
+
+A one-row table is the easiest way to put groups of widgets at the left, centre, and right of a bar. The table measures each group, so there is no need to calculate widths by hand.
+
+```cpp
+// Toolbar: tools on the left, play controls in the middle, settings on the right.
+if (ImGui::BeginTable("toolbar", 5, ImGuiTableFlags_SizingFixedFit))
+{
+    ImGui::TableSetupColumn("left",   ImGuiTableColumnFlags_WidthFixed);     // no width: fits its contents
+    ImGui::TableSetupColumn("gap1",   ImGuiTableColumnFlags_WidthStretch);
+    ImGui::TableSetupColumn("centre", ImGuiTableColumnFlags_WidthFixed);
+    ImGui::TableSetupColumn("gap2",   ImGuiTableColumnFlags_WidthStretch);
+    ImGui::TableSetupColumn("right",  ImGuiTableColumnFlags_WidthFixed);
+    ImGui::TableNextRow();
+
+    ImGui::TableNextColumn();
+    ImGui::Button("Move"); ImGui::SameLine();
+    ImGui::Button("Rotate"); ImGui::SameLine();
+    ImGui::Button("Scale");
+
+    ImGui::TableNextColumn();                                                // empty: takes spare space
+
+    ImGui::TableNextColumn();
+    ImGui::Button(playing ? "Pause" : "Play"); ImGui::SameLine();
+    ImGui::Button("Step");
+
+    ImGui::TableNextColumn();                                                // empty
+
+    ImGui::TableNextColumn();
+    ImGui::SetNextItemWidth(120);
+    ImGui::Combo("##view", &view_mode, "Lit\0Unlit\0Wireframe\0");
+    ImGui::EndTable();
+}
+```
+
+- A **fixed** column with no width fits its contents, measured on the previous frame. A group that grows (a label that gets longer) resizes its column on the next frame.
+- The two **stretch** gaps have equal weights, so they split the spare space evenly. The centre group sits halfway between the left and right groups, which is the centre of the bar only when those two groups are the same width.
+- When the bar is too narrow, the gaps shrink to zero and the groups touch, instead of overlapping.
+
+For a status bar whose middle must be exactly centred, use three **equal** stretch columns and align inside each cell:
+
+```cpp
+void centred_text(const char* text)
+{
+    centre_next(ImGui::CalcTextSize(text).x);
+    ImGui::TextUnformatted(text);
+}
+
+// The main area fills the window except for one row at the bottom.
+float status_height = ImGui::GetFrameHeightWithSpacing();
+ImGui::BeginChild("main", ImVec2(0, -status_height));
+draw_main_area();
+ImGui::EndChild();
+
+if (ImGui::BeginTable("status", 3, ImGuiTableFlags_SizingStretchSame | ImGuiTableFlags_BordersInnerV))
+{
+    ImGui::TableNextRow();
+    ImGui::TableNextColumn(); ImGui::Text("%d entities", entity_count);
+    ImGui::TableNextColumn(); centred_text(level_name);
+    ImGui::TableNextColumn(); right_aligned_text("%.2f ms", frame_ms);
+    ImGui::EndTable();
+}
+```
+
+The equal columns put the middle cell's centre on the window's centre, whatever the other cells contain. Cells clip their contents, so text too long for its third of the bar is cut off instead of overlapping its neighbour. `BordersInnerV` draws dividers between the sections.
+
+In a bar that mixes text with buttons or inputs, call `AlignTextToFramePadding()` before each piece of text, so it lines up with the widgets beside it.
+
 ## Panels: left, right, middle
 
 Side-by-side regions are child windows on one line:
