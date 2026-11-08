@@ -132,6 +132,7 @@ nav = [
       { "Plugins" = "csharp/assemblies/plugins.md" },
       { "Hosting from C++" = "csharp/assemblies/hosting.md" },
     ] },
+    { "Async and await in games" = "csharp/async.md" },
   ] },
   { "Unity" = [
     "unity/index.md",
