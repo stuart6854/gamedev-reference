@@ -33,6 +33,9 @@ nav = [
     { "Random distributions and shuffles" = "maths/random.md" },
     { "Intersection tests" = "maths/intersections.md" },
     { "Frustum and visibility tests" = "maths/frustum.md" },
+    { "Noise" = "maths/noise.md" },
+    { "Hex grids" = "maths/hex-grids.md" },
+    { "Bézier curves and splines" = "maths/curves.md" },
   ] },
   { "Data structures" = [
     "data-structures/index.md",

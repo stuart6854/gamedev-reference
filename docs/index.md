@@ -20,7 +20,7 @@ Admonitions mark a pitfall or an API quirk that is easy to miss if it is only a 
 
 Each section's index lists what is written there.
 
-- [Maths](maths/index.md) — vectors, quaternions, interpolation and damping, randomness, intersection tests, and frustum tests.
+- [Maths](maths/index.md) — vectors, quaternions, interpolation and damping, randomness, intersection tests, noise, hex grids, curves and splines, and frustum tests.
 - [Data structures](data-structures/index.md) — containers the standard libraries leave out, sparse sets, handle tables, ring buffers, free lists, spatial hash grids, and bit manipulation.
 - [Graphics](graphics/index.md) — coordinate spaces, primitive meshes, particles, a shader ground grid, and fog.
 - [Physics](physics/index.md) — the fixed timestep and integrators.

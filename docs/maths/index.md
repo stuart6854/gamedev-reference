@@ -10,12 +10,13 @@ Written:
 - [Random distributions and shuffles](random.md) — seeded generators, unbiased ranges, weighted picks, Fisher–Yates, shuffle bags, non-uniform distributions, and pseudo-random distribution.
 - [Intersection tests](intersections.md) — ray against plane, sphere, box, and triangle, overlap tests, and the separating axis test.
 - [Frustum and visibility tests](frustum.md) — points on screen, frustum planes, bounds tests, culling, line of sight, and off-screen indicators.
+- [Noise](noise.md) — hashing, value and gradient noise, fractal noise, ridged and warped noise, cellular noise, and Unity's noise functions.
+- [Hex grids](hex-grids.md) — cube, axial, and offset coordinates, neighbours, distance, world conversion and rounding, lines, ranges, rings, and rotation.
+- [Bézier curves and splines](curves.md) — cubic Bézier curves, spline joints, centripetal Catmull–Rom, constant-speed movement, closest points, rotation-minimising frames, and the Unity Splines package.
 
 Planned:
 
 - Matrices and transforms. The pipeline itself lives under [coordinate spaces](../graphics/coordinate-spaces.md).
 - Projections and the relationship between a field of view and a focal length.
-- Curves used for animation and cameras: Bézier and Catmull–Rom.
-- Noise.
 
 Other topics are on the [roadmap](../roadmap.md).

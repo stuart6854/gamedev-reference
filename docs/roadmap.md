@@ -43,9 +43,7 @@ Pages that already exist are not listed here.
 
 ### Space and curves
 
-- Bézier curves and splines (Unity Splines package)
 - Spline-based meshes (roads, fences, pipes, and rails extruded or instanced along a spline in the editor)
-- Hex grids (axial and cube coordinates, neighbours, distance, rounding, and world conversion)
 
 ### Interface
 
@@ -53,7 +51,6 @@ Pages that already exist are not listed here.
 
 ### World
 
-- Noise for procedural generation
 - Dungeon-like procedural generation (rooms and corridors, BSP, random walk / drunkard's walk, graph-based room layouts)
 
 ## Ideas / maybe later
