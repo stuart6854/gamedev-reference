@@ -164,6 +164,7 @@ nav = [
       "csharp/performance/index.md",
       { "Allocations and the GC" = "csharp/performance/allocations.md" },
       { "Structs, Span, and ref" = "csharp/performance/structs-span.md" },
+      { "Pointers and native memory" = "csharp/performance/memory.md" },
       { "Collections and data layout" = "csharp/performance/collections.md" },
       { "Measuring" = "csharp/performance/measuring.md" },
     ] },
