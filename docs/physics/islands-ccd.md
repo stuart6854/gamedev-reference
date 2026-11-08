@@ -92,4 +92,4 @@ A bullet is better modelled as a ray than as a rigid body: cast a ray (or a thin
 
 ## Bodies at large scales
 
-Very fast or very large objects stress every part of the step: broadphase boxes grow, CCD runs more often, and floating-point precision worsens far from the origin (engines shift the world origin to keep the simulated area near it). Clamp maximum velocities to what the game needs, and keep simulated bodies within a few kilometres of the origin.
+Very fast or very large objects stress every part of the step: broadphase boxes grow, CCD runs more often, and floating-point precision worsens far from the origin (see [world streaming](../engine/world-streaming.md#precision-far-from-the-origin) for shifting the origin). Clamp maximum velocities to what the game needs, and keep simulated bodies within a few kilometres of the origin.
