@@ -61,6 +61,16 @@ nav = [
   ] },
   { "Engine" = [
     "engine/index.md",
+    { "Render architecture" = [
+      "engine/rendering/index.md",
+      { "RHI design" = "engine/rendering/rhi.md" },
+      { "Frames in flight" = "engine/rendering/frames-in-flight.md" },
+      { "Render graph" = "engine/rendering/render-graph.md" },
+      { "Renderer layer" = "engine/rendering/renderer.md" },
+      { "Viewports and windows" = "engine/rendering/viewports.md" },
+    ] },
+    { "Scene and transform hierarchy" = "engine/scene-hierarchy.md" },
+    { "Console and debug tools" = "engine/debug-tools.md" },
     { "Entity component system" = [
       "engine/ecs/index.md",
       { "Entities" = "engine/ecs/entities.md" },
