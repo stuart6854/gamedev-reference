@@ -3,7 +3,7 @@
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
 - [Top-down survival](#top-down-survival) (48)
-- [Hordes and crowds](#hordes-and-crowds) (25)
+- [Hordes and crowds](#hordes-and-crowds) (26)
 - [Stealth](#stealth) (8)
 - [Shooters](#shooters) (34)
 - [Melee action](#melee-action) (12)
@@ -16,7 +16,7 @@ Pages grouped by what they are useful for. Each page lists its uses under its ti
 - [Open worlds](#open-worlds) (21)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
-- [Multiplayer](#multiplayer) (7)
+- [Multiplayer](#multiplayer) (8)
 
 ## Top-down survival
 
@@ -93,6 +93,7 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Object pooling](unity/architecture/pooling.md) — Enemies and their effects recycled during waves.
 - [Particle systems](graphics/particles.md) — Thousands of particles simulated on the GPU for swarms, ash, and blood mist.
 - [Perception](unity/ai/perception.md) — A gunshot pulls every zombie within its radius towards where it was fired.
+- [Pointers and native memory](csharp/performance/memory.md) — Large blocks of simulation data in native memory, outside the garbage collector.
 - [Profiler walkthrough](unity/tools/profiler.md) — Finding which of thousands of agents' systems costs the most, with a marker per system.
 - [Ragdolls](unity/animation/ragdolls.md) — Bone colliders that are hurtboxes while alive and a ragdoll when dead.
 - [Sparse set](data-structures/sparse-set.md) — Component storage for thousands of entities with packed iteration.
@@ -352,5 +353,6 @@ Several players, one world.
 - [Entities](engine/ecs/entities.md) — Command buffers that apply changes at a known point in the frame.
 - [Fixed timestep and the accumulator](physics/fixed-timestep.md) — Deterministic steps that clients and server can agree on.
 - [Handle table](data-structures/handle-table.md) — Small, copyable ids that can be sent over the network.
+- [Pointers and native memory](csharp/performance/memory.md) — Packets read and written as structs over byte buffers, with a fixed byte order.
 - [Ring buffer](data-structures/ring-buffer.md) — Snapshot buffers for interpolating other players' positions.
 - [Spatial hash grid](data-structures/spatial-hash.md) — The server sends each client only the entities in the cells near it.
