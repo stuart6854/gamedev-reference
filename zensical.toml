@@ -105,6 +105,7 @@ nav = [
       { "Packaging" = "engine/content/packaging.md" },
       { "Editor workflow" = "engine/content/editor-workflow.md" },
     ] },
+    { "World streaming" = "engine/world-streaming.md" },
     { "UI" = [
       "engine/ui/index.md",
       { "Widget tree" = "engine/ui/widget-tree.md" },
