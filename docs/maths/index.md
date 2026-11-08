@@ -13,6 +13,7 @@ Written:
 - [Noise](noise.md) — hashing, value and gradient noise, fractal noise, ridged and warped noise, cellular noise, and Unity's noise functions.
 - [Hex grids](hex-grids.md) — cube, axial, and offset coordinates, neighbours, distance, world conversion and rounding, lines, ranges, rings, and rotation.
 - [Bézier curves and splines](curves.md) — cubic Bézier curves, spline joints, centripetal Catmull–Rom, constant-speed movement, closest points, rotation-minimising frames, and the Unity Splines package.
+- [Maths utilities](utilities.md) — floor division and modulo, integer powers, powers of two, alignment, pointer arithmetic, memory sizes, float comparison and angles, lerp and slerp, and hashing, with `constexpr` C++ and C# versions.
 
 Planned:
 

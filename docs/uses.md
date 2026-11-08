@@ -12,11 +12,11 @@ Pages grouped by what they are useful for. Each page lists its uses under its ti
 - [Roguelikes](#roguelikes) (7)
 - [Platformers](#platformers) (8)
 - [Life and colony sims](#life-and-colony-sims) (11)
-- [Base building](#base-building) (11)
-- [Open worlds](#open-worlds) (21)
+- [Base building](#base-building) (12)
+- [Open worlds](#open-worlds) (22)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
-- [Multiplayer](#multiplayer) (8)
+- [Multiplayer](#multiplayer) (9)
 
 ## Top-down survival
 
@@ -292,6 +292,7 @@ Placing, upgrading, and defending structures.
 - [Ground grid](graphics/grid.md) — A placement grid on the ground that shows where pieces will snap.
 - [Hex grids](maths/hex-grids.md) — Hex tiles for settlement and territory layouts.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
+- [Maths utilities](maths/utilities.md) — Grid cells from world positions that stay correct either side of zero.
 - [Primitive generation](graphics/primitives.md) — Walls, floors, and pipes built at any size and subdivision, with colliders that match.
 - [Timed actions](unity/systems/timed-actions.md) — Construction that takes time, queued piece by piece, and stops when the builder is hit.
 - [Top-down strategy camera](unity/cameras/rts.md) — A top-down view for placing and managing structures.
@@ -312,6 +313,7 @@ Large maps, streaming, and a world that runs while you are away.
 - [Integrators](physics/integrators.md) — Vehicles and ropes that stay stable over long sessions.
 - [Interpolation and easing](maths/interpolation.md) — Day and night colours, fades, and remapped values from one lerp.
 - [Lootable containers](unity/systems/inventory/containers.md) — Thousands of containers that cost nothing until someone opens one.
+- [Maths utilities](maths/utilities.md) — Memory budgets shown in the right units, and stable string ids for streamed assets.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — Dropping hundreds of props onto the terrain with one shortcut.
 - [Noise](maths/noise.md) — Terrain height, biomes, and scattered vegetation from a seed, with no stored map.
 - [Particle systems](graphics/particles.md) — Weather around the camera, with only a screen's worth of particles alive.
@@ -353,6 +355,7 @@ Several players, one world.
 - [Entities](engine/ecs/entities.md) — Command buffers that apply changes at a known point in the frame.
 - [Fixed timestep and the accumulator](physics/fixed-timestep.md) — Deterministic steps that clients and server can agree on.
 - [Handle table](data-structures/handle-table.md) — Small, copyable ids that can be sent over the network.
+- [Maths utilities](maths/utilities.md) — String hashes that are the same on every machine and every run.
 - [Pointers and native memory](csharp/performance/memory.md) — Packets read and written as structs over byte buffers, with a fixed byte order.
 - [Ring buffer](data-structures/ring-buffer.md) — Snapshot buffers for interpolating other players' positions.
 - [Spatial hash grid](data-structures/spatial-hash.md) — The server sends each client only the entities in the cells near it.
