@@ -74,7 +74,7 @@ Then free the id, as above.
 
 ## Component masks
 
-A sparse-set world can keep a bitset per entity, one bit per component type, set when a component is added. It answers "does this entity have A and B" with one AND of two masks, and it lists which pools to visit on destroy. It costs one bitset per entity and must be updated on every add and remove. An archetype world does not need it: the entity's table is the mask.
+A sparse-set world can keep a bitset per entity, one bit per component type, set when a component is added. It answers "does this entity have A and B" with one AND of two masks, and it lists which pools to visit on destroy. It costs one bitset per entity and must be updated on every add and remove. An archetype world does not need it: the entity's table is the mask. The [C++](cpp.md#component-masks) and [C#](csharp.md#component-masks) pages implement masks as fixed-size structs.
 
 ## Deferred commands
 
@@ -97,6 +97,8 @@ A command that creates an entity cannot return the real id, because the id is on
 Playback order matters. Two commands for the same entity run in the order they were recorded, and commands for an entity that a previous command destroyed must be skipped, so check `alive(e)` as each one is applied.
 
 ## Language tips
+
+Complete, tested code for each piece is on the [ECS in C++](cpp.md) and [ECS in C#](csharp.md) pages.
 
 === "C++"
 

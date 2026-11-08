@@ -146,6 +146,8 @@ The cost is fragmentation. Every archetype takes at least one chunk, so 1,000 ar
 
 ## Language tips
 
+Complete, tested code for each piece is on the [ECS in C++](cpp.md) and [ECS in C#](csharp.md) pages.
+
 === "C++"
 
     - A column is type-erased bytes. Store a small type record per component type, `{size, alignment, move, destroy}`, with function pointers. For trivially copyable types, `move` is `std::memcpy` and `destroy` is nothing.
