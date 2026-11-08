@@ -2,18 +2,18 @@
 
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
-- [Top-down survival](#top-down-survival) (47)
+- [Top-down survival](#top-down-survival) (48)
 - [Hordes and crowds](#hordes-and-crowds) (25)
 - [Stealth](#stealth) (8)
 - [Shooters](#shooters) (34)
 - [Melee action](#melee-action) (12)
-- [Strategy and tactics](#strategy-and-tactics) (25)
+- [Strategy and tactics](#strategy-and-tactics) (27)
 - [RPGs](#rpgs) (32)
-- [Roguelikes](#roguelikes) (6)
-- [Platformers](#platformers) (7)
+- [Roguelikes](#roguelikes) (7)
+- [Platformers](#platformers) (8)
 - [Life and colony sims](#life-and-colony-sims) (11)
-- [Base building](#base-building) (10)
-- [Open worlds](#open-worlds) (19)
+- [Base building](#base-building) (11)
+- [Open worlds](#open-worlds) (21)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
 - [Multiplayer](#multiplayer) (7)
@@ -49,6 +49,7 @@ Scavenging, threats in the dark, and buildings to hide in, seen from above.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — A window that lists every door and container in the scene, with a click to select each.
 - [MonoBehaviour lifecycle](unity/architecture/lifecycle.md) — Systems that read each other at startup without null references.
 - [Needs and effects](unity/systems/needs.md) — Hunger, thirst, and fatigue that drain with game time, bleeding that stacks per wound, and an infection that runs its course.
+- [Noise](maths/noise.md) — Resource placement, fog density, and wind that varies smoothly across the map.
 - [Noise sources](unity/ai/noise.md) — A gunshot that pulls the street's zombies, a car alarm that keeps pulling them, and footsteps that give the player away.
 - [Particles in Unity](unity/rendering/particles.md) — Rain that follows the camera, fire and smoke, blood that stays where it fell, and footstep dust.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — A low-health look and grading that changes with the mood.
@@ -175,6 +176,7 @@ RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 
 - [Bit manipulation](data-structures/bits.md) — Visited and visible sets for flood fills and line of sight over large grids.
 - [Bullet tracers](unity/combat/tracers.md) — Lines of fire across the battlefield, from one shared particle system for every unit.
+- [Bézier curves and splines](maths/curves.md) — Smooth unit paths through waypoints, and patrol routes.
 - [Command pattern](unity/architecture/commands.md) — Unit orders queued as commands, shown as waypoints, and cancelled one at a time.
 - [Common elements](engine/ui/elements.md) — Dense panels, tooltips on everything, and dropdowns for orders.
 - [Coordinate spaces](graphics/coordinate-spaces.md) — Turning a mouse position into a world ray for selection and orders.
@@ -185,6 +187,7 @@ RTS, 4X, and tactics games: selecting, commanding, and seeing the map.
 - [Formation movement](unity/mechanics/formations.md) — Groups that move in a line, box, or wedge and face the way the player chose.
 - [Frustum and visibility tests](maths/frustum.md) — Off-screen indicators pointing at units and objectives.
 - [Ground grid](graphics/grid.md) — A map grid that stays crisp from close up to a zoomed-out overview.
+- [Hex grids](maths/hex-grids.md) — Movement ranges, distances, and line of sight on a hex map with no diagonal special cases.
 - [Horde simulation](unity/ai/horde.md) — Off-screen battles resolve cheaply while on-screen ones get full detail.
 - [Inspectors and property drawers](unity/tools/editor/inspectors.md) — Unit data that warns when a field is missing, instead of failing at runtime.
 - [Intersection tests](maths/intersections.md) — Clicking the ground plane under the cursor, and picking units by their bounds.
@@ -242,6 +245,7 @@ Runs, grids, randomness, and remembered maps.
 
 - [Fog of war and vision](unity/rendering/vision.md) — Grid field of view, with remembered tiles drawn dimmed.
 - [Loot tables](unity/systems/loot.md) — Seeded drops that replay with the run.
+- [Noise](maths/noise.md) — Cave and overworld generation that is different every run and the same for every seed.
 - [Primitive generation](graphics/primitives.md) — Procedural props and levels made from parts that are generated, not imported.
 - [Random distributions and shuffles](maths/random.md) — Seeded runs that replay exactly, shuffle bags, and points spread over a map.
 - [Sparse set](data-structures/sparse-set.md) — Fast sets of entity ids with constant-time add, remove, and clear.
@@ -252,6 +256,7 @@ Runs, grids, randomness, and remembered maps.
 Jumps, slopes, and precise movement.
 
 - [2D platformer](unity/mechanics/platformer-2d.md) — Variable jumps, slopes, and wall slides on a 2D body.
+- [Bézier curves and splines](maths/curves.md) — Moving platforms and camera rails on authored paths.
 - [Character movement](unity/mechanics/character-movement.md) — Coyote time and jump buffering on a kinematic capsule.
 - [Fixed timestep and the accumulator](physics/fixed-timestep.md) — Jumps that reach the same height at every frame rate.
 - [Integrators](physics/integrators.md) — Choosing the integrator that keeps jump arcs exact.
@@ -284,6 +289,7 @@ Placing, upgrading, and defending structures.
 - [Building and placement](unity/systems/building.md) — Grid and free placement, sockets, and a cost paid from the inventory.
 - [Command pattern](unity/architecture/commands.md) — Undo and redo for placing, rotating, and demolishing pieces.
 - [Ground grid](graphics/grid.md) — A placement grid on the ground that shows where pieces will snap.
+- [Hex grids](maths/hex-grids.md) — Hex tiles for settlement and territory layouts.
 - [Intersection tests](maths/intersections.md) — Overlap tests for whether a placed piece fits.
 - [Primitive generation](graphics/primitives.md) — Walls, floors, and pipes built at any size and subdivision, with colliders that match.
 - [Timed actions](unity/systems/timed-actions.md) — Construction that takes time, queued piece by piece, and stops when the builder is hit.
@@ -296,6 +302,7 @@ Large maps, streaming, and a world that runs while you are away.
 
 - [Archetype storage](engine/ecs/archetype-storage.md) — Large simulations where most entities keep the same components.
 - [Bootstrapping and services](unity/architecture/services.md) — Audio, saving, and settings that exist in every scene.
+- [Bézier curves and splines](maths/curves.md) — Roads, rivers, and rails laid along splines, and vehicles that follow them at a steady speed.
 - [Continuous spawning](unity/ai/spawning.md) — Zones that wake enemies as the player approaches.
 - [Crowd performance](unity/animation/crowds.md) — Townsfolk and wildlife that stop animating when nobody can see them.
 - [Day and night cycle](unity/rendering/day-night.md) — A clock that drives the sun, the sky, and the ambient light.
@@ -305,6 +312,7 @@ Large maps, streaming, and a world that runs while you are away.
 - [Interpolation and easing](maths/interpolation.md) — Day and night colours, fades, and remapped values from one lerp.
 - [Lootable containers](unity/systems/inventory/containers.md) — Thousands of containers that cost nothing until someone opens one.
 - [Menus, windows, and handles](unity/tools/editor/windows.md) — Dropping hundreds of props onto the terrain with one shortcut.
+- [Noise](maths/noise.md) — Terrain height, biomes, and scattered vegetation from a seed, with no stored map.
 - [Particle systems](graphics/particles.md) — Weather around the camera, with only a screen's worth of particles alive.
 - [Post-processing with volumes](unity/rendering/post-processing.md) — Local volumes for caves, underwater, and interiors.
 - [Profiler walkthrough](unity/tools/profiler.md) — Garbage collection spikes from allocations spread across hundreds of scripts.
