@@ -84,6 +84,7 @@ nav = [
       { "Parallel for and data layout" = "engine/jobs/parallel-for.md" },
       { "Fibers" = "engine/jobs/fibers.md" },
     ] },
+    { "Profiler instrumentation" = "engine/profiling.md" },
     { "Patterns" = [
       "engine/patterns/index.md",
       { "The frame" = "engine/patterns/frame.md" },
