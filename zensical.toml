@@ -71,6 +71,13 @@ nav = [
     ] },
     { "Scene and transform hierarchy" = "engine/scene-hierarchy.md" },
     { "Console and debug tools" = "engine/debug-tools.md" },
+    { "Audio engine" = [
+      "engine/audio/index.md",
+      { "Mixer and voices" = "engine/audio/mixer.md" },
+      { "3D audio" = "engine/audio/spatial.md" },
+      { "Streaming and formats" = "engine/audio/streaming.md" },
+      { "Game-side API" = "engine/audio/api.md" },
+    ] },
     { "Entity component system" = [
       "engine/ecs/index.md",
       { "Entities" = "engine/ecs/entities.md" },
