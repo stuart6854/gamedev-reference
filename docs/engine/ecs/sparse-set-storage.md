@@ -121,6 +121,8 @@ It is slower than archetypes for systems that read several components of most en
 
 ## Language tips
 
+Complete, tested code for each piece is on the [ECS in C++](cpp.md) and [ECS in C#](csharp.md) pages.
+
 === "C++"
 
     - The pool array holds a base class, such as `struct PoolBase { virtual void remove(Entity) = 0; virtual ~PoolBase() = default; };`, with `Pool<T>` derived from it. Destroying an entity calls `remove` through the base on every pool.
