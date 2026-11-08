@@ -58,6 +58,10 @@ nav = [
     "physics/index.md",
     { "Fixed timestep" = "physics/fixed-timestep.md" },
     { "Integrators" = "physics/integrators.md" },
+    { "Broadphase" = "physics/broadphase.md" },
+    { "Narrowphase" = "physics/narrowphase.md" },
+    { "Solver" = "physics/solver.md" },
+    { "Islands, sleeping, and CCD" = "physics/islands-ccd.md" },
   ] },
   { "Engine" = [
     "engine/index.md",
