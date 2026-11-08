@@ -36,6 +36,7 @@ nav = [
     { "Noise" = "maths/noise.md" },
     { "Hex grids" = "maths/hex-grids.md" },
     { "Bézier curves and splines" = "maths/curves.md" },
+    { "Maths utilities" = "maths/utilities.md" },
   ] },
   { "Data structures" = [
     "data-structures/index.md",
