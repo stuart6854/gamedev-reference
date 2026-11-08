@@ -108,8 +108,6 @@ nav = [
       { "Entities" = "engine/ecs/entities.md" },
       { "Sparse-set storage" = "engine/ecs/sparse-set-storage.md" },
       { "Archetype storage" = "engine/ecs/archetype-storage.md" },
-      { "ECS in C++" = "engine/ecs/cpp.md" },
-      { "ECS in C#" = "engine/ecs/csharp.md" },
     ] },
     { "Job system" = [
       "engine/jobs/index.md",

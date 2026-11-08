@@ -74,7 +74,7 @@ Then free the id, as above.
 
 ## Component masks
 
-A sparse-set world can keep a bitset per entity, one bit per component type, set when a component is added. It answers "does this entity have A and B" with one AND of two masks, and it lists which pools to visit on destroy. It costs one bitset per entity and must be updated on every add and remove. An archetype world does not need it: the entity's table is the mask. The [C++](cpp.md#component-masks) and [C#](csharp.md#component-masks) pages implement masks as fixed-size structs.
+A sparse-set world can keep a bitset per entity, one bit per component type, set when a component is added. It answers "does this entity have A and B" with one AND of two masks, and it lists which pools to visit on destroy. It costs one bitset per entity and must be updated on every add and remove. An archetype world does not need it: the entity's table is the mask.
 
 ## Deferred commands
 
@@ -98,17 +98,47 @@ Playback order matters. Two commands for the same entity run in the order they w
 
 ## Language tips
 
-Complete, tested code for each piece is on the [ECS in C++](cpp.md) and [ECS in C#](csharp.md) pages.
-
 === "C++"
 
     - Make `Entity` a distinct type, such as `enum class Entity : std::uint32_t {}`. A plain `std::uint32_t` converts silently to and from every other integer.
     - Reserve the `entities` vector at the expected count. A reallocation copies only integers, but it is still a spike on the frame that crosses the limit.
+    - A component mask can be a fixed array of words, so it is a plain value with no allocation. 256 bits covers most games:
+
+        ```cpp
+        struct ComponentMask {
+            std::array<std::uint64_t, 4> words{};
+            void set(std::uint32_t id)  { words[id >> 6] |= std::uint64_t(1) << (id & 63); }
+            bool contains_all(const ComponentMask& r) const {
+                for (std::size_t i = 0; i < words.size(); i++)
+                    if ((words[i] & r.words[i]) != r.words[i]) return false;
+                return true;
+            }
+        };
+        ```
+
+        `std::bitset<256>` also works (`(mask & required) == required`), but does not expose its words, so visiting only the set bits on destroy is slower. Loop over each word with `std::countr_zero` instead.
     - For the command buffer, record into a per-thread byte buffer of `{type tag, entity, component bytes}` rather than a vector of `std::function`, which allocates per command.
 
 === "C#"
 
     - Make `Entity` a `readonly struct` with one `uint` field, implementing `IEquatable<Entity>`. `default(Entity)` is then the null entity.
+    - A component mask can be a struct of `ulong` fields, so it is a value with no allocation. `BitArray` is a class, so avoid it per entity:
+
+        ```csharp
+        public struct ComponentMask
+        {
+            ulong _w0, _w1, _w2, _w3;                       // 256 component types
+            public void Set(int id)
+            {
+                ulong bit = 1UL << (id & 63);
+                switch (id >> 6) { case 0: _w0 |= bit; break; case 1: _w1 |= bit; break; case 2: _w2 |= bit; break; default: _w3 |= bit; break; }
+            }
+            public readonly bool ContainsAll(in ComponentMask r) =>
+                (_w0 & r._w0) == r._w0 && (_w1 & r._w1) == r._w1 && (_w2 & r._w2) == r._w2 && (_w3 & r._w3) == r._w3;
+        }
+        ```
+
+        Give component types ids with `static class ComponentType<T> { public static readonly int Id = ...; }` (see the sparse-set tips).
     - Commands as a `List<object>` box every struct. Use one list per command kind, such as `List<Entity>` for destroys, or a byte buffer with `MemoryMarshal`-based writes for component data.
     - In Unity, `EntityManager.Exists(entity)` is `alive`, and a structural change made directly on the `EntityManager` inside a `foreach` over a query throws. That is the iteration rule above, enforced. Use an `EntityCommandBuffer`.
 

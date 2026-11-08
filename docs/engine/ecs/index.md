@@ -30,7 +30,5 @@ Use sparse sets when components are added and removed often, such as status effe
 - [Entities](entities.md) — ids with a generation, a free list threaded through the id array, destroying an entity, and deferred commands.
 - [Sparse-set storage](sparse-set-storage.md) — a pool per component type, type ids, views, and groups that make multi-component iteration packed.
 - [Archetype storage](archetype-storage.md) — tables, entity records, moving an entity between tables, the archetype graph, cached queries, and chunks.
-- [ECS in C++](cpp.md) — strong entity ids, component type ids (and across DLLs), component masks, pools, a world, variadic views, type-erased archetype columns, and a byte command buffer, compiled and tested.
-- [ECS in C#](csharp.md) — the same pieces in C# 9 for .NET and Unity: struct ids, generic static type ids, masks, `ref`-returning pools, delegate and struct-job queries, typed columns, and an unmanaged command buffer.
 
 They build on the [sparse set](../../data-structures/sparse-set.md) and [handle table](../../data-structures/handle-table.md) pages.
