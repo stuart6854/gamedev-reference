@@ -69,6 +69,13 @@ nav = [
       { "Renderer layer" = "engine/rendering/renderer.md" },
       { "Viewports and windows" = "engine/rendering/viewports.md" },
     ] },
+    { "Animation runtime" = [
+      "engine/animation/index.md",
+      { "Clips, sampling, and compression" = "engine/animation/clips.md" },
+      { "Blending and graphs" = "engine/animation/blending.md" },
+      { "Skinning" = "engine/animation/skinning.md" },
+      { "Root motion and IK" = "engine/animation/root-motion-ik.md" },
+    ] },
     { "Scene and transform hierarchy" = "engine/scene-hierarchy.md" },
     { "Console and debug tools" = "engine/debug-tools.md" },
     { "Entity component system" = [
