@@ -14,4 +14,5 @@ Planned topics:
 - How the renderer is layered, from the graphics API to the scene. Written: [Render architecture](rendering/index.md), with pages on [RHI design](rendering/rhi.md), [frames in flight](rendering/frames-in-flight.md), the [render graph](rendering/render-graph.md), the [renderer layer](rendering/renderer.md), and [viewports and windows](rendering/viewports.md).
 - Parent and child transforms, and updating them cheaply. Written: [Scene and transform hierarchy](scene-hierarchy.md).
 - Console variables, commands, logging, assertions, and debug drawing. Written: [Console and debug tools](debug-tools.md).
+- Playing, mixing, and placing sound. Written: [Audio engine](audio/index.md), with pages on the [mixer and voices](audio/mixer.md), [3D audio](audio/spatial.md), [streaming and formats](audio/streaming.md), and the [game-side API](audio/api.md).
 - Testing game and engine code. Written: [Unit testing](testing/index.md), with pages on [C# testing](testing/csharp.md) and [C++ testing](testing/cpp.md).
