@@ -9,9 +9,8 @@ Planned topics:
 - How particle systems work: pools, emission, simulation, billboards, blending and sorting, and CPU against GPU. Written: [Particle systems](particles.md).
 - Drawing an editor-style ground grid in a shader: anti-aliased lines, major lines and axes, fading, and changing spacing with zoom. Written: [Ground grid](grid.md).
 - Distance and height fog, fog in custom shaders, and scattering colour. Written: [Fog](fog.md).
-- Shading models, normal maps, and the difference between a light direction in world space and in tangent space.
-- Colour, gamma, and tone mapping.
-- Shadow maps and why the depth format dominates their quality.
+- Shading models, normal maps, colour, gamma, and tone mapping. Written: [Physically based rendering](pbr/index.md), with pages on the [BRDF](pbr/brdf.md), [materials](pbr/materials.md), [image-based lighting](pbr/ibl.md), and the [colour pipeline](pbr/colour.md).
+- Shadow maps, bias, filtering, cascades, and local light shadows. Written: [Shadow mapping](shadows/index.md), with pages on [basics and bias](shadows/basics.md), [filtering](shadows/filtering.md), [cascades](shadows/cascades.md), and [local lights and atlases](shadows/local-lights.md).
 - Post-processing as a sequence of buffers, not a stack of effects.
 
 The coordinate-spaces page is the one the later shading notes will assume.

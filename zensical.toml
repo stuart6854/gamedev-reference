@@ -53,6 +53,20 @@ nav = [
     { "Particle systems" = "graphics/particles.md" },
     { "Ground grid" = "graphics/grid.md" },
     { "Fog" = "graphics/fog.md" },
+    { "Physically based rendering" = [
+      "graphics/pbr/index.md",
+      { "BRDF" = "graphics/pbr/brdf.md" },
+      { "Materials" = "graphics/pbr/materials.md" },
+      { "Image-based lighting" = "graphics/pbr/ibl.md" },
+      { "Colour pipeline" = "graphics/pbr/colour.md" },
+    ] },
+    { "Shadow mapping" = [
+      "graphics/shadows/index.md",
+      { "Basics and bias" = "graphics/shadows/basics.md" },
+      { "Filtering" = "graphics/shadows/filtering.md" },
+      { "Cascades" = "graphics/shadows/cascades.md" },
+      { "Local lights and atlases" = "graphics/shadows/local-lights.md" },
+    ] },
   ] },
   { "Physics" = [
     "physics/index.md",
