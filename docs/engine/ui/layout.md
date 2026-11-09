@@ -145,6 +145,79 @@ A health bar in the top-left corner has anchors `(0, 0)`, pivot `(0, 0)`, and of
 
 Use anchors on the screen's top level and stacks inside each panel. Anchors everywhere means repositioning everything by hand whenever one element grows.
 
+## Layout protocols
+
+The two-pass model above is one of two common ways for a parent and child to agree on a size. The other is Flutter's **constraints** model. They differ in what the parent passes down, and in how often a child may be asked.
+
+### Measure and arrange (WPF style)
+
+This is the model used on this page, and in WPF, Avalonia, and Unity UI Toolkit (through Yoga):
+
+```text
+measure(child, available) -> desired     // a question; may be asked several times
+arrange(child, rect)                     // the answer; rect.size may differ from desired
+```
+
+- `available` is a single size, with `INFINITY` meaning "as big as you like".
+- The parent may **measure a child more than once** with different sizes, then arrange it at a size that is none of them. A grid with star-sized rows measures auto rows first, then measures star rows with their share of what is left, and measures again if a column's width changed.
+- The child does not know its final size until arrange, so anything that depends on it (wrapped text, aspect ratios) must either guess in measure or cause another layout pass.
+
+### Constraints (Flutter style)
+
+Flutter's rule is "constraints go down, sizes go up, the parent sets the position":
+
+```text
+BoxConstraints { min_w, max_w, min_h, max_h }      // max may be INFINITY
+tight(size) = (size.w, size.w, size.h, size.h)     // exactly this size
+loose(size) = (0, size.w, 0, size.h)               // anything up to this size
+
+layout(child, constraints) -> size                 // called once per parent layout
+    child.size = constraints.constrain(child.perform_layout(constraints))
+    return child.size
+```
+
+A column with flexible children:
+
+```text
+column.perform_layout(c):
+    used = 0, width = 0
+    for child in non-flex children:
+        s = layout(child, BoxConstraints(0, c.max_w, 0, INFINITY))
+        used += s.h
+        width = max(width, s.w)
+    spare = c.max_h - used                         // must be finite if any child flexes
+    for child in flex children:
+        h = spare * child.flex / total_flex
+        s = layout(child, BoxConstraints(0, c.max_w, h, h))     // tight on the main axis
+        width = max(width, s.w)
+    y = 0
+    for child in children:                         // positions only: no more layout calls
+        child.offset = (0, y)
+        y += child.size.h
+    return c.constrain((width, y))
+```
+
+- **One call per child.** The final size comes back from the only call, so there is no separate arrange pass and layout is linear in the number of widgets.
+- **Position is separate from size.** The parent sets offsets after sizing, so moving a child never re-runs its layout.
+- **Relayout boundaries.** If a child's constraints are tight, or its parent does not read its size, a change inside the child cannot change anything above it. Invalidation stops there instead of walking to the root.
+- **Escape hatch: intrinsic sizes.** When a parent really needs to ask before deciding (a table column sized to its widest cell), it calls `min_intrinsic_width(height)` and similar. These are extra queries that walk the subtree, and nesting them is quadratic, so they are kept for the few widgets that need them.
+
+### Comparing them
+
+| | Measure and arrange | Constraints |
+| --- | --- | --- |
+| Passed down | One available size (or infinity) | A min and max per axis |
+| Passed up | Desired size | Final size |
+| Final size decided by | The parent, in arrange | The child, within the constraints |
+| Calls per child | Measure one or more times, then arrange | Layout once; intrinsics on request |
+| Position set | In arrange, with the size | Separately, after sizing |
+| Typical failure | Arranged size differs from desired: content clips or overflows | Unbounded constraint on a flexible child: an error, not a layout |
+| Fits best | Grids with star sizing, layouts that negotiate | Large trees, frequent changes, predictable cost |
+
+Yoga's [measure modes](flexbox.md#measure-modes) sit between the two: `EXACTLY` is a tight constraint, `AT_MOST` a loose one, and `UNDEFINED` an unbounded one, but Yoga still lays children out more than once, and caches the results to keep that cheap.
+
+For a game engine, constraints are the simpler choice: one recursive function per widget type, a predictable cost per frame, and invalidation that stops early. The sizing rules above map onto either model; `Fixed` becomes a tight constraint, `Grow` is a flex child, and `Fit` is a loose constraint.
+
 ## Skipping work
 
 Layout only descends into widgets flagged `LAYOUT` (see [invalidation](widget-tree.md#invalidation)), but a clean parent can still be given a different rect when a sibling grows. Cache on both passes:

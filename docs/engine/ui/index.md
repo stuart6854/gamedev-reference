@@ -30,12 +30,12 @@ Input is dispatched against last frame's layout, which is what the player was lo
 
 ## Pages
 
+- [Design and architecture](architecture.md) — keeping UI apart from game state, view models and bindings, the screen stack, styling, scaling, and animation.
 - [Widget tree](widget-tree.md) — the widget record, invalidation, visibility, layers, and changing the tree while it is being walked.
-- [Layout](layout.md) — measure and arrange, sizing rules, stacks, wrapping text, anchors, and pixel snapping.
+- [Layout](layout.md) — measure and arrange, sizing rules, stacks, wrapping text, anchors, Flutter-style constraints versus measure and arrange, and pixel snapping.
 - [Flexbox layout](flexbox.md) — the Yoga subset of CSS flexbox: base sizes, lines, growing and shrinking, alignment, absolute children, and caching.
+- [Style sheets](stylesheets.md) — a CSS subset: tokenizing and parsing, selector matching, the cascade, computed values, variables, and transitions.
 - [Input and focus](input.md) — hit testing, event routing, hover and press, pointer capture, dragging, keyboard focus, and gamepad navigation.
 - [Common elements](elements.md) — buttons, toggles, sliders, text fields, scroll views, virtualised lists, popups, and tooltips.
 - [Tabs, splits, and docking](docking.md) — tab views, split panes, and a dock tree with drop zones and saved layouts.
-- [Design and architecture](architecture.md) — keeping UI apart from game state, view models and bindings, the screen stack, styling, scaling, and animation.
-- [Style sheets](stylesheets.md) — a CSS subset: tokenizing and parsing, selector matching, the cascade, computed values, variables, and transitions.
 - [Dear ImGui](dear-imgui.md) — the immediate-mode library for tools: begin and end rules, left, right, and centred alignment, columns with tables, side-by-side panels, IDs, styling, and common widgets.
