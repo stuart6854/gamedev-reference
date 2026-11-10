@@ -5,6 +5,7 @@ Writing C# that runs well in a game: fewer allocations, value types used where t
 - [Allocations and the GC](allocations.md) — what allocates without looking like it, pooling, and garbage collector settings in .NET and Unity.
 - [Structs, Span, and ref](structs-span.md) — when value types help, `in` and `ref`, defensive copies, `Span<T>` and `stackalloc`, and struct equality.
 - [Pointers and native memory](memory.md) — `unsafe` code, pinning, native allocations and arenas, reinterpreting bytes with `MemoryMarshal`, struct layout, and calling native code.
+- [Unions and command buffers](unions.md) — tagged unions with explicit layout, byte command buffers, and command lists for rendering, entity changes, undo and redo, and network messages.
 - [Collections and data layout](collections.md) — choosing and sizing collections, arrays of structs against structs of arrays, and keeping virtual calls out of hot loops.
 - [Measuring](measuring.md) — BenchmarkDotNet, allocation tests, reading the generated code, and profiling in Unity.
 
