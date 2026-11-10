@@ -3,7 +3,7 @@
 Pages grouped by what they are useful for. Each page lists its uses under its title; this page is generated from those lists by `scripts/gen_uses.py`.
 
 - [Top-down survival](#top-down-survival) (48)
-- [Hordes and crowds](#hordes-and-crowds) (26)
+- [Hordes and crowds](#hordes-and-crowds) (27)
 - [Stealth](#stealth) (8)
 - [Shooters](#shooters) (34)
 - [Melee action](#melee-action) (12)
@@ -12,11 +12,11 @@ Pages grouped by what they are useful for. Each page lists its uses under its ti
 - [Roguelikes](#roguelikes) (7)
 - [Platformers](#platformers) (8)
 - [Life and colony sims](#life-and-colony-sims) (11)
-- [Base building](#base-building) (12)
+- [Base building](#base-building) (13)
 - [Open worlds](#open-worlds) (22)
 - [Wildlife](#wildlife) (5)
 - [Companions and NPCs](#companions-and-npcs) (6)
-- [Multiplayer](#multiplayer) (9)
+- [Multiplayer](#multiplayer) (10)
 
 ## Top-down survival
 
@@ -101,6 +101,7 @@ Many agents at once: zombies, swarms, armies, and pedestrians.
 - [Spatial hash grid](data-structures/spatial-hash.md) — Each agent finds its neighbours for separation and flocking without testing every other agent.
 - [Steering and crowds](unity/ai/steering.md) — Hundreds of agents head for one goal without stacking, and swarmers pursue where the player is going.
 - [Stuck agents and chokepoints](unity/ai/navigation/stuck.md) — Zombies that queue at a doorway instead of jamming it, and recover when pushed off the mesh.
+- [Unions and command buffers](csharp/performance/unions.md) — Spawns and despawns recorded during jobs and applied in one place.
 
 ## Stealth
 
@@ -296,6 +297,7 @@ Placing, upgrading, and defending structures.
 - [Primitive generation](graphics/primitives.md) — Walls, floors, and pipes built at any size and subdivision, with colliders that match.
 - [Timed actions](unity/systems/timed-actions.md) — Construction that takes time, queued piece by piece, and stops when the builder is hit.
 - [Top-down strategy camera](unity/cameras/rts.md) — A top-down view for placing and managing structures.
+- [Unions and command buffers](csharp/performance/unions.md) — Undo and redo for placing, moving, and removing pieces.
 - [World state](unity/systems/saving/world-state.md) — Placed pieces are spawned objects, saved with their prefab key and position.
 
 ## Open worlds
@@ -359,3 +361,4 @@ Several players, one world.
 - [Pointers and native memory](csharp/performance/memory.md) — Packets read and written as structs over byte buffers, with a fixed byte order.
 - [Ring buffer](data-structures/ring-buffer.md) — Snapshot buffers for interpolating other players' positions.
 - [Spatial hash grid](data-structures/spatial-hash.md) — The server sends each client only the entities in the cells near it.
+- [Unions and command buffers](csharp/performance/unions.md) — Several message types in one packet, read with one switch and validated before use.
