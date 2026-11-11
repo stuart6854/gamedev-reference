@@ -25,6 +25,7 @@ Each section's index lists what is written there.
 - [Graphics](graphics/index.md) — coordinate spaces, primitive meshes, particles, a shader ground grid, fog, physically based rendering, and shadow mapping.
 - [Physics](physics/index.md) — the fixed timestep, integrators, and how a rigid-body engine works: broadphase, narrowphase, solver, sleeping, and continuous collision.
 - [Engine architecture](engine/index.md) — render architecture, animation, audio, profiling, world streaming, engine patterns (the frame, subsystems, resources, modules), transform hierarchies, debug tools, the job system, serialisation and content pipelines, how an entity component system stores entities and components, how a retained-mode UI is built, and unit testing.
+- [Languages](languages/index.md) — designing a language, and compiling one with LLVM.
 - [C#](csharp/index.md) — performance techniques, assemblies and load contexts, and Roslyn analysers and source generators.
 - [Unity](unity/index.md) — the bulk of the site: cameras, controllers, systems, architecture, AI, combat, and rendering for Unity 6.
 
