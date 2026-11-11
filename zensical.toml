@@ -158,6 +158,11 @@ nav = [
       { "C++ testing" = "engine/testing/cpp.md" },
     ] },
   ] },
+  { "Languages" = [
+    "languages/index.md",
+    { "Programming language design" = "languages/design.md" },
+    { "LLVM" = "languages/llvm.md" },
+  ] },
   { "C#" = [
     "csharp/index.md",
     { "Performance" = [
