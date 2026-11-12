@@ -162,6 +162,18 @@ nav = [
     "languages/index.md",
     { "Programming language design" = "languages/design.md" },
     { "LLVM" = "languages/llvm.md" },
+    { "Writing a compiler" = [
+      "languages/compiler/index.md",
+      { "Source text and diagnostics" = "languages/compiler/source-diagnostics.md" },
+      { "Lexer" = "languages/compiler/lexer.md" },
+      { "Parser" = "languages/compiler/parser.md" },
+      { "Syntax trees" = "languages/compiler/syntax-trees.md" },
+      { "Names, scopes, and symbols" = "languages/compiler/binding.md" },
+      { "Type checking and inference" = "languages/compiler/types.md" },
+      { "Lowering and control flow" = "languages/compiler/lowering.md" },
+      { "Code generation with LLVMSharp" = "languages/compiler/llvmsharp.md" },
+      { "Testing a compiler" = "languages/compiler/testing.md" },
+    ] },
   ] },
   { "C#" = [
     "csharp/index.md",
