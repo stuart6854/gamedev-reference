@@ -95,7 +95,7 @@ number():
     return is_float ? FloatLiteral : IntLiteral
 ```
 
-- Support `0x`, `0b`, and `_` separators (`1_000_000`) from the start; they are cheap here and annoying to add later.
+- Support `0x`, `0b`, and `_` separators (`1_000_000`) from the start; they are cheap here and annoying to add later. In C#, [regular expressions](#regular-expressions-for-token-shapes) describe all the forms compactly.
 - **Range-check later**, not in the lexer: whether `300` fits depends on the type it ends up with (`u8` or `i32`). The lexer stores the value in the widest type (a 64-bit unsigned integer, or a double) and the [type checker](types.md#literals) checks it.
 - A leading `-` is **not** part of the literal: `x-1` must lex as `x`, `-`, `1`. Unary minus is an operator in the parser.
 
@@ -183,6 +183,140 @@ An array is simpler and plenty fast for files of a few thousand lines. Change on
 **Always make progress.** Every path through the main loop must consume at least one character, including the `Bad` token path. Assert it in debug builds; a lexer that returns a zero-length token for some character loops forever.
 
 **Small things that surprise.** A `#!` line at the very start of a file (so scripts can be run directly) is trivia. A file may end without a newline, inside a comment, or inside a string. Tabs count as one column in spans, even if editors display them wider.
+
+## Regular expressions for token shapes
+
+The main loop stays hand-written, but the **shape** of a single token can be a regular expression: an identifier, or a number with its hex, binary, and octal forms, digit separators, exponents, and suffixes. The lexer loop decides which kind of token starts at the current character; the regex says how long it is and whether it is valid.
+
+| Use a regex for | Keep hand-written |
+| --- | --- |
+| identifiers, number literals, a fixed set of suffixes | the main loop and the choice of token kind |
+| validating a literal once its extent is known | operators (a `switch` is clearer and handles longest match) |
+| | strings (escape decoding, interpolation modes, unterminated-string recovery) |
+| | comments (nested block comments cannot be matched by a simple regex) |
+
+### Matching at a position
+
+`\G` anchors a match to exactly where the search starts, so `regex.Match(text, position)` only succeeds if the token starts at `position`. `[GeneratedRegex]` (.NET 7 and later) turns the pattern into C# at build time, with no start-up cost.
+
+```csharp
+public static partial class TokenShapes
+{
+    // ASCII identifiers. For Unicode ones (see "Unicode identifiers" above): \G[\p{L}_][\p{L}\p{Mn}\p{Nd}_]*
+    [GeneratedRegex(@"\G[A-Za-z_][A-Za-z0-9_]*")]
+    private static partial Regex Identifier();
+
+    public static int IdentifierLength(string text, int position)
+    {
+        foreach (ValueMatch m in Identifier().EnumerateMatches(text, position))   // no allocation
+            return m.Length;
+        return 0;
+    }
+}
+```
+
+`EnumerateMatches` returns a `ValueMatch` (an index and a length) without allocating, which is all the identifier case needs. Groups need `Match`, which allocates; use it only where the groups are read.
+
+### Numbers: scan, then validate
+
+A strict number pattern on its own has a trap: it matches the **valid prefix** and stops. `0b102` would lex as `0b10` followed by a separate `2`, and `1_` as `1` followed by the identifier `_`, with no error. Lex numbers in two steps instead:
+
+1. **Scan** loosely: everything a number could plausibly contain, so a malformed literal becomes one token.
+2. **Validate** that token against the strict pattern, and report a diagnostic if it is not a complete match.
+
+```csharp
+// Step 1: how far does the literal go? A `.` only counts when a digit follows, so `1..2`
+// and `x.1.foo()` still split; a sign only counts after an exponent, and not in hex.
+[GeneratedRegex("""
+    \G(?:
+        0[xX][0-9A-Za-z_]*
+      | [0-9](?:[eE][+-]|[0-9A-Za-z_]|\.(?=[0-9]))*
+    )
+    """, RegexOptions.IgnorePatternWhitespace)]
+private static partial Regex NumberExtent();
+
+// Step 2: the valid forms. `_?` between digits allows 1_000 but not 1_, 1__0, or 0x_FF.
+[GeneratedRegex("""
+    ^(?:
+        0[xX](?<hex>[0-9a-fA-F](?:_?[0-9a-fA-F])*)
+      | 0[bB](?<bin>[01](?:_?[01])*)
+      | 0[oO](?<oct>[0-7](?:_?[0-7])*)
+      | (?<int>[0-9](?:_?[0-9])*)
+        (?<frac>\.[0-9](?:_?[0-9])*)?
+        (?<exp>[eE][+-]?[0-9](?:_?[0-9])*)?
+    )
+    (?<suffix>[iu](?:8|16|32|64)|f(?:32|64))?$
+    """, RegexOptions.IgnorePatternWhitespace)]
+private static partial Regex NumberLiteral();
+```
+
+```csharp
+SyntaxKind LexNumber()
+{
+    int length = 0;
+    foreach (ValueMatch m in NumberExtent().EnumerateMatches(_text, _position)) { length = m.Length; break; }
+    string token = _text.Substring(_position, length);
+    var span = new TextSpan(_position, length);
+    _position += length;
+
+    Match match = NumberLiteral().Match(token);
+    if (!match.Success)
+    {
+        _diagnostics.InvalidNumber(span, token);          // "invalid number literal '0b102'"
+        _value = 0UL;
+        return SyntaxKind.IntLiteral;                      // still a number token: the parser carries on
+    }
+
+    string Digits(string group) => match.Groups[group].Value.Replace("_", "");
+    string suffix = match.Groups["suffix"].Value;
+    _suffix = suffix;                                     // the type checker uses it
+
+    if (match.Groups["hex"].Success) return Integer(Digits("hex"), NumberStyles.AllowHexSpecifier, span);
+    if (match.Groups["bin"].Success) return Integer(Digits("bin"), NumberStyles.AllowBinarySpecifier, span);
+    if (match.Groups["oct"].Success) return Octal(Digits("oct"), span);
+
+    string text = Digits("int") + Digits("frac") + Digits("exp");
+    if (match.Groups["frac"].Success || match.Groups["exp"].Success || suffix.StartsWith('f'))
+    {
+        _value = double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture);
+        return SyntaxKind.FloatLiteral;
+    }
+    return Integer(text, NumberStyles.None, span);
+}
+
+SyntaxKind Integer(string digits, NumberStyles style, TextSpan span)
+{
+    if (!ulong.TryParse(digits, style, CultureInfo.InvariantCulture, out ulong value))
+        _diagnostics.NumberTooLarge(span);                 // more than 64 bits
+    _value = value;
+    return SyntaxKind.IntLiteral;
+}
+
+SyntaxKind Octal(string digits, TextSpan span)
+{
+    try { _value = Convert.ToUInt64(digits, 8); }
+    catch (OverflowException) { _diagnostics.NumberTooLarge(span); _value = 0UL; }
+    return SyntaxKind.IntLiteral;
+}
+```
+
+What it gives for some inputs:
+
+| Input | Token | Result |
+| --- | --- | --- |
+| `0xdead_beef` | `0xdead_beef` | integer 3735928559 |
+| `0b1_0` | `0b1_0` | integer 2 |
+| `2.5e-3` | `2.5e-3` | float 0.0025 |
+| `1.5f32` | `1.5f32` | float 1.5, suffix `f32` |
+| `0b102` | `0b102` | error: invalid number literal |
+| `1_`, `1__0`, `0x_FF`, `12abc` | the whole text | error |
+| `1..2` | `1` | integer; `..` and `2` are the next tokens |
+| `0xE-1` | `0xE` | integer 14; `-` and `1` follow |
+| `1.foo` | `1` | integer; `.` and `foo` follow |
+
+- `NumberStyles.AllowBinarySpecifier` is .NET 8 and later; on older runtimes use `Convert.ToUInt64(digits, 2)`, as `Octal` does for base 8. There is no `NumberStyles` for octal.
+- For more specific messages ("expected hex digits after '0x'", "'2' is not a binary digit"), check the prefix of a failed token and find the first character that is not valid for that base. The regex says **whether** the literal is valid; a few lines of code say **why** not.
+- Range checking against the literal's type (`300u8`) still belongs to the [type checker](types.md#literals).
 
 ## C# tips
 
