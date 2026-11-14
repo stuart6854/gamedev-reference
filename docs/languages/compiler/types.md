@@ -23,8 +23,16 @@ TypeVariable    { id, binding: Type? }     // only during inference; see below
 
 ```text
 bind_binary(expr, scope):
-    left = bind_expression(expr.left, scope)
-    right = bind_expression(expr.right, scope)
+    // A literal takes its type from the other operand: in `length_sq(v) == 25.0`, 25.0 is an f32.
+    if expr.right is a literal and expr.left is not:
+        left = bind_expression(expr.left, scope)
+        right = check(expr.right, left.type) if left.type is numeric else bind_expression(expr.right, scope)
+    elif expr.left is a literal and expr.right is not:
+        right = bind_expression(expr.right, scope)
+        left = check(expr.left, right.type) if right.type is numeric else bind_expression(expr.left, scope)
+    else:
+        left = bind_expression(expr.left, scope)
+        right = bind_expression(expr.right, scope)
     if left.type is ErrorType or right.type is ErrorType:
         return BoundError(expr)                             // already reported
     op = lookup_binary_operator(expr.operator, left.type, right.type)
@@ -56,7 +64,7 @@ The same pattern covers everything else:
 
 ### Conversions
 
-Decide which conversions happen **implicitly** and which need `as`. A strict default suits a systems language:
+Decide which conversions happen **implicitly** and which need `as`. A strict default suits a systems language; [numeric types and conversions](numeric-conversions.md) covers promotion, overflow, and what each explicit conversion does:
 
 | From → to | Implicit | Explicit (`as`) |
 | --- | --- | --- |
@@ -82,6 +90,7 @@ An integer literal like `300` has no type of its own until its context gives it 
 
 - With an expected type (`let x: u8 = 300;`, or an argument to an `i64` parameter), the literal takes that type, and a value that does not fit is an error: "literal 300 does not fit in 'u8'".
 - Without one (`let x = 300;`), integers default to `i32` and floats to `f64` (or `f32`, for a game language; pick one and document it).
+- In a binary operation, a literal takes the **other operand's** type: `x + 1` with `x: u8` adds two `u8`s, and `length_sq(v) == 25.0` compares two `f32`s. Without this rule, the example program would fail to type-check, because an `f32` and a default `f64` literal have no common `==` operator.
 - This needs the expected type passed **down** into the expression, which is what bidirectional checking does.
 
 ## Bidirectional checking
@@ -97,7 +106,10 @@ check(expr, expected)              // the type is known; check the expression ag
 check(expr, expected):
     switch expr:
         IntLiteral:    if fits(expr.value, expected) and expected is an integer type: give it expected
+                       elif expected is a float type: give it expected        // `let x: f32 = 1;`
                        else: report and return error
+        FloatLiteral:  if expected is a float type: give it expected
+                       else: convert(synthesize(expr), expected)       // reports f64 vs i32
         StructLiteral: check each field value against the field's type
         If expression: check both branches against expected
         default:       convert(synthesize(expr), expected)
@@ -167,4 +179,4 @@ When generics arrive:
 - Put primitive types in static readonly fields (`TypeSymbol.I32`, `TypeSymbol.Error`), so checks read as `if (type == TypeSymbol.Bool)`.
 - Keep the operator table as data: an array of `BoundBinaryOperator` records (`SyntaxKind`, `Kind`, `Left`, `Right`, `Result`), searched linearly. It is short, and adding an operator is one line.
 - `ToString()` on each type should return the display form, so it appears correctly in the debugger and in messages.
-- Literal values: store them as `ulong` or `double` from the lexer, and range-check with `value <= (ulong)sbyte.MaxValue` and similar for each target type. Remember that a negative literal is a unary minus applied to a positive one, so `-128` as an `i8` needs the check to look at the negation.
+- Literal values: the lexer stores them as `ulong` or `double`. Range-check with `value <= (ulong)sbyte.MaxValue` and similar for each target type, then store the checked value in the bound literal as a `long` (integers) or `double` (floats), which is what [code generation](llvmsharp.md#expressions) expects. A negative literal is a unary minus applied to a positive one, so `-128` as an `i8` needs the check to look at the negation; fold the two into one constant once the check passes.

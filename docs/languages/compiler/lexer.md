@@ -166,6 +166,24 @@ There are two ways to feed the parser:
 
 An array is simpler and plenty fast for files of a few thousand lines. Change only if interpolated strings or other modes need the parser's help.
 
+## More tips
+
+**String interpolation.** `"hp: {hp + 1}!"` contains code inside a string. Give the lexer a **mode stack**: in string mode it reads text until `{`, then pushes code mode and counts braces; the `}` that brings the count back to zero pops back to string mode. Emit `InterpolatedStart`, `StringText`, the tokens of the expression, `StringText`, and `InterpolatedEnd`, and let the parser build the parts. A brace inside the embedded code (`{ f({x}) }`) must not end the interpolation early, which is why the count is needed.
+
+**Multi-line and raw strings.** A `"""` string that spans lines usually strips the indentation of its closing delimiter from every line, as C# raw string literals and Swift do; that rule lets the string be indented with the code. Raw strings (no escapes) need a delimiter that cannot appear inside: let the number of quotes vary, as C# does.
+
+**Contextual keywords.** Words that are keywords in one place only (`get` and `set` in a property, `where` after a generic signature) are lexed as **identifiers**, and the parser checks the text where the word is special. A new language version can then add one without breaking programs that use it as a name.
+
+**Unicode identifiers.** If identifiers may be Unicode, follow [UAX #31](https://unicode.org/reports/tr31/): a start character from `XID_Start` (or `_`), then `XID_Continue`. Normalise to NFC before comparing names, or two identical-looking names (`é` precomposed and decomposed) will be different symbols.
+
+**Newlines as separators.** For optional semicolons, Go's rule is simple and predictable: after a line whose last token is an identifier, a literal, `)`, `]`, `}`, or `return`, the lexer inserts a semicolon at the newline. The parser then sees a normal semicolon-terminated grammar.
+
+**Interning.** Store each distinct identifier text once, in a table owned by the compilation, and give tokens the shared `string`. Names then compare by reference in the binder, and a file with ten thousand uses of `i` holds one `"i"`.
+
+**Always make progress.** Every path through the main loop must consume at least one character, including the `Bad` token path. Assert it in debug builds; a lexer that returns a zero-length token for some character loops forever.
+
+**Small things that surprise.** A `#!` line at the very start of a file (so scripts can be run directly) is trivia. A file may end without a newline, inside a comment, or inside a string. Tabs count as one column in spans, even if editors display them wider.
+
 ## C# tips
 
 - Lex over a `string` with an `int` position, and keep `Peek(offset)` returning `'\0'` past the end, so no condition needs a length check.

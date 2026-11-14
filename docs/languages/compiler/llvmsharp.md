@@ -80,10 +80,10 @@ The same order as the [binder](binding.md#binding-in-passes): declare everything
 ```csharp
 LLVMTypeRef Lower(TypeSymbol type) => type switch
 {
-    _ when type == TypeSymbol.I32  => _context.Int32Type,
-    _ when type == TypeSymbol.I64  => _context.Int64Type,
-    _ when type == TypeSymbol.F32  => _context.FloatType,
     _ when type == TypeSymbol.Bool => _context.Int1Type,
+    { IsInteger: true }            => _context.GetIntType((uint)type.SizeInBits),   // i8 .. i64, u8 .. u64
+    { IsFloat: true, SizeInBits: 32 } => _context.FloatType,
+    { IsFloat: true, SizeInBits: 64 } => _context.DoubleType,
     _ when type == TypeSymbol.Void => _context.VoidType,
     PointerType                    => LLVMTypeRef.CreatePointer(_context.Int8Type, 0),
     StructType s                   => _structs[s.Symbol],
@@ -154,6 +154,7 @@ LLVMValueRef EmitExpression(BoundExpression e) => e switch
     BoundLiteral { Value: double d } l => LLVMValueRef.CreateConstReal(Lower(l.Type), d),
     BoundLiteral { Value: bool b }     => LLVMValueRef.CreateConstInt(_context.Int1Type, b ? 1UL : 0UL),
     BoundVariable v      => _builder.BuildLoad2(Lower(v.Type), _locals[v.Symbol], v.Symbol.Name),
+    BoundUnary u         => EmitUnary(u),
     BoundBinary b        => EmitBinary(b),
     BoundCall c          => EmitCall(c),
     BoundFieldAccess f   => _builder.BuildLoad2(Lower(f.Type), EmitAddress(f), f.Field.Name),
@@ -181,9 +182,73 @@ LLVMValueRef EmitBinary(BoundBinary b)
 }
 ```
 
+```csharp
+LLVMValueRef EmitUnary(BoundUnary u)
+{
+    LLVMValueRef operand = EmitExpression(u.Operand);
+    return u.Operator.Kind switch
+    {
+        UnaryOperatorKind.IntNegate   => _builder.BuildNeg(operand, "neg"),
+        UnaryOperatorKind.FloatNegate => _builder.BuildFNeg(operand, "fneg"),
+        UnaryOperatorKind.LogicalNot  => _builder.BuildNot(operand, "not"),    // flips an i1
+        _ => throw new UnreachableException($"Unexpected operator {u.Operator.Kind}"),
+    };
+}
+```
+
 - **Integer overflow**: `BuildAdd` wraps (two's complement). `BuildNSWAdd` tells LLVM signed overflow cannot happen, which is undefined behaviour if it does. Use the plain forms unless the language says overflow is undefined; for "trap on overflow", call the `llvm.sadd.with.overflow` intrinsic and branch on its flag.
 - **Division by zero** and `INT_MIN / -1` are undefined behaviour in LLVM's `sdiv`. If the language defines them, emit a check and a branch before the division.
 - `&&` and `||` were already lowered to jumps, so there is no short-circuit case here.
+
+### Conversions
+
+Every implicit and explicit conversion is a `BoundConversion` by now, so this is the only place that picks a cast instruction. The rules themselves are on [numeric types and conversions](numeric-conversions.md). `TypeSymbol` here has `IsInteger`, `IsSigned`, `IsFloat`, and `SizeInBits` for primitive types.
+
+```csharp
+LLVMValueRef EmitConversion(BoundConversion c)
+{
+    LLVMValueRef value = EmitExpression(c.Operand);
+    TypeSymbol from = c.Operand.Type, to = c.Type;
+    LLVMTypeRef target = Lower(to);
+
+    if (from.IsInteger && to.IsInteger)
+    {
+        if (to.SizeInBits < from.SizeInBits) return _builder.BuildTrunc(value, target, "trunc");
+        if (to.SizeInBits > from.SizeInBits)
+            return from.IsSigned ? _builder.BuildSExt(value, target, "sext") : _builder.BuildZExt(value, target, "zext");
+        return value;                                       // i32 <-> u32: the same bits
+    }
+    if (from.IsInteger && to.IsFloat)
+        return from.IsSigned ? _builder.BuildSIToFP(value, target, "sitofp") : _builder.BuildUIToFP(value, target, "uitofp");
+    if (from.IsFloat && to.IsFloat)
+        return to.SizeInBits > from.SizeInBits ? _builder.BuildFPExt(value, target, "fpext") : _builder.BuildFPTrunc(value, target, "fptrunc");
+    if (from.IsFloat && to.IsInteger)
+    {
+        // fptosi/fptoui give poison when the value does not fit (NaN, 1e20 as i32). The .sat
+        // intrinsics clamp to the type's range and turn NaN into 0, so every input has an answer.
+        string name = to.IsSigned ? "llvm.fptosi.sat" : "llvm.fptoui.sat";
+        LLVMTypeRef source = Lower(from);
+        return CallIntrinsic(name, new[] { target, source }, LLVMTypeRef.CreateFunction(target, new[] { source }), value);
+    }
+    throw new UnreachableException($"No conversion from {from} to {to}");
+}
+
+LLVMValueRef CallIntrinsic(string name, LLVMTypeRef[] overloadTypes, LLVMTypeRef functionType, params LLVMValueRef[] args)
+{
+    uint id = LookupIntrinsicId(name);
+    LLVMValueRef function = _module.GetIntrinsicDeclaration(id, overloadTypes);   // e.g. llvm.fptosi.sat.i32.f32
+    return _builder.BuildCall2(functionType, function, args, "");
+}
+
+static unsafe uint LookupIntrinsicId(string name)
+{
+    using var marshalled = new MarshaledString(name);
+    uint id = LLVM.LookupIntrinsicID(marshalled, (nuint)name.Length);
+    return id != 0 ? id : throw new ArgumentException($"Unknown intrinsic {name}");
+}
+```
+
+`CallIntrinsic` also covers maths built-ins: `llvm.sqrt`, `llvm.fabs`, `llvm.floor`, `llvm.fma`, and `llvm.memcpy` become single instructions where the target has them. See [the standard library](standard-library.md#intrinsics).
 
 ### Addresses: fields and assignment
 
@@ -379,9 +444,10 @@ int result = ((delegate* unmanaged<int>)address)();             // 55 for the ex
 - Call into the JIT'd code only with types that match the LLVM signature exactly. A `delegate* unmanaged<int>` for an `i32 ()` function is right; a mismatch corrupts the stack without an error.
 - To let scripts call **C# functions**, mark static methods `[UnmanagedCallersOnly]`, and define their addresses as absolute symbols in the JIT dylib (`LLVM.OrcAbsoluteSymbols` and `OrcJITDylibDefine`). [Pointers and native memory](../../csharp/performance/memory.md#interop) covers the C# side.
 
-## Debug info
+## Debug info and the runtime
 
-To step through compiled code in a debugger, attach debug info with a `DIBuilder` (`module.CreateDIBuilder()`): a compile unit and file, a subprogram per function, and a location for each instruction from the bound node's syntax span. The [LLVM page](../llvm.md#debug-info) shows the objects involved. Call `LLVM.DIBuilderFinalize` before verifying.
+- [Debug info with LLVMSharp](debug-info.md) adds source lines and variables, so the compiled program can be stepped through in gdb, lldb, or Visual Studio.
+- [Runtime and ABI](runtime-abi.md) covers the entry point, panics and bounds checks, string and array layouts, and passing structs to C correctly.
 
 !!! warning "Common pitfalls"
 

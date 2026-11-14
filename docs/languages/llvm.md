@@ -4,7 +4,7 @@ LLVM is a compiler infrastructure whose contract is an **intermediate representa
 
 Game engines meet it as a library, not as `clang`. Unity's Burst compiles a subset of C# through LLVM, which is why it shows up when [measuring](../csharp/performance/measuring.md#reading-the-generated-code). Shader toolchains and custom script compilers use the same IR. Hosting C# itself is not an LLVM problem; that is [hosting from C++](../csharp/assemblies/hosting.md). [Roslyn](../csharp/roslyn/index.md) is a C# frontend that emits IL, not LLVM IR.
 
-The snippets on this page target **LLVM 18 or later**, where pointers are opaque (`ptr`, not `double*`) and the new pass manager is the optimisation pipeline. The C++ is the native API. The C# is [LLVMSharp](https://github.com/dotnet/LLVMSharp) 20 (`LLVMSharp.Interop`), which wraps the LLVM C API; the libLLVM you load must be the same major version as the bindings. [Code generation with LLVMSharp](compiler/llvmsharp.md) uses LLVMSharp 22 for a whole language, including a working ORC JIT. The [Language Reference](https://llvm.org/docs/LangRef.html) is the IR's specification. The [Kaleidoscope tutorial](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html) is the walk-through that these sections compress.
+The snippets on this page target **LLVM 18 or later**, where pointers are opaque (`ptr`, not `double*`) and the new pass manager is the optimisation pipeline. The C++ is the native API. The C# is [LLVMSharp](https://github.com/dotnet/LLVMSharp) 22 (`LLVMSharp.Interop`, .NET 10), which wraps the LLVM C API; the libLLVM you load must be the same major version as the bindings. [Code generation with LLVMSharp](compiler/llvmsharp.md#setup) covers installing it, and uses it for a whole language, including a working ORC JIT. The [Language Reference](https://llvm.org/docs/LangRef.html) is the IR's specification. The [Kaleidoscope tutorial](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html) is the walk-through that these sections compress.
 
 ## IR and SSA
 
@@ -82,7 +82,7 @@ ModulePassManager MPM = PB.buildPerModuleDefaultPipeline(OptimizationLevel::O2);
 MPM.run(*Mod, MAM);
 ```
 
-The analysis managers must be declared in that order so that proxies are destroyed after the managers they reference. Later LLVM releases added an `LLVMContext &` as the first argument of `PassBuilder`; if a default construct no longer compiles, check the header you have.
+The analysis managers must be declared in that order so that proxies are destroyed after the managers they reference. `PassBuilder`'s arguments (target machine, tuning options, PGO options, instrumentation callbacks) all have defaults, so `PassBuilder PB;` works, but pass the `TargetMachine` when you have one, so the pipeline knows the target's costs.
 
 The C API, which LLVMSharp wraps, does the same work with a pipeline string:
 
@@ -323,7 +323,7 @@ A call uses the function type for the same reason, because the callee value is a
     }
     ```
 
-Dump the IR with `Mod->print(errs(), nullptr)` or `module.PrintToString()` while you are writing the frontend. After `O2`, `expr` should collapse to a single fused multiply-add or to `a` scaled and added, and `abs` may become a target intrinsic or a bitwise clear of the sign bit, depending on the target and the pass pipeline.
+Dump the IR with `Mod->print(errs(), nullptr)` or `module.PrintToString()` while you are writing the frontend. After `O2`, `expr` stays a multiply and an add: LLVM will not fuse them into one multiply-add unless the instructions allow it (the `contract` fast-math flag), because the fused result rounds differently. `abs` becomes a branch-free `select`, but not the `fabs` intrinsic: for `-0.0` the source returns `-0.0` (`-0.0 >= 0` is true), where `fabs` returns `+0.0`. The optimiser only makes changes that keep the exact result, so write the code you mean (`llvm.fabs`, or fast-math flags) when you want the faster form.
 
 ## Emitting object files
 
@@ -338,7 +338,7 @@ Initialise the targets you intend to use (or all of them, in a tool), build a `T
     InitializeAllAsmParsers();
     InitializeAllAsmPrinters();
 
-    std::string triple = sys::getDefaultTargetTriple();
+    Triple triple(sys::getDefaultTargetTriple());   // LLVM 18–20: pass triple.str() where a string is expected below
     std::string err;
     const Target *target = TargetRegistry::lookupTarget(triple, err);
     if (!target) {
@@ -348,7 +348,7 @@ Initialise the targets you intend to use (or all of them, in a tool), build a `T
 
     auto TM = std::unique_ptr<TargetMachine>(target->createTargetMachine(
         triple, "generic", "", TargetOptions{}, Reloc::PIC_));
-    Mod->setTargetTriple(triple);
+    Mod->setTargetTriple(triple);                    // LLVM 21+: a Triple; earlier: a string
     Mod->setDataLayout(TM->createDataLayout());
 
     std::error_code ec;
@@ -422,12 +422,26 @@ LLJIT is the small ORC wrapper that covers "compile this module and give me a fu
 === "C#"
 
     ```csharp
-    // LLVMSharp exposes the ORC C API in llvm-c/LLJIT.h (LLVM.OrcCreateLLJIT,
-    // LLVM.OrcLLJITAddLLVMIRModule, LLVM.OrcLLJITLookup, and the ThreadSafeModule
-    // constructors). Ownership is the same as in C++: once the module is added,
-    // the JIT owns it and the context. For a first AOT path, TryEmitToFile is
-    // simpler; use LLJIT when the program is not known at pack time.
+    // The ORC C API (llvm-c/LLJIT.h), called through LLVMSharp's LLVM.Orc* functions.
+    // Check each returned LLVMOpaqueError*: null means success.
+    unsafe
+    {
+        LLVMOrcOpaqueLLJIT* jit;
+        LLVM.OrcCreateLLJIT(&jit, null);                        // null builder: target the host
+
+        LLVMOrcOpaqueThreadSafeContext* tsc = LLVM.OrcCreateNewThreadSafeContextFromLLVMContext(context);
+        LLVMOrcOpaqueThreadSafeModule* tsm = LLVM.OrcCreateNewThreadSafeModule(module, tsc);
+        LLVM.OrcDisposeThreadSafeContext(tsc);
+        LLVM.OrcLLJITAddLLVMIRModule(jit, LLVM.OrcLLJITGetMainJITDylib(jit), tsm);   // the JIT now owns both
+
+        ulong address;
+        using var name = new MarshaledString("expr");
+        LLVM.OrcLLJITLookup(jit, &address, name);
+        double result = ((delegate* unmanaged<double, double, double>)address)(3.0, 4.0);   // 10
+    }
     ```
+
+    The full version, with error checking and symbols resolved from the host process, is on [code generation with LLVMSharp](compiler/llvmsharp.md#jit-with-orc).
 
 If the IR calls functions you did not define (`sin`, an engine API), add a definition or, more usually, define a JIT'd symbol that points at the host function. LLJIT's main JIT dylib accepts absolute symbols for that. Forgetting this looks like a lookup failure or a crash the first time the compiled code calls out.
 
@@ -466,8 +480,8 @@ Things that have already broken frontends, and will break them again:
 
 - **Opaque pointers.** `load` / `GEP` / `CreateCall` without an explicit type, and `PointerType::get(ElementTy, AS)` as a way to recover the element, are gone. So is `getPointerElementType()`.
 - **`PassManagerBuilder`** (the old `createFunctionPassManager` / `OptBuilder` path) was removed in LLVM 17. Use `PassBuilder` and, from C, `LLVMRunPasses` / `module.RunPasses`.
-- **`PassBuilder`'s constructor** gained arguments across releases. LLVM 18 takes an optional `TargetMachine *`. Later releases have required an `LLVMContext &` first. Codegen still uses `legacy::PassManager`.
-- **Header homes.** `TargetRegistry.h` moved under `llvm/MC/`. `sys::getDefaultTargetTriple()` moved to `llvm/TargetParser/Host.h`. `setTargetTriple` has accepted a string and, in later APIs, a `Triple` object.
+- **Triples became objects.** From LLVM 21, `Module::setTargetTriple`, `Target::createTargetMachine`, and the target registry take a `Triple` rather than a string. Wrap the string in `Triple(...)`, or call `.str()` on a `Triple` for older versions. Codegen still uses `legacy::PassManager`.
+- **Header homes.** `TargetRegistry.h` moved under `llvm/MC/`. `sys::getDefaultTargetTriple()` moved to `llvm/TargetParser/Host.h`. 
 - **LLVMSharp and libLLVM must match.** A v20 package against an 18 library, or the reverse, fails in ways that look like missing exports or garbage IR. The higher-level `LLVMSharp` wrappers (not `LLVMSharp.Interop`) have historically lagged; the Interop types used above are the ones that track the C API.
 - **ORC replaces MCJIT.** New code should not start from `EngineBuilder` / `MCJIT`. LLJIT is the entry point; the lower ORC layers are there when you need lazy compilation or custom linking.
 

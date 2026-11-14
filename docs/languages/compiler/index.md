@@ -53,10 +53,13 @@ flowchart LR
 | Source | file bytes | text, line map, diagnostics | [Source text and diagnostics](source-diagnostics.md) |
 | Lexer | text | tokens with spans | [Lexer](lexer.md) |
 | Parser | tokens | syntax tree | [Parser](parser.md), [Syntax trees](syntax-trees.md) |
-| Binder | syntax tree | symbols, scopes, bound tree with types | [Names, scopes, and symbols](binding.md), [Type checking and inference](types.md) |
+| Binder | syntax tree | symbols, scopes, bound tree with types | [Names, scopes, and symbols](binding.md), [Type checking and inference](types.md), [Numeric types and conversions](numeric-conversions.md) |
 | Lowering | bound tree | simpler bound tree, control-flow graph | [Lowering and control flow](lowering.md) |
-| Code generation | lowered tree | LLVM module, object file, or JIT'd function | [Code generation with LLVMSharp](llvmsharp.md) |
+| Evaluator | lowered tree | results, for tests and constants | [Reference evaluator](evaluator.md) |
+| Code generation | lowered tree | LLVM module, object file, or JIT'd function | [Code generation with LLVMSharp](llvmsharp.md), [Debug info](debug-info.md) |
+| Runtime and library | | support code linked with every program | [Runtime and ABI](runtime-abi.md), [Standard library](standard-library.md) |
 | Tests | every stage | | [Testing a compiler](testing.md) |
+| Editor support | the front end | errors, hover, completion in editors | [Language server](language-server.md) |
 
 Every stage **reports errors and carries on**. The parser makes a tree even from broken code, the binder gives a broken expression an error type, and code generation runs only when there are no errors. One compile gives every error in the file, not just the first.
 
@@ -96,13 +99,13 @@ compile(files):
 
 Get something running end to end early, then grow every stage together. A complete lexer for a language that cannot run teaches you less than a whole pipeline for integer arithmetic.
 
-1. **Expressions.** Lex and parse `1 + 2 * 3`, print the tree, evaluate it with a tree-walking evaluator.
+1. **Expressions.** Lex and parse `1 + 2 * 3`, print the tree, evaluate it with a tree-walking [evaluator](evaluator.md).
 2. **Functions and locals.** `fn`, `let`, `var`, `return`, parameters; the binder and scopes; `i32` and `bool` only.
 3. **Control flow.** `if`, `while`, comparisons, `&&` and `||`; lowering to jumps; checks for missing returns.
 4. **LLVM.** Generate IR for everything so far, JIT `main`, and compare its result with the evaluator's.
 5. **More types.** Floats, conversions, structs, pointers or references, `extern` functions.
 6. **Native output.** Emit an object file and link it with the system linker.
-7. **Later.** Modules and imports, generics, arrays and slices, a language server.
+7. **Later.** Modules and imports, generics, arrays and slices, [debug info](debug-info.md), a [standard library](standard-library.md), and a [language server](language-server.md).
 
 The evaluator from step 1 stays useful: it is the reference that the compiled code is tested against.
 

@@ -214,6 +214,39 @@ skip_bad_token():
 - **Do not report at a missing node twice.** `parse_prefix` returns a `MissingExpression` without consuming anything, and the statement that follows reports nothing more about it.
 - **Delimiters guide recovery.** On an error inside parentheses or braces, skip to the matching closer rather than to the next keyword, counting nesting as you go.
 
+## More tips
+
+**Design the grammar for one-token decisions.** If every statement and item starts with a distinct token (`let`, `fn`, `if`), the parser decides with `current.kind` alone. Each construct that needs more look-ahead is a place where parsing, error recovery, and error messages get harder.
+
+**Look-ahead before backtracking.** Where one token is not enough, look further without consuming: `peek(1).kind == Colon` tells a named argument `f(x: 1)` from an expression. Fixed look-ahead keeps the parser linear.
+
+**Speculative parsing, when unavoidable.** For a genuine ambiguity (a generic call `f<T>(x)` if you chose that syntax), save the position and the diagnostic count, try one parse, and rewind if it fails:
+
+```text
+try_parse(parse_fn):
+    saved_pos = pos, saved_errors = len(diagnostics)
+    result = parse_fn()
+    if len(diagnostics) > saved_errors:          // it did not fit: undo everything
+        pos = saved_pos
+        truncate diagnostics to saved_errors
+        return nothing
+    return result
+```
+
+Keep this to one or two places; nested speculation can take exponential time.
+
+**"Expected one of" messages.** Record each token kind tested with `at()` since the last token was consumed. When parsing fails, that set is exactly what would have been valid: "expected ',' or ')' after the argument". Clear it on `advance()`.
+
+**Separate parsers for types and expressions.** `parse_type` and `parse_expression` should be different functions, called where each is expected. C-style casts (`(T)x`) need both at once and are ambiguous with parenthesised expressions; `x as T` avoids the problem.
+
+**Leave semantics to the binder.** The parser should accept `5;` or `a + b;` as expression statements; "this expression has no effect" is a binder warning. A parser that rejects things it could parse produces worse messages and recovers worse.
+
+**Attributes and doc comments.** Parse `#[...]` attributes into a list attached to the next item, and keep `///` doc comments as trivia on that item's first token. Both then reach the binder with the item they describe.
+
+**Trailing separators everywhere.** Allow a trailing comma in every comma-separated list (parameters, arguments, fields, struct literals). It makes diffs one line shorter and generated code simpler, and `parse_separated` handles it already.
+
+**Test precedence exhaustively.** For every pair of binary operators, parse `a op1 b op2 c` and check the grouping against the precedence table. It is a few lines of test code and catches every table mistake.
+
 ## C# tips
 
 - Make the parser a class over `ImmutableArray<Token>` with an `int _position`. `Current`, `Peek(int)`, `NextToken()`, and `MatchToken(SyntaxKind)` are each one line.
