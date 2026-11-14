@@ -115,7 +115,7 @@ run_case(file):
 
 ## Differential testing
 
-The tree-walking evaluator from the first milestone is a second implementation of the language's meaning. Run every end-to-end case through both, and compare:
+The [reference evaluator](evaluator.md) from the first milestone is a second implementation of the language's meaning. Run every end-to-end case through both, and compare:
 
 ```text
 for case in cases:

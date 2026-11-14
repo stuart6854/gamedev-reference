@@ -64,7 +64,7 @@ The same pattern covers everything else:
 
 ### Conversions
 
-Decide which conversions happen **implicitly** and which need `as`. A strict default suits a systems language:
+Decide which conversions happen **implicitly** and which need `as`. A strict default suits a systems language; [numeric types and conversions](numeric-conversions.md) covers promotion, overflow, and what each explicit conversion does:
 
 | From → to | Implicit | Explicit (`as`) |
 | --- | --- | --- |

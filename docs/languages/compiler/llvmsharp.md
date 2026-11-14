@@ -444,9 +444,10 @@ int result = ((delegate* unmanaged<int>)address)();             // 55 for the ex
 - Call into the JIT'd code only with types that match the LLVM signature exactly. A `delegate* unmanaged<int>` for an `i32 ()` function is right; a mismatch corrupts the stack without an error.
 - To let scripts call **C# functions**, mark static methods `[UnmanagedCallersOnly]`, and define their addresses as absolute symbols in the JIT dylib (`LLVM.OrcAbsoluteSymbols` and `OrcJITDylibDefine`). [Pointers and native memory](../../csharp/performance/memory.md#interop) covers the C# side.
 
-## Debug info
+## Debug info and the runtime
 
-To step through compiled code in a debugger, attach debug info with a `DIBuilder` (`module.CreateDIBuilder()`): a compile unit and file, a subprogram per function, and a location for each instruction from the bound node's syntax span. The [LLVM page](../llvm.md#debug-info) shows the objects involved. Call `LLVM.DIBuilderFinalize` before verifying.
+- [Debug info with LLVMSharp](debug-info.md) adds source lines and variables, so the compiled program can be stepped through in gdb, lldb, or Visual Studio.
+- [Runtime and ABI](runtime-abi.md) covers the entry point, panics and bounds checks, string and array layouts, and passing structs to C correctly.
 
 !!! warning "Common pitfalls"
 
