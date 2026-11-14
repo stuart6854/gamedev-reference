@@ -76,28 +76,107 @@ One place where longest match is wrong: `>>` closing two generic argument lists,
 
 ## Numbers
 
+### The forms
+
+| Form | Examples | Notes |
+| --- | --- | --- |
+| Decimal integer | `0`, `42`, `1_000_000` | no leading zeros: `007` is an error (see [octal](#octal)) |
+| Hexadecimal | `0xFF`, `0xdead_beef` | digits in either case; prefer a lowercase `0x` |
+| Binary | `0b1010`, `0b1111_0000` | bit masks and flags |
+| Float | `3.14`, `1e10`, `2.5e-3`, `1E+3` | decimal only; digits are needed on **both** sides of the `.` |
+| Type suffix | `7u8`, `255i32`, `0xFFu8`, `1.5f32`, `1f32` | an integer with a float suffix is a float |
+
+- **Digit separators** (`_`) are allowed only **between** digits: not `1_`, `1__0`, or `0x_FF`. That makes every literal read one way.
+- **No `.5` and no `1.`**. A leading dot clashes with member access, and a trailing one with method calls on literals (`1.max(2)`) and ranges (`1..2`). Requiring a digit after the `.` keeps those working: `1..2` lexes as `1`, `..`, `2`.
+- **No hex floats** (`0x1.8p3`). They are useful for exact float constants in maths libraries, and nowhere else.
+- **No float suffix on hex**: `0x1f32` is the hex number 7986, because `f`, `3`, and `2` are hex digits. Integer suffixes are fine, since `i` and `u` are not.
+- A leading `-` is **not** part of the literal: `x-1` must lex as `x`, `-`, `1`. Unary minus is an operator in the parser.
+
+### Scanning
+
+One function lexes every form. It always consumes the whole literal, valid or not, so a mistake gives **one token and one error**, never a valid prefix followed by junk (`0b102` as `0b10` and `2`).
+
 ```text
 number():
-    while is_digit_or_underscore(text[pos]): pos += 1
+    start = pos
+    base = 10
+    if text[pos] == '0' and text[pos + 1] in "xX": base = 16; pos += 2
+    elif text[pos] == '0' and text[pos + 1] in "bB": base = 2; pos += 2
+
+    (value, count, overflow) = digits(base, buffer)          // the integer part
+    if count == 0:            report(expected digits after the prefix)       // "0x", "0xG"
+    if base == 10 and count > 1 and buffer[0] == '0': report(leading zeros are not allowed)
+
     is_float = false
-    if text[pos] == '.' and is_digit(text[pos + 1]):    // "1." followed by a name is a member access, not a float
-        is_float = true
-        pos += 1
-        while is_digit_or_underscore(text[pos]): pos += 1
-    if text[pos] in "eE":
-        is_float = true
-        pos += 1
-        if text[pos] in "+-": pos += 1
-        require a digit, then while is_digit(text[pos]): pos += 1
-    suffix = optional type suffix: "i32", "u8", "f32", ...
-    digits = text[start .. end of number] without '_'
-    value = parse digits as integer or float; on overflow report and use 0
-    return is_float ? FloatLiteral : IntLiteral
+    if base == 10 and text[pos] == '.' and is_digit(text[pos + 1]):
+        is_float = true; buffer += '.'; pos += 1
+        digits(10, buffer)
+    if base == 10 and text[pos] in "eE":
+        is_float = true; buffer += 'e'; pos += 1
+        if text[pos] in "+-": buffer += text[pos]; pos += 1
+        if digits(10, buffer).count == 0: report(expected digits in the exponent)   // "1e", "1e+"
+
+    suffix = the run of letters, digits, and '_' that follows
+    if suffix starts with a digit:   report(invalid digit '{suffix[0]}' for base {base})     // "0b102"
+    elif suffix not in known:        report(unknown suffix '{suffix}')                       // "12abc", "3u7"
+    elif is_float and suffix is an integer suffix: report(a float cannot have suffix '{suffix}')
+    elif base != 10 and suffix is a float suffix:  report(hex and binary literals cannot be floats)
+
+    if is_float or suffix is a float suffix:
+        value = parse_float(buffer, as f32 if suffix == "f32" else f64)
+        return FloatLiteral
+    if overflow: report(integer literal is too large)
+    return IntLiteral
+
+digits(base, buffer):                    // reads digits and separators of one base
+    value = 0, count = 0, overflow = false
+    loop:
+        c = text[pos]
+        if c == '_':
+            if count == 0 or not is_digit_in_base(text[pos + 1], base):
+                report('_' must be between digits)
+            pos += 1
+            continue
+        d = digit_value(c)               // '0'-'9', 'a'-'f', 'A'-'F'; otherwise none
+        if d is none or d >= base: break
+        if value > (MAX_U64 - d) / base: overflow = true
+        else: value = value * base + d
+        buffer += c, count += 1, pos += 1
+    return (value, count, overflow)
 ```
 
-- Support `0x`, `0b`, and `_` separators (`1_000_000`) from the start; they are cheap here and annoying to add later. In C#, [regular expressions](#regular-expressions-for-token-shapes) describe all the forms compactly.
-- **Range-check later**, not in the lexer: whether `300` fits depends on the type it ends up with (`u8` or `i32`). The lexer stores the value in the widest type (a 64-bit unsigned integer, or a double) and the [type checker](types.md#literals) checks it.
-- A leading `-` is **not** part of the literal: `x-1` must lex as `x`, `-`, `1`. Unary minus is an operator in the parser.
+- Report **one** error per literal (keep the first), and still return a number token, with value 0, so the parser carries on without a cascade.
+- The integer value is built **digit by digit** with an overflow check, which works for every base and needs no parsing library.
+- A float is **not** built digit by digit: repeated multiplication accumulates rounding errors. Collect its digits (without separators) and hand them to a correctly rounded parser. An `f32` literal is parsed directly as `f32`; parsing as `f64` and then rounding to `f32` can be off by one in the last bit.
+- **Range-check later**, not in the lexer: whether `300` fits depends on the type it ends up with (`u8` or `i32`). The lexer stores the value in the widest type (a 64-bit unsigned integer, or a double), and the [type checker](types.md#literals) checks it against the suffix or the context.
+
+| Input | Token | Result |
+| --- | --- | --- |
+| `0xdead_beef`, `0b1_0` | the whole text | integers 3735928559 and 2 |
+| `2.5e-3`, `1.5f32`, `1f32` | the whole text | floats; `1f32` is a float because of its suffix |
+| `0xFFu8` | `0xFFu8` | integer 255, suffix `u8` |
+| `0x1f32` | `0x1f32` | integer 7986: the `f32` is hex digits |
+| `18446744073709551616` | the whole text | error: integer literal is too large |
+| `1_`, `1__0`, `0x_FF` | the whole text | error: `_` must be between digits |
+| `0x`, `0xG` | the whole text | error: expected digits after `0x` |
+| `0b102` | `0b102` | error: invalid digit `2` for base 2 |
+| `12abc`, `3u7` | the whole text | error: unknown suffix |
+| `1e`, `1e+` | the whole text | error: expected digits in the exponent |
+| `007` | `007` | error: leading zeros are not allowed |
+| `1.`, `1..2`, `1.foo` | `1` | integer; the `.` starts the next token |
+| `0xE-1` | `0xE` | integer 14; `-` and `1` follow |
+
+### Octal
+
+**Usually not worth it.** Octal's main use today is Unix file permissions (`0o755`), which game code rarely writes. It costs little to add, but every form you add is one more thing to document and test.
+
+What **is** worth it is deciding what a leading zero means:
+
+- C, C++, and JavaScript's old rule makes `010` octal, so `010 == 8`. People pad numbers with zeros to line up columns of data, and get wrong values without any error. Never copy this.
+- Treating `010` as decimal 10 (as Rust does) is safe, but means `010` silently changes meaning for anyone who expects C's rule.
+- **Rejecting** leading zeros (as Python 3 does, with "leading zeros are not allowed") is the clearest: the code above does this. `0` itself is fine.
+
+If you do add octal later, use an explicit `0o` prefix (`0o755`), like Rust, Python, Swift, and JavaScript: it is one more branch next to `0x` and `0b`, with base 8.
 
 ## Strings
 
@@ -184,140 +263,6 @@ An array is simpler and plenty fast for files of a few thousand lines. Change on
 
 **Small things that surprise.** A `#!` line at the very start of a file (so scripts can be run directly) is trivia. A file may end without a newline, inside a comment, or inside a string. Tabs count as one column in spans, even if editors display them wider.
 
-## Regular expressions for token shapes
-
-The main loop stays hand-written, but the **shape** of a single token can be a regular expression: an identifier, or a number with its hex, binary, and octal forms, digit separators, exponents, and suffixes. The lexer loop decides which kind of token starts at the current character; the regex says how long it is and whether it is valid.
-
-| Use a regex for | Keep hand-written |
-| --- | --- |
-| identifiers, number literals, a fixed set of suffixes | the main loop and the choice of token kind |
-| validating a literal once its extent is known | operators (a `switch` is clearer and handles longest match) |
-| | strings (escape decoding, interpolation modes, unterminated-string recovery) |
-| | comments (nested block comments cannot be matched by a simple regex) |
-
-### Matching at a position
-
-`\G` anchors a match to exactly where the search starts, so `regex.Match(text, position)` only succeeds if the token starts at `position`. `[GeneratedRegex]` (.NET 7 and later) turns the pattern into C# at build time, with no start-up cost.
-
-```csharp
-public static partial class TokenShapes
-{
-    // ASCII identifiers. For Unicode ones (see "Unicode identifiers" above): \G[\p{L}_][\p{L}\p{Mn}\p{Nd}_]*
-    [GeneratedRegex(@"\G[A-Za-z_][A-Za-z0-9_]*")]
-    private static partial Regex Identifier();
-
-    public static int IdentifierLength(string text, int position)
-    {
-        foreach (ValueMatch m in Identifier().EnumerateMatches(text, position))   // no allocation
-            return m.Length;
-        return 0;
-    }
-}
-```
-
-`EnumerateMatches` returns a `ValueMatch` (an index and a length) without allocating, which is all the identifier case needs. Groups need `Match`, which allocates; use it only where the groups are read.
-
-### Numbers: scan, then validate
-
-A strict number pattern on its own has a trap: it matches the **valid prefix** and stops. `0b102` would lex as `0b10` followed by a separate `2`, and `1_` as `1` followed by the identifier `_`, with no error. Lex numbers in two steps instead:
-
-1. **Scan** loosely: everything a number could plausibly contain, so a malformed literal becomes one token.
-2. **Validate** that token against the strict pattern, and report a diagnostic if it is not a complete match.
-
-```csharp
-// Step 1: how far does the literal go? A `.` only counts when a digit follows, so `1..2`
-// and `x.1.foo()` still split; a sign only counts after an exponent, and not in hex.
-[GeneratedRegex("""
-    \G(?:
-        0[xX][0-9A-Za-z_]*
-      | [0-9](?:[eE][+-]|[0-9A-Za-z_]|\.(?=[0-9]))*
-    )
-    """, RegexOptions.IgnorePatternWhitespace)]
-private static partial Regex NumberExtent();
-
-// Step 2: the valid forms. `_?` between digits allows 1_000 but not 1_, 1__0, or 0x_FF.
-[GeneratedRegex("""
-    ^(?:
-        0[xX](?<hex>[0-9a-fA-F](?:_?[0-9a-fA-F])*)
-      | 0[bB](?<bin>[01](?:_?[01])*)
-      | 0[oO](?<oct>[0-7](?:_?[0-7])*)
-      | (?<int>[0-9](?:_?[0-9])*)
-        (?<frac>\.[0-9](?:_?[0-9])*)?
-        (?<exp>[eE][+-]?[0-9](?:_?[0-9])*)?
-    )
-    (?<suffix>[iu](?:8|16|32|64)|f(?:32|64))?$
-    """, RegexOptions.IgnorePatternWhitespace)]
-private static partial Regex NumberLiteral();
-```
-
-```csharp
-SyntaxKind LexNumber()
-{
-    int length = 0;
-    foreach (ValueMatch m in NumberExtent().EnumerateMatches(_text, _position)) { length = m.Length; break; }
-    string token = _text.Substring(_position, length);
-    var span = new TextSpan(_position, length);
-    _position += length;
-
-    Match match = NumberLiteral().Match(token);
-    if (!match.Success)
-    {
-        _diagnostics.InvalidNumber(span, token);          // "invalid number literal '0b102'"
-        _value = 0UL;
-        return SyntaxKind.IntLiteral;                      // still a number token: the parser carries on
-    }
-
-    string Digits(string group) => match.Groups[group].Value.Replace("_", "");
-    string suffix = match.Groups["suffix"].Value;
-    _suffix = suffix;                                     // the type checker uses it
-
-    if (match.Groups["hex"].Success) return Integer(Digits("hex"), NumberStyles.AllowHexSpecifier, span);
-    if (match.Groups["bin"].Success) return Integer(Digits("bin"), NumberStyles.AllowBinarySpecifier, span);
-    if (match.Groups["oct"].Success) return Octal(Digits("oct"), span);
-
-    string text = Digits("int") + Digits("frac") + Digits("exp");
-    if (match.Groups["frac"].Success || match.Groups["exp"].Success || suffix.StartsWith('f'))
-    {
-        _value = double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture);
-        return SyntaxKind.FloatLiteral;
-    }
-    return Integer(text, NumberStyles.None, span);
-}
-
-SyntaxKind Integer(string digits, NumberStyles style, TextSpan span)
-{
-    if (!ulong.TryParse(digits, style, CultureInfo.InvariantCulture, out ulong value))
-        _diagnostics.NumberTooLarge(span);                 // more than 64 bits
-    _value = value;
-    return SyntaxKind.IntLiteral;
-}
-
-SyntaxKind Octal(string digits, TextSpan span)
-{
-    try { _value = Convert.ToUInt64(digits, 8); }
-    catch (OverflowException) { _diagnostics.NumberTooLarge(span); _value = 0UL; }
-    return SyntaxKind.IntLiteral;
-}
-```
-
-What it gives for some inputs:
-
-| Input | Token | Result |
-| --- | --- | --- |
-| `0xdead_beef` | `0xdead_beef` | integer 3735928559 |
-| `0b1_0` | `0b1_0` | integer 2 |
-| `2.5e-3` | `2.5e-3` | float 0.0025 |
-| `1.5f32` | `1.5f32` | float 1.5, suffix `f32` |
-| `0b102` | `0b102` | error: invalid number literal |
-| `1_`, `1__0`, `0x_FF`, `12abc` | the whole text | error |
-| `1..2` | `1` | integer; `..` and `2` are the next tokens |
-| `0xE-1` | `0xE` | integer 14; `-` and `1` follow |
-| `1.foo` | `1` | integer; `.` and `foo` follow |
-
-- `NumberStyles.AllowBinarySpecifier` is .NET 8 and later; on older runtimes use `Convert.ToUInt64(digits, 2)`, as `Octal` does for base 8. There is no `NumberStyles` for octal.
-- For more specific messages ("expected hex digits after '0x'", "'2' is not a binary digit"), check the prefix of a failed token and find the first character that is not valid for that base. The regex says **whether** the literal is valid; a few lines of code say **why** not.
-- Range checking against the literal's type (`300u8`) still belongs to the [type checker](types.md#literals).
-
 ## C# tips
 
 - Lex over a `string` with an `int` position, and keep `Peek(offset)` returning `'\0'` past the end, so no condition needs a length check.
@@ -325,4 +270,7 @@ What it gives for some inputs:
 - Build the keyword table once: `FrozenDictionary<string, SyntaxKind>`, or a `switch` expression on the text, which the C# compiler turns into a hash or length-based jump table. Look it up with the span (`.GetAlternateLookup<ReadOnlySpan<char>>()` on .NET 9 and later) to avoid allocating a string for every identifier.
 - `SearchValues.Create("+-*/%=<>!&|^~")` with `span.IndexOfAnyExcept` skips runs of a character class quickly, such as whitespace or digits.
 - Make `Token` a `readonly record struct`: `SyntaxKind Kind`, `TextSpan Span`, and `object? Value`. Store `Text` only for identifiers and literals.
-- Parse numbers with `long.TryParse` / `ulong.TryParse` and `double.TryParse(..., NumberStyles.Float, CultureInfo.InvariantCulture)`. Without the invariant culture, `1.5` fails to parse on machines whose decimal separator is a comma.
+- Build integer values with the digit loop above (`ulong`, with the `(ulong.MaxValue - d) / base` overflow check), rather than `ulong.Parse`, so decimal, hex, and binary share one path and separators need no stripping.
+- Parse floats from the collected digits with `double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture)`, or `float.Parse` for an `f32` literal: `(float)double.Parse(text)` rounds twice, and for some inputs lands one bit away from the correctly rounded `float`. Without the invariant culture, `1.5` fails to parse on machines whose decimal separator is a comma.
+- Collect the digits into a `StringBuilder` or a pooled `char` buffer only for floats; integers need no buffer at all.
+- `char.IsAsciiDigit` and `char.IsAsciiHexDigit` (.NET 7) are the digit tests: unlike `char.IsDigit`, they reject non-ASCII digits.
