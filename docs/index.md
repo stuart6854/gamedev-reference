@@ -22,7 +22,7 @@ Each section's index lists what is written there.
 
 - [Maths](maths/index.md) — vectors, quaternions, interpolation and damping, randomness, intersection tests, noise, hex grids, curves and splines, and frustum tests.
 - [Data structures](data-structures/index.md) — containers the standard libraries leave out, sparse sets, handle tables, ring buffers, free lists, spatial hash grids, and bit manipulation.
-- [Graphics](graphics/index.md) — coordinate spaces, primitive meshes, particles, a shader ground grid, fog, physically based rendering, and shadow mapping.
+- [Graphics](graphics/index.md) — coordinate spaces, primitive meshes, particles, a shader ground grid, fog, physically based rendering, shadow mapping, and the D3D12 and Vulkan APIs side by side.
 - [Physics](physics/index.md) — the fixed timestep, integrators, and how a rigid-body engine works: broadphase, narrowphase, solver, sleeping, and continuous collision.
 - [Engine architecture](engine/index.md) — render architecture, animation, audio, profiling, world streaming, engine patterns (the frame, subsystems, resources, modules), transform hierarchies, debug tools, the job system, serialisation and content pipelines, how an entity component system stores entities and components, how a retained-mode UI is built, and unit testing.
 - [Languages](languages/index.md) — designing a language, compiling one with LLVM, and writing a compiler in C# from lexer to LLVMSharp.

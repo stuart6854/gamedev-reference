@@ -11,6 +11,7 @@ Planned topics:
 - Distance and height fog, fog in custom shaders, and scattering colour. Written: [Fog](fog.md).
 - Shading models, normal maps, colour, gamma, and tone mapping. Written: [Physically based rendering](pbr/index.md), with pages on the [BRDF](pbr/brdf.md), [materials](pbr/materials.md), [image-based lighting](pbr/ibl.md), and the [colour pipeline](pbr/colour.md).
 - Shadow maps, bias, filtering, cascades, and local light shadows. Written: [Shadow mapping](shadows/index.md), with pages on [basics and bias](shadows/basics.md), [filtering](shadows/filtering.md), [cascades](shadows/cascades.md), and [local lights and atlases](shadows/local-lights.md).
+- The explicit graphics APIs side by side: devices and queues, memory, descriptors and bindless, pipelines, barriers, swapchains, shader compilation, async compute, mesh shaders, and debugging. Written: [D3D12 and Vulkan](apis/index.md).
 - Post-processing as a sequence of buffers, not a stack of effects.
 
 The coordinate-spaces page is the one the later shading notes will assume.

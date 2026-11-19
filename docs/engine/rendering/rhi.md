@@ -122,6 +122,6 @@ float4 PSMain(PSIn input) : SV_Target
 ## Backends
 
 - One backend per API, chosen at start-up. Keep the RHI interface free of API types.
-- Use the **D3D12 and Vulkan models as the common denominator**: explicit barriers, pipelines, command lists. Metal maps onto them with small adjustments (its barriers are mostly automatic within a command encoder).
+- Use the **D3D12 and Vulkan models as the common denominator**: explicit barriers, pipelines, command lists. The [D3D12 and Vulkan](../../graphics/apis/index.md) pages show each concept in both APIs. Metal maps onto them with small adjustments (its barriers are mostly automatic within a command encoder).
 - Turn on the **validation layers** (Vulkan validation, the D3D12 debug layer, Metal API validation) in development builds, and treat their messages as bugs.
 - Make GPU **markers** part of the RHI (`cmd.begin_marker("Shadows")`), so captures in RenderDoc, PIX, or Xcode show the frame's structure.
