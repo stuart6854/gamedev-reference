@@ -37,7 +37,7 @@ expr        = see the precedence table
     class Parser
     {
     public:
-        Parser(std::vector<Token> tokens, std::vector<Diagnostic>& diagnostics)
+        Parser(std::vector<Token> tokens, DiagnosticBag& diagnostics)
             : tokens_(std::move(tokens)), diagnostics_(diagnostics) {}
         FileSyntax* ParseFile();
 
@@ -63,11 +63,10 @@ expr        = see the precedence table
         {
             if (At(kind)) return Advance();
             uint32_t end = pos_ > 0 ? tokens_[pos_ - 1].span.End() : 0;          // the end of the previous token
-            Report({ end, 0 }, std::format("expected {}, found {}", Describe(kind), Describe(Current().kind)));
+            Diagnostic& d = diagnostics_.Report<Diag::ExpectedToken>({ end, 0 }, Describe(kind), Describe(Current().kind));
+            if (kind == SyntaxKind::SemicolonToken) d.WithFix({ end, 0 }, ";");     // safe to insert: editors offer it
             return Token{ .kind = kind, .span = { end, 0 }, .isMissing = true };  // zero length: the tree stays complete
         }
-
-        void Report(TextSpan span, std::string message) { diagnostics_.push_back({ span, std::move(message) }); }
 
         template <class T, class... Args> T* Make(Args&&... args)   // allocate a node the parser owns
         {
@@ -77,7 +76,7 @@ expr        = see the precedence table
 
         std::vector<Token> tokens_;
         size_t pos_ = 0;
-        std::vector<Diagnostic>& diagnostics_;
+        DiagnosticBag& diagnostics_;                   // see source text and diagnostics
         std::vector<std::unique_ptr<SyntaxNode>> nodes_;   // every node; SyntaxNode has a virtual destructor
     };
     ```
@@ -85,7 +84,7 @@ expr        = see the precedence table
 === "C#"
 
     ```csharp
-    public sealed class Parser(List<Token> tokens, List<Diagnostic> diagnostics)
+    public sealed class Parser(List<Token> tokens, DiagnosticBag diagnostics)
     {
         int _pos;
 
@@ -106,11 +105,11 @@ expr        = see the precedence table
         {
             if (At(kind)) return Advance();
             int end = _pos > 0 ? tokens[_pos - 1].Span.End : 0;             // the end of the previous token
-            Report(new TextSpan(end, 0), $"expected {Describe(kind)}, found {Describe(Current.Kind)}");
+            Diagnostic d = diagnostics.Report(Diagnostics.ExpectedToken, new TextSpan(end, 0), Describe(kind), Describe(Current.Kind));
+            if (kind == SyntaxKind.SemicolonToken) d.WithFix(new TextSpan(end, 0), ";");   // safe to insert: editors offer it
             return new Token(kind, new TextSpan(end, 0), IsMissing: true);   // zero length: the tree stays complete
         }
 
-        void Report(TextSpan span, string message) => diagnostics.Add(new Diagnostic(span, message));
     }
     ```
 
@@ -364,7 +363,7 @@ Operators bind by **binding power**: higher binds tighter. Each infix operator h
             left = Make<BinarySyntax>(left, opToken, right);
             std::optional<BindingPower> next = InfixPower(Current().kind);
             if (power->nonAssociative && next && next->left == power->left)      // a == b == c
-                Report(Current().span, "comparisons cannot be chained; use '&&'");
+                diagnostics_.Report<Diag::ChainedComparison>(Current().span);
         }
         return left;
     }
@@ -394,7 +393,7 @@ Operators bind by **binding power**: higher binds tighter. Each infix operator h
             return Make<UnarySyntax>(op, ParseExpression(PrefixPower, allowStructLiteral));
         }
         default:
-            Report(Current().span, std::format("expected an expression, found {}", Describe(Current().kind)));
+            diagnostics_.Report<Diag::ExpectedExpression>(Current().span, Describe(Current().kind));
             return Make<MissingExpressionSyntax>(Current().span.start);   // do not consume: the caller decides
         }
     }
@@ -454,7 +453,7 @@ Operators bind by **binding power**: higher binds tighter. Each infix operator h
             ExpressionSyntax right = ParseExpression(rightPower, allowStructLiteral);
             left = new BinarySyntax(left, opToken, right);
             if (nonAssociative && InfixPower(Current.Kind)?.Left == leftPower)   // a == b == c
-                Report(Current.Span, "comparisons cannot be chained; use '&&'");
+                diagnostics.Report(Diagnostics.ChainedComparison, Current.Span);
         }
         return left;
     }
@@ -478,7 +477,7 @@ Operators bind by **binding power**: higher binds tighter. Each infix operator h
                 Token op = Advance();
                 return new UnarySyntax(op, ParseExpression(PrefixPower, allowStructLiteral));
             default:
-                Report(Current.Span, $"expected an expression, found {Describe(Current.Kind)}");
+                diagnostics.Report(Diagnostics.ExpectedExpression, Current.Span, Describe(Current.Kind));
                 return new MissingExpressionSyntax(Current.Span.Start);  // do not consume: the caller decides
         }
     }
@@ -517,7 +516,7 @@ The aim is to report the first real error in each statement, then carry on as if
     void Parser::SkipBadTokens()
     {
         Token first = Advance();                        // at least one token, so the caller always makes progress
-        Report(first.span, std::format("unexpected {}", Describe(first.kind)));   // once per run of bad tokens
+        diagnostics_.Report<Diag::UnexpectedToken>(first.span, Describe(first.kind));   // once per run of bad tokens
         Token last = first;
         while (last.kind != SyntaxKind::SemicolonToken && !IsSyncPoint(Current().kind))   // keywords, '}', end of file
             last = Advance();
@@ -531,7 +530,7 @@ The aim is to report the first real error in each statement, then carry on as if
     void SkipBadTokens()
     {
         Token first = Advance();                        // at least one token, so the caller always makes progress
-        Report(first.Span, $"unexpected {Describe(first.Kind)}");   // once per run of bad tokens
+        diagnostics.Report(Diagnostics.UnexpectedToken, first.Span, Describe(first.Kind));   // once per run of bad tokens
         Token last = first;
         while (last.Kind != SyntaxKind.SemicolonToken && !IsSyncPoint(Current.Kind))   // keywords, '}', end of file
             last = Advance();
@@ -557,12 +556,12 @@ The aim is to report the first real error in each statement, then carry on as if
     template <class ParseFn>
     auto Parser::TryParse(ParseFn parse) -> decltype(parse())   // nullptr if it did not fit
     {
-        size_t savedPos = pos_, savedErrors = diagnostics_.size();
+        size_t savedPos = pos_, savedCount = diagnostics_.Count();
         auto result = parse();
-        if (diagnostics_.size() > savedErrors)          // it did not fit: undo everything
+        if (diagnostics_.Count() > savedCount)          // it did not fit: undo everything
         {
             pos_ = savedPos;
-            diagnostics_.resize(savedErrors);
+            diagnostics_.Truncate(savedCount);
             return nullptr;
         }
         return result;
@@ -574,12 +573,12 @@ The aim is to report the first real error in each statement, then carry on as if
     ```csharp
     T? TryParse<T>(Func<T> parse) where T : class      // null if it did not fit
     {
-        int savedPos = _pos, savedErrors = diagnostics.Count;
+        int savedPos = _pos, savedCount = diagnostics.Count;
         T result = parse();
-        if (diagnostics.Count > savedErrors)            // it did not fit: undo everything
+        if (diagnostics.Count > savedCount)             // it did not fit: undo everything
         {
             _pos = savedPos;
-            diagnostics.RemoveRange(savedErrors, diagnostics.Count - savedErrors);
+            diagnostics.Truncate(savedCount);
             return null;
         }
         return result;
