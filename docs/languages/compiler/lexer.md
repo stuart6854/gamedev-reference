@@ -60,16 +60,15 @@ The lexer turns text into **tokens**: the words of the language. It decides wher
     class Lexer
     {
     public:
-        Lexer(std::string_view text, std::vector<Diagnostic>& diagnostics) : text_(text), diagnostics_(diagnostics) {}
+        Lexer(const SourceText& source, DiagnosticBag& diagnostics) : text_(source.Text()), diagnostics_(diagnostics) {}
         std::vector<Token> Lex();
 
     private:
         char Peek(size_t offset = 0) const { return pos_ + offset < text_.size() ? text_[pos_ + offset] : '\0'; }
         TextSpan Span() const { return { uint32_t(start_), uint32_t(pos_ - start_) }; }    // the current token
-        void Report(TextSpan span, std::string message) { diagnostics_.push_back({ span, std::move(message) }); }
 
         std::string_view text_;
-        std::vector<Diagnostic>& diagnostics_;           // { span, message }: see source text and diagnostics
+        DiagnosticBag& diagnostics_;                     // see source text and diagnostics
         size_t pos_ = 0, start_ = 0;
         decltype(Token::value) value_;                   // set by Number() and String()
         // SkipTrivia, IdentifierOrKeyword, Number, String, and Punctuation are below
@@ -111,14 +110,14 @@ The lexer turns text into **tokens**: the words of the language. It decides wher
 === "C#"
 
     ```csharp
-    public sealed class Lexer(string text, List<Diagnostic> diagnostics)
+    public sealed class Lexer(SourceText source, DiagnosticBag diagnostics)   // see source text and diagnostics
     {
+        readonly string text = source.Text;
         int _pos, _start;
         object? _value;                                  // set by Number() and String()
 
         char Peek(int offset = 0) => _pos + offset < text.Length ? text[_pos + offset] : '\0';
         TextSpan Span => TextSpan.FromBounds(_start, _pos);   // the current token
-        void Report(TextSpan span, string message) => diagnostics.Add(new Diagnostic(span, message));
 
         public List<Token> Lex()
         {
@@ -189,7 +188,7 @@ Multi-character operators win over their prefixes: `->` is one token, not `-` th
         case '(': return SyntaxKind::OpenParenToken;
         // ... the rest of the operators and delimiters
         }
-        Report(Span(), std::format("unexpected character '{}'", c));
+        diagnostics_.Report<Diag::UnexpectedCharacter>(Span(), c);
         return SyntaxKind::BadToken;
     }
     ```
@@ -218,7 +217,7 @@ Multi-character operators win over their prefixes: `->` is one token, not `-` th
             case '(': return SyntaxKind.OpenParenToken;
             // ... the rest of the operators and delimiters
         }
-        Report(Span, $"unexpected character '{c}'");
+        diagnostics.Report(Diagnostics.UnexpectedCharacter, Span, c);
         return SyntaxKind.BadToken;
     }
     ```
@@ -250,10 +249,13 @@ One function lexes every form. It always consumes the whole literal, valid or no
 === "C++"
 
     ```cpp
-    // Lexer members used here: std::string literalError_ (the first error in the current number), and
+    // Lexer members used here: std::optional<Diagnostic> literalError_ (the first error in the current number), and
     struct Digits { uint64_t value = 0; int count = 0; bool overflow = false; };
 
-    void Lexer::LiteralError(std::string message) { if (literalError_.empty()) literalError_ = std::move(message); }
+    template <Diag Id, class... Args> void Lexer::LiteralError(Args&&... args)   // keep the first; its span is set at the end
+    {
+        if (!literalError_) literalError_ = Diagnostic::Make<Id>({}, std::forward<Args>(args)...);
+    }
 
     SyntaxKind Lexer::Number()
     {
@@ -261,11 +263,11 @@ One function lexes every form. It always consumes the whole literal, valid or no
         if (Peek() == '0' && (Peek(1) == 'x' || Peek(1) == 'X')) { base = 16; pos_ += 2; }
         else if (Peek() == '0' && (Peek(1) == 'b' || Peek(1) == 'B')) { base = 2; pos_ += 2; }
 
-        literalError_.clear();
+        literalError_.reset();
         std::string buffer;                              // the digits without separators, for floats
         Digits digits = ReadDigits(base, buffer);        // the integer part
-        if (digits.count == 0) LiteralError("expected digits after the prefix");                       // "0x", "0xG"
-        else if (base == 10 && digits.count > 1 && buffer[0] == '0') LiteralError("leading zeros are not allowed");
+        if (digits.count == 0) LiteralError<Diag::ExpectedDigits>(text_.substr(start_, pos_ - start_));   // "0x", "0xG"
+        else if (base == 10 && digits.count > 1 && buffer[0] == '0') LiteralError<Diag::LeadingZeros>();
 
         bool isFloat = false;
         if (base == 10 && Peek() == '.' && IsDigit(Peek(1)))
@@ -279,7 +281,7 @@ One function lexes every form. It always consumes the whole literal, valid or no
             isFloat = true;
             buffer += text_[pos_++];
             if (Peek() == '+' || Peek() == '-') buffer += text_[pos_++];
-            if (ReadDigits(10, buffer).count == 0) LiteralError("expected digits in the exponent");  // "1e", "1e+"
+            if (ReadDigits(10, buffer).count == 0) LiteralError<Diag::ExpectedExponentDigits>();  // "1e", "1e+"
         }
 
         size_t suffixStart = pos_;
@@ -287,15 +289,15 @@ One function lexes every form. It always consumes the whole literal, valid or no
         std::string_view suffix = text_.substr(suffixStart, pos_ - suffixStart);
         bool floatSuffix = suffix == "f32" || suffix == "f64";
         if (suffix.empty()) {}
-        else if (IsDigit(suffix[0])) LiteralError(std::format("invalid digit '{}' for base {}", suffix[0], base)); // "0b102"
-        else if (!floatSuffix && !IsIntegerSuffix(suffix)) LiteralError(std::format("unknown suffix '{}'", suffix)); // "12abc"
-        else if (isFloat && !floatSuffix) LiteralError(std::format("a float cannot have suffix '{}'", suffix));
-        else if (base != 10 && floatSuffix) LiteralError("hex and binary literals cannot be floats");
+        else if (IsDigit(suffix[0])) LiteralError<Diag::InvalidDigit>(suffix[0], base);    // "0b102"
+        else if (!floatSuffix && !IsIntegerSuffix(suffix)) LiteralError<Diag::UnknownSuffix>(suffix);      // "12abc"
+        else if (isFloat && !floatSuffix) LiteralError<Diag::FloatIntegerSuffix>(suffix);
+        else if (base != 10 && floatSuffix) LiteralError<Diag::NonDecimalFloat>();
 
         isFloat = isFloat || floatSuffix;
-        if (!isFloat && digits.overflow) LiteralError("integer literal is too large");
+        if (!isFloat && digits.overflow) LiteralError<Diag::IntegerTooLarge>();
         value_ = isFloat ? decltype(value_)(0.0) : decltype(value_)(uint64_t(0));   // the value after an error
-        if (isFloat && literalError_.empty())
+        if (isFloat && !literalError_)
         {
             const char* first = buffer.data();
             const char* last = first + buffer.size();
@@ -303,12 +305,16 @@ One function lexes every form. It always consumes the whole literal, valid or no
             float f = 0;
             auto result = suffix == "f32" ? std::from_chars(first, last, f)          // rounded once, to float
                                           : std::from_chars(first, last, d);
-            if (result.ec == std::errc::result_out_of_range) LiteralError("float literal is out of range");
+            if (result.ec == std::errc::result_out_of_range) LiteralError<Diag::FloatOutOfRange>();
             else value_ = suffix == "f32" ? double(f) : d;
         }
-        else if (literalError_.empty())
+        else if (!literalError_)
             value_ = digits.value;
-        if (!literalError_.empty()) Report(Span(), literalError_);   // one error, over the whole literal
+        if (literalError_)                           // one error, over the whole literal
+        {
+            literalError_->span = Span();
+            diagnostics_.Add(std::move(*literalError_));
+        }
         return isFloat ? SyntaxKind::FloatLiteralToken : SyntaxKind::IntLiteralToken;
     }
 
@@ -320,7 +326,7 @@ One function lexes every form. It always consumes the whole literal, valid or no
             char c = Peek();
             if (c == '_')
             {
-                if (d.count == 0 || DigitValue(Peek(1)) >= base) LiteralError("'_' must be between digits");
+                if (d.count == 0 || DigitValue(Peek(1)) >= base) LiteralError<Diag::MisplacedSeparator>();
                 pos_++;
                 continue;
             }
@@ -339,8 +345,8 @@ One function lexes every form. It always consumes the whole literal, valid or no
 === "C#"
 
     ```csharp
-    string? _literalError;                               // the first error in the current number
-    void LiteralError(string message) => _literalError ??= message;
+    Diagnostic? _literalError;                           // the first error in the current number
+    void LiteralError(Diagnostic diagnostic) => _literalError ??= diagnostic;   // keep the first; its span is set at the end
 
     SyntaxKind Number()
     {
@@ -351,8 +357,8 @@ One function lexes every form. It always consumes the whole literal, valid or no
         _literalError = null;
         var buffer = new StringBuilder();                // the digits without separators, for floats
         var (value, count, overflow) = ReadDigits(numberBase, buffer);   // the integer part
-        if (count == 0) LiteralError("expected digits after the prefix");                             // "0x", "0xG"
-        else if (numberBase == 10 && count > 1 && buffer[0] == '0') LiteralError("leading zeros are not allowed");
+        if (count == 0) LiteralError(Diagnostic.Create(Diagnostics.ExpectedDigits, default, text[_start.._pos]));   // "0x", "0xG"
+        else if (numberBase == 10 && count > 1 && buffer[0] == '0') LiteralError(Diagnostic.Create(Diagnostics.LeadingZeros, default));
 
         bool isFloat = false;
         if (numberBase == 10 && Peek() == '.' && char.IsAsciiDigit(Peek(1)))
@@ -366,7 +372,7 @@ One function lexes every form. It always consumes the whole literal, valid or no
             isFloat = true;
             buffer.Append(text[_pos++]);
             if (Peek() is '+' or '-') buffer.Append(text[_pos++]);
-            if (ReadDigits(10, buffer).Count == 0) LiteralError("expected digits in the exponent");  // "1e", "1e+"
+            if (ReadDigits(10, buffer).Count == 0) LiteralError(Diagnostic.Create(Diagnostics.ExpectedExponentDigits, default));  // "1e", "1e+"
         }
 
         int suffixStart = _pos;
@@ -375,13 +381,13 @@ One function lexes every form. It always consumes the whole literal, valid or no
         bool floatSuffix = suffix is "f32" or "f64";
         bool intSuffix = suffix is "i8" or "i16" or "i32" or "i64" or "u8" or "u16" or "u32" or "u64";
         if (suffix.Length == 0) { }
-        else if (char.IsAsciiDigit(suffix[0])) LiteralError($"invalid digit '{suffix[0]}' for base {numberBase}"); // "0b102"
-        else if (!floatSuffix && !intSuffix) LiteralError($"unknown suffix '{suffix}'");                        // "12abc"
-        else if (isFloat && intSuffix) LiteralError($"a float cannot have suffix '{suffix}'");
-        else if (numberBase != 10 && floatSuffix) LiteralError("hex and binary literals cannot be floats");
+        else if (char.IsAsciiDigit(suffix[0])) LiteralError(Diagnostic.Create(Diagnostics.InvalidDigit, default, suffix[0], numberBase));   // "0b102"
+        else if (!floatSuffix && !intSuffix) LiteralError(Diagnostic.Create(Diagnostics.UnknownSuffix, default, suffix));   // "12abc"
+        else if (isFloat && intSuffix) LiteralError(Diagnostic.Create(Diagnostics.FloatIntegerSuffix, default, suffix));
+        else if (numberBase != 10 && floatSuffix) LiteralError(Diagnostic.Create(Diagnostics.NonDecimalFloat, default));
 
         isFloat |= floatSuffix;
-        if (!isFloat && overflow) LiteralError("integer literal is too large");
+        if (!isFloat && overflow) LiteralError(Diagnostic.Create(Diagnostics.IntegerTooLarge, default));
         _value = isFloat ? 0.0 : 0UL;                    // the value after an error
         if (isFloat && _literalError is null)
         {
@@ -389,12 +395,16 @@ One function lexes every form. It always consumes the whole literal, valid or no
             double d = suffix == "f32"
                 ? float.Parse(digits, NumberStyles.Float, CultureInfo.InvariantCulture)    // rounded once, to float
                 : double.Parse(digits, NumberStyles.Float, CultureInfo.InvariantCulture);
-            if (double.IsInfinity(d)) LiteralError("float literal is out of range");
+            if (double.IsInfinity(d)) LiteralError(Diagnostic.Create(Diagnostics.FloatOutOfRange, default));
             else _value = d;
         }
         else if (_literalError is null)
             _value = value;
-        if (_literalError is not null) Report(Span, _literalError);   // one error, over the whole literal
+        if (_literalError is not null)               // one error, over the whole literal
+        {
+            _literalError.Span = Span;
+            diagnostics.Add(_literalError);
+        }
         return isFloat ? SyntaxKind.FloatLiteralToken : SyntaxKind.IntLiteralToken;
     }
 
@@ -408,7 +418,7 @@ One function lexes every form. It always consumes the whole literal, valid or no
             char c = Peek();
             if (c == '_')
             {
-                if (count == 0 || DigitValue(Peek(1)) >= numberBase) LiteralError("'_' must be between digits");
+                if (count == 0 || DigitValue(Peek(1)) >= numberBase) LiteralError(Diagnostic.Create(Diagnostics.MisplacedSeparator, default));
                 _pos++;
                 continue;
             }
@@ -470,7 +480,7 @@ If you do add octal later, use an explicit `0o` prefix (`0o755`), like Rust, Pyt
         {
             if (pos_ == text_.size() || Peek() == '\n')
             {
-                Report(Span(), "unterminated string");   // the token ends here; lexing goes on
+                diagnostics_.Report<Diag::UnterminatedString>(Span());   // the token ends here; lexing goes on
                 break;
             }
             char c = text_[pos_++];
@@ -483,7 +493,7 @@ If you do add octal later, use an explicit `0o` prefix (`0o755`), like Rust, Pyt
             case 't': builder += '\t'; break;
             case '\\': case '"': builder += e; break;
             case 'u': UnicodeEscape(builder); break;     // \u{1F600}: reads the hex digits, appends the code point as UTF-8
-            default: Report({ uint32_t(pos_ - 2), 2 }, std::format("unknown escape '\\{}'", e));
+            default: diagnostics_.Report<Diag::UnknownEscape>({ uint32_t(pos_ - 2), 2 }, e);
             }
         }
         value_ = std::move(builder);
@@ -502,7 +512,7 @@ If you do add octal later, use an explicit `0o` prefix (`0o755`), like Rust, Pyt
         {
             if (_pos == text.Length || Peek() == '\n')
             {
-                Report(Span, "unterminated string");     // the token ends here; lexing goes on
+                diagnostics.Report(Diagnostics.UnterminatedString, Span);   // the token ends here; lexing goes on
                 break;
             }
             char c = text[_pos++];
@@ -516,7 +526,7 @@ If you do add octal later, use an explicit `0o` prefix (`0o755`), like Rust, Pyt
                 case 't': builder.Append('\t'); break;
                 case '\\' or '"': builder.Append(e); break;
                 case 'u': UnicodeEscape(builder); break; // \u{1F600}: reads the hex digits, appends new Rune(code point)
-                default: Report(new TextSpan(_pos - 2, 2), $"unknown escape '\\{e}'"); break;
+                default: diagnostics.Report(Diagnostics.UnknownEscape, new TextSpan(_pos - 2, 2), e); break;
             }
         }
         _value = builder.ToString();
@@ -553,7 +563,7 @@ Stopping an unterminated string at the end of the line keeps one missing quote f
                     else if (Peek() == '*' && Peek(1) == '/') { depth--; pos_ += 2; }
                     else pos_++;
                 }
-                if (depth > 0) Report({ uint32_t(commentStart), 2 }, "unterminated comment");
+                if (depth > 0) diagnostics_.Report<Diag::UnterminatedComment>({ uint32_t(commentStart), 2 });
             }
             else
                 return;
@@ -583,7 +593,7 @@ Stopping an unterminated string at the end of the line keeps one missing quote f
                     else if (Peek() == '*' && Peek(1) == '/') { depth--; _pos += 2; }
                     else _pos++;
                 }
-                if (depth > 0) Report(new TextSpan(commentStart, 2), "unterminated comment");
+                if (depth > 0) diagnostics.Report(Diagnostics.UnterminatedComment, new TextSpan(commentStart, 2));
             }
             else
                 return;
