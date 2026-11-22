@@ -4,73 +4,224 @@ The lexer turns text into **tokens**: the words of the language. It decides wher
 
 ## Tokens
 
-```text
-Token {
-    kind            // Identifier, IntLiteral, FloatLiteral, StringLiteral, keyword or punctuation kind, EndOfFile, Bad
-    span            // where it is in the source
-    text            // the characters, for identifiers and literals
-    value           // the parsed number or string, filled in by the lexer
-    leading_trivia  // whitespace and comments before it (optional; see below)
-}
-```
+=== "C++"
+
+    ```cpp
+    enum class SyntaxKind : uint8_t
+    {
+        IdentifierToken, IntLiteralToken, FloatLiteralToken, StringLiteralToken,
+        FnKeyword, LetKeyword, /* ...one per keyword */
+        PlusToken, MinusToken, ArrowToken, /* ...one per operator and delimiter */
+        EndOfFileToken, BadToken,
+    };
+
+    struct TextSpan { uint32_t start = 0, length = 0; uint32_t End() const { return start + length; } };
+
+    struct Token
+    {
+        SyntaxKind kind;
+        TextSpan span;                                   // where it is in the source
+        std::string_view text = {};                      // the characters: a view into the source text
+        std::variant<std::monostate, uint64_t, double, std::string> value = {};   // the parsed number or string
+        bool isMissing = false;                          // inserted by the parser's error recovery
+        // leading trivia: whitespace and comments before it (optional; see below)
+    };
+    ```
+
+=== "C#"
+
+    ```csharp
+    public enum SyntaxKind : byte
+    {
+        IdentifierToken, IntLiteralToken, FloatLiteralToken, StringLiteralToken,
+        FnKeyword, LetKeyword, /* ...one per keyword */
+        PlusToken, MinusToken, ArrowToken, /* ...one per operator and delimiter */
+        EndOfFileToken, BadToken,
+    }
+
+    public readonly record struct Token(
+        SyntaxKind Kind,
+        TextSpan Span,              // where it is in the source
+        string? Text = null,        // the characters, for identifiers and literals
+        object? Value = null,       // the parsed number (ulong or double) or string
+        bool IsMissing = false);    // inserted by the parser's error recovery
+        // leading trivia: whitespace and comments before it (optional; see below)
+    ```
 
 - Give **each keyword and each operator its own kind** (`FnKeyword`, `LetKeyword`, `PlusToken`, `ArrowToken`). The parser then switches on kinds, never on text.
-- End every token stream with an **EndOfFile** token whose span is empty and at the end of the text. The parser can then always look at the current token without checking for the end.
-- A character that starts no token becomes a **Bad** token with a diagnostic. Lexing continues.
+- End every token stream with an **`EndOfFileToken`** whose span is empty and at the end of the text. The parser can then always look at the current token without checking for the end.
+- A character that starts no token becomes a **`BadToken`** with a diagnostic. Lexing continues.
 
 ## The main loop
 
-```text
-lex(text):
-    pos = 0
-    tokens = []
-    loop:
-        skip_trivia()                         // whitespace and comments
-        start = pos
-        if pos == len(text):
-            tokens.append(Token(EndOfFile, span(start, 0)))
-            return tokens
-        c = text[pos]
-        kind =
-            if is_letter(c) or c == '_':  identifier_or_keyword()
-            elif is_digit(c):             number()
-            elif c == '"':                string()
-            else:                         punctuation()
-        tokens.append(Token(kind, span(start, pos - start), ...))
+=== "C++"
 
-identifier_or_keyword():
-    while pos < len(text) and (is_letter_or_digit(text[pos]) or text[pos] == '_'): pos += 1
-    word = text[start .. pos]
-    return keywords.get(word, Identifier)     // "fn" -> FnKeyword, "let" -> LetKeyword, ...
-```
+    ```cpp
+    class Lexer
+    {
+    public:
+        Lexer(std::string_view text, std::vector<Diagnostic>& diagnostics) : text_(text), diagnostics_(diagnostics) {}
+        std::vector<Token> Lex();
 
-Keywords are lexed as identifiers and then looked up in a table. A separate rule per keyword gets `format` wrong (it starts with `for`).
+    private:
+        char Peek(size_t offset = 0) const { return pos_ + offset < text_.size() ? text_[pos_ + offset] : '\0'; }
+        TextSpan Span() const { return { uint32_t(start_), uint32_t(pos_ - start_) }; }    // the current token
+        void Report(TextSpan span, std::string message) { diagnostics_.push_back({ span, std::move(message) }); }
+
+        std::string_view text_;
+        std::vector<Diagnostic>& diagnostics_;           // { span, message }: see source text and diagnostics
+        size_t pos_ = 0, start_ = 0;
+        decltype(Token::value) value_;                   // set by Number() and String()
+        // SkipTrivia, IdentifierOrKeyword, Number, String, and Punctuation are below
+    };
+
+    std::vector<Token> Lexer::Lex()
+    {
+        std::vector<Token> tokens;
+        for (;;)
+        {
+            SkipTrivia();                                // whitespace and comments
+            start_ = pos_;
+            value_ = {};
+            if (pos_ == text_.size())
+            {
+                tokens.push_back({ SyntaxKind::EndOfFileToken, Span() });
+                return tokens;
+            }
+            char c = Peek();
+            SyntaxKind kind = IsIdentifierStart(c) ? IdentifierOrKeyword()   // ASCII letter or '_'
+                            : IsDigit(c)           ? Number()
+                            : c == '"'             ? String()
+                                                   : Punctuation();
+            tokens.push_back({ kind, Span(), text_.substr(start_, pos_ - start_), std::move(value_) });
+        }
+    }
+
+    SyntaxKind Lexer::IdentifierOrKeyword()
+    {
+        while (IsIdentifierPart(Peek())) pos_++;
+        static const std::unordered_map<std::string_view, SyntaxKind> keywords = {
+            { "fn", SyntaxKind::FnKeyword }, { "let", SyntaxKind::LetKeyword }, // ...
+        };
+        auto it = keywords.find(text_.substr(start_, pos_ - start_));
+        return it != keywords.end() ? it->second : SyntaxKind::IdentifierToken;
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    public sealed class Lexer(string text, List<Diagnostic> diagnostics)
+    {
+        int _pos, _start;
+        object? _value;                                  // set by Number() and String()
+
+        char Peek(int offset = 0) => _pos + offset < text.Length ? text[_pos + offset] : '\0';
+        TextSpan Span => TextSpan.FromBounds(_start, _pos);   // the current token
+        void Report(TextSpan span, string message) => diagnostics.Add(new Diagnostic(span, message));
+
+        public List<Token> Lex()
+        {
+            var tokens = new List<Token>();
+            while (true)
+            {
+                SkipTrivia();                            // whitespace and comments
+                _start = _pos;
+                _value = null;
+                if (_pos == text.Length)
+                {
+                    tokens.Add(new Token(SyntaxKind.EndOfFileToken, Span));
+                    return tokens;
+                }
+                char c = Peek();
+                SyntaxKind kind = IsIdentifierStart(c) ? IdentifierOrKeyword()   // ASCII letter or '_'
+                                : char.IsAsciiDigit(c) ? Number()
+                                : c == '"'             ? String()
+                                :                        Punctuation();
+                string? tokenText = kind <= SyntaxKind.StringLiteralToken ? text[_start.._pos] : null;   // identifiers and literals
+                tokens.Add(new Token(kind, Span, tokenText, _value));
+            }
+        }
+
+        SyntaxKind IdentifierOrKeyword()
+        {
+            while (IsIdentifierPart(Peek())) _pos++;
+            return text[_start.._pos] switch
+            {
+                "fn" => SyntaxKind.FnKeyword,
+                "let" => SyntaxKind.LetKeyword,
+                // ...
+                _ => SyntaxKind.IdentifierToken,
+            };
+        }
+
+        // SkipTrivia, Number, String, and Punctuation are below
+    }
+    ```
+
+Keywords are lexed as identifiers and then looked up in a table. A separate rule per keyword gets `format` wrong (it starts with `for`). `Peek` returns `'\0'` past the end, so no check needs a length test; the loops that could run off the end compare `pos` with the length directly.
 
 ## Punctuation: longest match
 
 Multi-character operators win over their prefixes: `->` is one token, not `-` then `>`; `<=` is one token; `==` is not two `=`.
 
-```text
-punctuation():
-    c = text[pos]
-    next = text[pos + 1] if pos + 1 < len(text) else '\0'
-    pos += 1
-    switch c:
-        '+': return Plus
-        '-': if next == '>': pos += 1; return Arrow
-             return Minus
-        '=': if next == '=': pos += 1; return EqualsEquals
-             return Equals
-        '<': if next == '=': pos += 1; return LessEquals
-             return Less
-        '&': if next == '&': pos += 1; return AmpersandAmpersand
-             return Ampersand
-        '(': return OpenParen
+=== "C++"
+
+    ```cpp
+    SyntaxKind Lexer::Punctuation()
+    {
+        char c = Peek(), next = Peek(1);
+        pos_++;
+        auto pair = [&](char second, SyntaxKind two, SyntaxKind one)   // `two` if the next character is `second`
+        {
+            if (next != second) return one;
+            pos_++;
+            return two;
+        };
+        switch (c)
+        {
+        case '+': return SyntaxKind::PlusToken;
+        case '-': return pair('>', SyntaxKind::ArrowToken, SyntaxKind::MinusToken);
+        case '=': return pair('=', SyntaxKind::EqualsEqualsToken, SyntaxKind::EqualsToken);
+        case '<': return pair('=', SyntaxKind::LessEqualsToken, SyntaxKind::LessToken);
+        case '&': return pair('&', SyntaxKind::AmpersandAmpersandToken, SyntaxKind::AmpersandToken);
+        case '|': if (next == '|') { pos_++; return SyntaxKind::PipePipeToken; } break;   // a single '|' is not a token
+        case '(': return SyntaxKind::OpenParenToken;
         // ... the rest of the operators and delimiters
-        default:
-            report(bad_character(span(pos - 1, 1), c))
-            return Bad
-```
+        }
+        Report(Span(), std::format("unexpected character '{}'", c));
+        return SyntaxKind::BadToken;
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    SyntaxKind Punctuation()
+    {
+        char c = Peek(), next = Peek(1);
+        _pos++;
+        SyntaxKind Pair(char second, SyntaxKind two, SyntaxKind one)   // `two` if the next character is `second`
+        {
+            if (next != second) return one;
+            _pos++;
+            return two;
+        }
+        switch (c)
+        {
+            case '+': return SyntaxKind.PlusToken;
+            case '-': return Pair('>', SyntaxKind.ArrowToken, SyntaxKind.MinusToken);
+            case '=': return Pair('=', SyntaxKind.EqualsEqualsToken, SyntaxKind.EqualsToken);
+            case '<': return Pair('=', SyntaxKind.LessEqualsToken, SyntaxKind.LessToken);
+            case '&': return Pair('&', SyntaxKind.AmpersandAmpersandToken, SyntaxKind.AmpersandToken);
+            case '|' when next == '|': _pos++; return SyntaxKind.PipePipeToken;   // a single '|' is not a token
+            case '(': return SyntaxKind.OpenParenToken;
+            // ... the rest of the operators and delimiters
+        }
+        Report(Span, $"unexpected character '{c}'");
+        return SyntaxKind.BadToken;
+    }
+    ```
 
 One place where longest match is wrong: `>>` closing two generic argument lists, as in `List<List<i32>>`. Either lex `>` always as a single token and let the parser treat two adjacent `>` as a shift (checking that their spans touch), or have the parser split the token when it expects a `>`. Decide before adding generics.
 
@@ -96,54 +247,182 @@ One place where longest match is wrong: `>>` closing two generic argument lists,
 
 One function lexes every form. It always consumes the whole literal, valid or not, so a mistake gives **one token and one error**, never a valid prefix followed by junk (`0b102` as `0b10` and `2`).
 
-```text
-number():
-    start = pos
-    base = 10
-    if text[pos] == '0' and text[pos + 1] in "xX": base = 16; pos += 2
-    elif text[pos] == '0' and text[pos + 1] in "bB": base = 2; pos += 2
+=== "C++"
 
-    (value, count, overflow) = digits(base, buffer)          // the integer part
-    if count == 0:            report(expected digits after the prefix)       // "0x", "0xG"
-    if base == 10 and count > 1 and buffer[0] == '0': report(leading zeros are not allowed)
+    ```cpp
+    // Lexer members used here: std::string literalError_ (the first error in the current number), and
+    struct Digits { uint64_t value = 0; int count = 0; bool overflow = false; };
 
-    is_float = false
-    if base == 10 and text[pos] == '.' and is_digit(text[pos + 1]):
-        is_float = true; buffer += '.'; pos += 1
-        digits(10, buffer)
-    if base == 10 and text[pos] in "eE":
-        is_float = true; buffer += 'e'; pos += 1
-        if text[pos] in "+-": buffer += text[pos]; pos += 1
-        if digits(10, buffer).count == 0: report(expected digits in the exponent)   // "1e", "1e+"
+    void Lexer::LiteralError(std::string message) { if (literalError_.empty()) literalError_ = std::move(message); }
 
-    suffix = the run of letters, digits, and '_' that follows
-    if suffix starts with a digit:   report(invalid digit '{suffix[0]}' for base {base})     // "0b102"
-    elif suffix not in known:        report(unknown suffix '{suffix}')                       // "12abc", "3u7"
-    elif is_float and suffix is an integer suffix: report(a float cannot have suffix '{suffix}')
-    elif base != 10 and suffix is a float suffix:  report(hex and binary literals cannot be floats)
+    SyntaxKind Lexer::Number()
+    {
+        int base = 10;
+        if (Peek() == '0' && (Peek(1) == 'x' || Peek(1) == 'X')) { base = 16; pos_ += 2; }
+        else if (Peek() == '0' && (Peek(1) == 'b' || Peek(1) == 'B')) { base = 2; pos_ += 2; }
 
-    if is_float or suffix is a float suffix:
-        value = parse_float(buffer, as f32 if suffix == "f32" else f64)
-        return FloatLiteral
-    if overflow: report(integer literal is too large)
-    return IntLiteral
+        literalError_.clear();
+        std::string buffer;                              // the digits without separators, for floats
+        Digits digits = ReadDigits(base, buffer);        // the integer part
+        if (digits.count == 0) LiteralError("expected digits after the prefix");                       // "0x", "0xG"
+        else if (base == 10 && digits.count > 1 && buffer[0] == '0') LiteralError("leading zeros are not allowed");
 
-digits(base, buffer):                    // reads digits and separators of one base
-    value = 0, count = 0, overflow = false
-    loop:
-        c = text[pos]
-        if c == '_':
-            if count == 0 or not is_digit_in_base(text[pos + 1], base):
-                report('_' must be between digits)
-            pos += 1
-            continue
-        d = digit_value(c)               // '0'-'9', 'a'-'f', 'A'-'F'; otherwise none
-        if d is none or d >= base: break
-        if value > (MAX_U64 - d) / base: overflow = true
-        else: value = value * base + d
-        buffer += c, count += 1, pos += 1
-    return (value, count, overflow)
-```
+        bool isFloat = false;
+        if (base == 10 && Peek() == '.' && IsDigit(Peek(1)))
+        {
+            isFloat = true;
+            buffer += text_[pos_++];
+            ReadDigits(10, buffer);
+        }
+        if (base == 10 && (Peek() == 'e' || Peek() == 'E'))
+        {
+            isFloat = true;
+            buffer += text_[pos_++];
+            if (Peek() == '+' || Peek() == '-') buffer += text_[pos_++];
+            if (ReadDigits(10, buffer).count == 0) LiteralError("expected digits in the exponent");  // "1e", "1e+"
+        }
+
+        size_t suffixStart = pos_;
+        while (IsIdentifierPart(Peek())) pos_++;
+        std::string_view suffix = text_.substr(suffixStart, pos_ - suffixStart);
+        bool floatSuffix = suffix == "f32" || suffix == "f64";
+        if (suffix.empty()) {}
+        else if (IsDigit(suffix[0])) LiteralError(std::format("invalid digit '{}' for base {}", suffix[0], base)); // "0b102"
+        else if (!floatSuffix && !IsIntegerSuffix(suffix)) LiteralError(std::format("unknown suffix '{}'", suffix)); // "12abc"
+        else if (isFloat && !floatSuffix) LiteralError(std::format("a float cannot have suffix '{}'", suffix));
+        else if (base != 10 && floatSuffix) LiteralError("hex and binary literals cannot be floats");
+
+        isFloat = isFloat || floatSuffix;
+        if (!isFloat && digits.overflow) LiteralError("integer literal is too large");
+        value_ = isFloat ? decltype(value_)(0.0) : decltype(value_)(uint64_t(0));   // the value after an error
+        if (isFloat && literalError_.empty())
+        {
+            const char* first = buffer.data();
+            const char* last = first + buffer.size();
+            double d = 0;
+            float f = 0;
+            auto result = suffix == "f32" ? std::from_chars(first, last, f)          // rounded once, to float
+                                          : std::from_chars(first, last, d);
+            if (result.ec == std::errc::result_out_of_range) LiteralError("float literal is out of range");
+            else value_ = suffix == "f32" ? double(f) : d;
+        }
+        else if (literalError_.empty())
+            value_ = digits.value;
+        if (!literalError_.empty()) Report(Span(), literalError_);   // one error, over the whole literal
+        return isFloat ? SyntaxKind::FloatLiteralToken : SyntaxKind::IntLiteralToken;
+    }
+
+    Lexer::Digits Lexer::ReadDigits(int base, std::string& buffer)   // digits and separators of one base
+    {
+        Digits d;
+        for (;;)
+        {
+            char c = Peek();
+            if (c == '_')
+            {
+                if (d.count == 0 || DigitValue(Peek(1)) >= base) LiteralError("'_' must be between digits");
+                pos_++;
+                continue;
+            }
+            int digit = DigitValue(c);                   // 0 to 15 for '0'-'9', 'a'-'f', 'A'-'F'; 99 for anything else
+            if (digit >= base) break;
+            if (d.value > (UINT64_MAX - digit) / base) d.overflow = true;
+            else d.value = d.value * base + digit;
+            buffer += c;
+            d.count++;
+            pos_++;
+        }
+        return d;
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    string? _literalError;                               // the first error in the current number
+    void LiteralError(string message) => _literalError ??= message;
+
+    SyntaxKind Number()
+    {
+        int numberBase = 10;
+        if (Peek() == '0' && Peek(1) is 'x' or 'X') { numberBase = 16; _pos += 2; }
+        else if (Peek() == '0' && Peek(1) is 'b' or 'B') { numberBase = 2; _pos += 2; }
+
+        _literalError = null;
+        var buffer = new StringBuilder();                // the digits without separators, for floats
+        var (value, count, overflow) = ReadDigits(numberBase, buffer);   // the integer part
+        if (count == 0) LiteralError("expected digits after the prefix");                             // "0x", "0xG"
+        else if (numberBase == 10 && count > 1 && buffer[0] == '0') LiteralError("leading zeros are not allowed");
+
+        bool isFloat = false;
+        if (numberBase == 10 && Peek() == '.' && char.IsAsciiDigit(Peek(1)))
+        {
+            isFloat = true;
+            buffer.Append(text[_pos++]);
+            ReadDigits(10, buffer);
+        }
+        if (numberBase == 10 && Peek() is 'e' or 'E')
+        {
+            isFloat = true;
+            buffer.Append(text[_pos++]);
+            if (Peek() is '+' or '-') buffer.Append(text[_pos++]);
+            if (ReadDigits(10, buffer).Count == 0) LiteralError("expected digits in the exponent");  // "1e", "1e+"
+        }
+
+        int suffixStart = _pos;
+        while (IsIdentifierPart(Peek())) _pos++;
+        string suffix = text[suffixStart.._pos];
+        bool floatSuffix = suffix is "f32" or "f64";
+        bool intSuffix = suffix is "i8" or "i16" or "i32" or "i64" or "u8" or "u16" or "u32" or "u64";
+        if (suffix.Length == 0) { }
+        else if (char.IsAsciiDigit(suffix[0])) LiteralError($"invalid digit '{suffix[0]}' for base {numberBase}"); // "0b102"
+        else if (!floatSuffix && !intSuffix) LiteralError($"unknown suffix '{suffix}'");                        // "12abc"
+        else if (isFloat && intSuffix) LiteralError($"a float cannot have suffix '{suffix}'");
+        else if (numberBase != 10 && floatSuffix) LiteralError("hex and binary literals cannot be floats");
+
+        isFloat |= floatSuffix;
+        if (!isFloat && overflow) LiteralError("integer literal is too large");
+        _value = isFloat ? 0.0 : 0UL;                    // the value after an error
+        if (isFloat && _literalError is null)
+        {
+            string digits = buffer.ToString();
+            double d = suffix == "f32"
+                ? float.Parse(digits, NumberStyles.Float, CultureInfo.InvariantCulture)    // rounded once, to float
+                : double.Parse(digits, NumberStyles.Float, CultureInfo.InvariantCulture);
+            if (double.IsInfinity(d)) LiteralError("float literal is out of range");
+            else _value = d;
+        }
+        else if (_literalError is null)
+            _value = value;
+        if (_literalError is not null) Report(Span, _literalError);   // one error, over the whole literal
+        return isFloat ? SyntaxKind.FloatLiteralToken : SyntaxKind.IntLiteralToken;
+    }
+
+    (ulong Value, int Count, bool Overflow) ReadDigits(int numberBase, StringBuilder buffer)   // digits and separators of one base
+    {
+        ulong value = 0;
+        int count = 0;
+        bool overflow = false;
+        while (true)
+        {
+            char c = Peek();
+            if (c == '_')
+            {
+                if (count == 0 || DigitValue(Peek(1)) >= numberBase) LiteralError("'_' must be between digits");
+                _pos++;
+                continue;
+            }
+            int digit = DigitValue(c);                   // 0 to 15 for '0'-'9', 'a'-'f', 'A'-'F'; 99 for anything else
+            if (digit >= numberBase) break;
+            if (value > (ulong.MaxValue - (ulong)digit) / (ulong)numberBase) overflow = true;
+            else value = value * (ulong)numberBase + (ulong)digit;
+            buffer.Append(c);
+            count++;
+            _pos++;
+        }
+        return (value, count, overflow);
+    }
+    ```
 
 - Report **one** error per literal (keep the first), and still return a number token, with value 0, so the parser carries on without a cascade.
 - The integer value is built **digit by digit** with an overflow check, which works for every base and needs no parsing library.
@@ -180,31 +459,70 @@ If you do add octal later, use an explicit `0o` prefix (`0o755`), like Rust, Pyt
 
 ## Strings
 
-```text
-string():
-    pos += 1                                     // opening quote
-    builder = ""
-    loop:
-        if pos == len(text) or text[pos] == '\n':
-            report(unterminated_string(span(start, pos - start)))
-            break                                // the token ends here; lexing goes on
-        c = text[pos]
-        if c == '"': pos += 1; break
-        if c == '\\':
-            pos += 1
-            switch text[pos]:
-                'n': builder += '\n'
-                't': builder += '\t'
-                '\\', '"': builder += text[pos]
-                'u': read "{hex}" and append that code point
-                default: report(bad_escape(span(pos - 1, 2)))
-            pos += 1
-        else:
-            builder += c
-            pos += 1
-    value = builder
-    return StringLiteral
-```
+=== "C++"
+
+    ```cpp
+    SyntaxKind Lexer::String()
+    {
+        pos_++;                                          // the opening quote
+        std::string builder;
+        for (;;)
+        {
+            if (pos_ == text_.size() || Peek() == '\n')
+            {
+                Report(Span(), "unterminated string");   // the token ends here; lexing goes on
+                break;
+            }
+            char c = text_[pos_++];
+            if (c == '"') break;
+            if (c != '\\') { builder += c; continue; }
+            if (pos_ == text_.size() || Peek() == '\n') continue;   // a '\' at the end: reported as unterminated
+            switch (char e = text_[pos_++])
+            {
+            case 'n': builder += '\n'; break;
+            case 't': builder += '\t'; break;
+            case '\\': case '"': builder += e; break;
+            case 'u': UnicodeEscape(builder); break;     // \u{1F600}: reads the hex digits, appends the code point as UTF-8
+            default: Report({ uint32_t(pos_ - 2), 2 }, std::format("unknown escape '\\{}'", e));
+            }
+        }
+        value_ = std::move(builder);
+        return SyntaxKind::StringLiteralToken;
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    SyntaxKind String()
+    {
+        _pos++;                                          // the opening quote
+        var builder = new StringBuilder();
+        while (true)
+        {
+            if (_pos == text.Length || Peek() == '\n')
+            {
+                Report(Span, "unterminated string");     // the token ends here; lexing goes on
+                break;
+            }
+            char c = text[_pos++];
+            if (c == '"') break;
+            if (c != '\\') { builder.Append(c); continue; }
+            if (_pos == text.Length || Peek() == '\n') continue;   // a '\' at the end: reported as unterminated
+            char e = text[_pos++];
+            switch (e)
+            {
+                case 'n': builder.Append('\n'); break;
+                case 't': builder.Append('\t'); break;
+                case '\\' or '"': builder.Append(e); break;
+                case 'u': UnicodeEscape(builder); break; // \u{1F600}: reads the hex digits, appends new Rune(code point)
+                default: Report(new TextSpan(_pos - 2, 2), $"unknown escape '\\{e}'"); break;
+            }
+        }
+        _value = builder.ToString();
+        return SyntaxKind.StringLiteralToken;
+    }
+    ```
 
 Stopping an unterminated string at the end of the line keeps one missing quote from swallowing the rest of the file.
 
@@ -212,21 +530,66 @@ Stopping an unterminated string at the end of the line keeps one missing quote f
 
 **Trivia** is everything that is not a token: spaces, newlines, and comments.
 
-```text
-skip_trivia():
-    loop:
-        if is_whitespace(text[pos]): pos += 1
-        elif text[pos] == '/' and text[pos + 1] == '/':
-            while pos < len(text) and text[pos] != '\n': pos += 1
-        elif text[pos] == '/' and text[pos + 1] == '*':
-            depth = 1, pos += 2                   // nested block comments: /* a /* b */ c */
-            while depth > 0 and pos < len(text):
-                if starts_with("/*"): depth += 1; pos += 2
-                elif starts_with("*/"): depth -= 1; pos += 2
-                else: pos += 1
-            if depth > 0: report(unterminated_comment)
-        else: return
-```
+=== "C++"
+
+    ```cpp
+    void Lexer::SkipTrivia()
+    {
+        for (;;)
+        {
+            char c = Peek();
+            if (c == ' ' || c == '\t' || c == '\r' || c == '\n')
+                pos_++;
+            else if (c == '/' && Peek(1) == '/')
+                while (pos_ < text_.size() && Peek() != '\n') pos_++;
+            else if (c == '/' && Peek(1) == '*')
+            {
+                size_t commentStart = pos_;
+                int depth = 1;                           // nested block comments: /* a /* b */ c */
+                pos_ += 2;
+                while (depth > 0 && pos_ < text_.size())
+                {
+                    if (Peek() == '/' && Peek(1) == '*') { depth++; pos_ += 2; }
+                    else if (Peek() == '*' && Peek(1) == '/') { depth--; pos_ += 2; }
+                    else pos_++;
+                }
+                if (depth > 0) Report({ uint32_t(commentStart), 2 }, "unterminated comment");
+            }
+            else
+                return;
+        }
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    void SkipTrivia()
+    {
+        while (true)
+        {
+            char c = Peek();
+            if (c is ' ' or '\t' or '\r' or '\n')
+                _pos++;
+            else if (c == '/' && Peek(1) == '/')
+                while (_pos < text.Length && Peek() != '\n') _pos++;
+            else if (c == '/' && Peek(1) == '*')
+            {
+                int commentStart = _pos, depth = 1;      // nested block comments: /* a /* b */ c */
+                _pos += 2;
+                while (depth > 0 && _pos < text.Length)
+                {
+                    if (Peek() == '/' && Peek(1) == '*') { depth++; _pos += 2; }
+                    else if (Peek() == '*' && Peek(1) == '/') { depth--; _pos += 2; }
+                    else _pos++;
+                }
+                if (depth > 0) Report(new TextSpan(commentStart, 2), "unterminated comment");
+            }
+            else
+                return;
+        }
+    }
+    ```
 
 A compiler can throw trivia away. A **formatter**, a refactoring tool, or a language server needs it: attach the trivia to the following token (`leading_trivia`) and the text can be reproduced exactly. Keeping the spans is enough to start; the trivia text can be recovered from them.
 
@@ -263,14 +626,20 @@ An array is simpler and plenty fast for files of a few thousand lines. Change on
 
 **Small things that surprise.** A `#!` line at the very start of a file (so scripts can be run directly) is trivia. A file may end without a newline, inside a comment, or inside a string. Tabs count as one column in spans, even if editors display them wider.
 
+## C++ tips
+
+- Write the character tests yourself (`c >= 'a' && c <= 'z'`). `std::isalpha` and `std::isdigit` depend on the locale, and are undefined for negative `char` values, which every non-ASCII byte of UTF-8 is.
+- Keep the source text alive for as long as the tokens: `Token::text` is a `std::string_view` into it. Load each file into a `std::string` owned by the compilation.
+- `std::from_chars` (C++17; for floats, in libstdc++ since GCC 11 and in MSVC since 2019; check your version of libc++) parses floats correctly rounded and without the locale. `std::stod` and `strtod` read the decimal separator from the C locale.
+- `std::unordered_map<std::string_view, SyntaxKind>` finds keywords without allocating. For a dozen keywords a `switch` on length, then a comparison, is as fast.
+- With UTF-8 source, a non-ASCII byte outside a string or comment becomes a `BadToken` per byte. Decode a whole code point there and report it once.
+
 ## C# tips
 
-- Lex over a `string` with an `int` position, and keep `Peek(offset)` returning `'\0'` past the end, so no condition needs a length check.
 - `char.IsLetter` and `char.IsDigit` accept every Unicode letter and digit, including Arabic-Indic digits. Decide whether identifiers may be Unicode; for digits use `char.IsAsciiDigit`.
 - Build the keyword table once: `FrozenDictionary<string, SyntaxKind>`, or a `switch` expression on the text, which the C# compiler turns into a hash or length-based jump table. Look it up with the span (`.GetAlternateLookup<ReadOnlySpan<char>>()` on .NET 9 and later) to avoid allocating a string for every identifier.
 - `SearchValues.Create("+-*/%=<>!&|^~")` with `span.IndexOfAnyExcept` skips runs of a character class quickly, such as whitespace or digits.
-- Make `Token` a `readonly record struct`: `SyntaxKind Kind`, `TextSpan Span`, and `object? Value`. Store `Text` only for identifiers and literals.
-- Build integer values with the digit loop above (`ulong`, with the `(ulong.MaxValue - d) / base` overflow check), rather than `ulong.Parse`, so decimal, hex, and binary share one path and separators need no stripping.
-- Parse floats from the collected digits with `double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture)`, or `float.Parse` for an `f32` literal: `(float)double.Parse(text)` rounds twice, and for some inputs lands one bit away from the correctly rounded `float`. Without the invariant culture, `1.5` fails to parse on machines whose decimal separator is a comma.
-- Collect the digits into a `StringBuilder` or a pooled `char` buffer only for floats; integers need no buffer at all.
-- `char.IsAsciiDigit` and `char.IsAsciiHexDigit` (.NET 7) are the digit tests: unlike `char.IsDigit`, they reject non-ASCII digits.
+- `Token` as a `readonly record struct` keeps a token list compact. Storing `Text` only for identifiers and literals (the `kind <= StringLiteralToken` check relies on the enum's order) avoids a string per `(`.
+- Parse an `f32` literal with `float.Parse`, as above: `(float)double.Parse(text)` rounds twice, and for some inputs lands one bit away from the correctly rounded `float`. Without `CultureInfo.InvariantCulture`, `1.5` fails to parse on machines whose decimal separator is a comma.
+- The `StringBuilder` above is only needed for floats; a pooled `char` buffer, or a `stackalloc` span, avoids allocating one per number.
+- `char.IsAsciiDigit`, `char.IsAsciiHexDigit`, and `char.IsAsciiLetter` (.NET 7) are the character tests: unlike `char.IsDigit`, they reject non-ASCII digits.
