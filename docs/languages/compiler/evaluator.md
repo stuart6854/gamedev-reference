@@ -59,6 +59,8 @@ Run the **lowered** program: flat statement lists with labels and gotos, the sam
     }
     ```
 
+Integer values are cut down to their type's width after every operation:
+
 === "C++"
 
     ```cpp

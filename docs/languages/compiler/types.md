@@ -362,6 +362,8 @@ Two modes, instead of one:
     BoundExpression BindExpression(ExpressionSyntax syntax, TypeSymbol expected, Scope scope);
     ```
 
+Check mode is where literals get their types, and everything else falls back to synthesize and convert:
+
 === "C++"
 
     ```cpp

@@ -333,6 +333,8 @@ Functions and structs can be used before they are declared, and can refer to eac
     }
     ```
 
+Binding a body then walks its statements, with a new scope for each block:
+
 === "C++"
 
     ```cpp
