@@ -2,7 +2,7 @@
 
 How to build a compiler for a small statically typed language with local type inference, from source text to native code through LLVM. [Programming language design](../design.md) covers the choices a language makes. These pages cover implementing them: the data structures, the order to build things in, and the tests that keep it working.
 
-Each page gives pseudocode and then tips for C# (.NET 10). The backend uses [LLVMSharp](https://github.com/dotnet/LLVMSharp); the [LLVM](../llvm.md) page explains the IR, passes, and targets it drives.
+Each page gives code in C++ (C++20) and C# (.NET 10), then tips for each. The code generation pages use [LLVMSharp](https://github.com/dotnet/LLVMSharp) from C#; the [LLVM](../llvm.md) page explains the IR, passes, and targets it drives, with the C++ API alongside.
 
 ## The example language
 
@@ -82,18 +82,110 @@ tests/
   cases/                    // end-to-end .lang files with expected output
 ```
 
-Keep the compiler a **library**. The command line, a test, an editor plug-in, and a game that compiles scripts at run time are all just callers of `Compilation`.
+Keep the compiler a **library**. The command line, a test, an editor plug-in, and a game that compiles scripts at run time are all just callers of `Compilation`. The result is the lowered functions, which the caller passes to the [code generator](llvmsharp.md) or the [evaluator](evaluator.md).
 
-```text
-compile(files):
-    trees = [parse(file) for file in files]
-    program = bind(trees)                     // names, types; never throws on user errors
-    diagnostics = all diagnostics from the trees and the program
-    if diagnostics has errors: return diagnostics
-    lowered = lower(program)
-    module = generate(lowered)
-    return module, diagnostics                // warnings may still be there
-```
+=== "C++"
+
+    ```cpp
+    struct CompileResult
+    {
+        std::vector<Diagnostic> diagnostics;
+        std::unordered_map<const FunctionSymbol*, LoweredFunction> lowered = {};   // empty when there are errors
+        bool succeeded = false;
+    };
+
+    class Compilation
+    {
+    public:
+        // One file here. With several, each file gets its own bag, and the binder reports into the bag of the file it is binding.
+        CompileResult Compile(const SourceText& source)
+        {
+            DiagnosticBag diagnostics(source);
+            std::vector<Token> tokens = Lexer(source, diagnostics).Lex();
+            Parser parser(std::move(tokens), diagnostics);
+            const FileSyntax* tree = parser.ParseFile();
+            nodes_ = parser.TakeNodes();                    // the tree must outlive the binder's results
+            binder_ = std::make_unique<Binder>(diagnostics);
+            const Scope& global = binder_->BindProgram({ tree });   // names, types; never throws on user errors
+            if (diagnostics.HasErrors()) return { diagnostics.Items() };
+
+            CompileResult result;
+            for (const ItemSyntax* item : tree->items)
+            {
+                auto* syntax = dynamic_cast<const FunctionSyntax*>(item);
+                if (!syntax) continue;
+                auto* function = static_cast<const FunctionSymbol*>(global.Lookup(syntax->name.text));
+                LoweredFunction lowered = Lowerer::Lower(function);
+                FlowChecks::Run(function, *ControlFlowGraph::Build(lowered.body), diagnostics);   // missing returns, unassigned locals
+                result.lowered.emplace(function, std::move(lowered));
+            }
+            result.diagnostics = diagnostics.Items();       // warnings may still be there
+            result.succeeded = !diagnostics.HasErrors();
+            if (!result.succeeded) result.lowered.clear();
+            return result;
+        }
+
+    private:
+        std::vector<std::unique_ptr<SyntaxNode>> nodes_;
+        std::unique_ptr<Binder> binder_;
+    };
+    ```
+
+=== "C#"
+
+    ```csharp
+    public sealed record CompileResult(
+        ImmutableArray<Diagnostic> Diagnostics,
+        ImmutableDictionary<FunctionSymbol, ImmutableArray<BoundStatement>>? Lowered);   // null when there are errors
+
+    public static class Compilation
+    {
+        // One file here. With several, each file gets its own bag, and the binder reports into the bag of the file it is binding.
+        public static CompileResult Compile(SourceText source)
+        {
+            var diagnostics = new DiagnosticBag(source);
+            List<Token> tokens = new Lexer(source, diagnostics).Lex();
+            FileSyntax tree = new Parser(tokens, diagnostics).ParseFile();
+            Scope global = new Binder(diagnostics).BindProgram([tree]);           // names, types; never throws on user errors
+            if (diagnostics.HasErrors) return new CompileResult([.. diagnostics], null);
+
+            var lowered = ImmutableDictionary.CreateBuilder<FunctionSymbol, ImmutableArray<BoundStatement>>();
+            foreach (var item in tree.Items.OfType<FunctionSyntax>())
+            {
+                var function = (FunctionSymbol)global.Lookup(item.Name.Text!)!;
+                ImmutableArray<BoundStatement> body = Lowerer.Lower(function);
+                FlowChecks.Run(function, ControlFlowGraph.Build(body), diagnostics);   // missing returns, unassigned locals
+                lowered[function] = body;
+            }
+            if (diagnostics.HasErrors) return new CompileResult([.. diagnostics], null);
+            return new CompileResult([.. diagnostics], lowered.ToImmutable());   // warnings may still be there
+        }
+    }
+
+    public static class Compilation
+    {
+        // One file here. With several, each file gets its own bag, and the binder reports into the bag of the file it is binding.
+        public static CompileResult Compile(SourceText source)
+        {
+            var diagnostics = new DiagnosticBag(source);
+            List<Token> tokens = new Lexer(source, diagnostics).Lex();
+            FileSyntax tree = new Parser(tokens, diagnostics).ParseFile();
+            Scope global = new Binder(diagnostics).BindProgram([tree]);           // names, types; never throws on user errors
+            if (diagnostics.HasErrors) return new CompileResult([.. diagnostics], null);
+
+            var lowered = ImmutableDictionary.CreateBuilder<FunctionSymbol, ImmutableArray<BoundStatement>>();
+            foreach (var item in tree.Items.OfType<FunctionSyntax>())
+            {
+                var function = (FunctionSymbol)global.Lookup(item.Name.Text!)!;
+                ImmutableArray<BoundStatement> body = Lowerer.Lower(function);
+                FlowChecks.Run(function, ControlFlowGraph.Build(body), diagnostics);   // missing returns, unassigned locals
+                lowered[function] = body;
+            }
+            if (diagnostics.HasErrors) return new CompileResult([.. diagnostics], null);
+            return new CompileResult([.. diagnostics], lowered.ToImmutable());   // warnings may still be there
+        }
+    }
+    ```
 
 ## Order of work
 
@@ -109,9 +201,17 @@ Get something running end to end early, then grow every stage together. A comple
 
 The evaluator from step 1 stays useful: it is the reference that the compiled code is tested against.
 
+## C++ tips
+
+- **C++20** gives `std::format`, designated initialisers, `std::span`, and `contains` on maps; all the code here uses it.
+- **Build tests with sanitizers** (`-fsanitize=address,undefined` with GCC or Clang, `/fsanitize=address` with MSVC). A compiler is a graph of pointers, and use-after-free bugs in it are otherwise silent.
+- **One owner per stage**: the parser owns the syntax nodes and the binder the symbols and bound nodes, and everything else holds plain `const` pointers. Keep each owner alive for as long as anything reads its output, as `Compilation` does.
+- **Strings:** tokens hold `std::string_view`s into the source text; symbols copy names into `std::string`.
+- **Switch on a `kind` enum** to dispatch on node types, with `static_cast` to the concrete type. `dynamic_cast` is fine where there are only a few cases.
+
 ## C# tips
 
-- **Language features that fit compilers:** `sealed record` classes for nodes and symbols, `switch` expressions with type patterns for walking trees, `ImmutableArray<T>` for children, and `required` and `init` properties for building nodes.
+- **Language features that fit compilers:** `sealed class`es with primary constructors for nodes and symbols (not records: nodes compare by reference), `switch` expressions with type patterns for walking trees, and `ImmutableArray<T>` for children.
 - **Turn on nullable reference types and warnings as errors** from the start. A compiler is a large graph of objects, and null references are the commonest crash.
 - **Strings:** lex from `ReadOnlySpan<char>` or `ReadOnlyMemory<char>`, and create `string` objects only for identifiers and literals.
 - **Lookups:** `FrozenDictionary` (keyword tables, built once) and `SearchValues<char>` (character classes) are fast for tables that never change.

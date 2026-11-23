@@ -56,15 +56,45 @@ An **intrinsic** is a library function the code generator implements directly, u
 | `checked_add` | `llvm.sadd.with.overflow` | `add` and a branch on the overflow flag |
 | `copy(dst, src)` on slices | `llvm.memcpy` | `rep movs`, or a call to `memcpy` |
 
-```text
-emit_call(call):
-    f = call.function
-    if f has an intrinsic attribute:
-        return call_intrinsic(f.intrinsic_name, overload types from the argument types, arguments)
-    ...normal call
-```
+=== "C++"
 
-[Code generation](llvmsharp.md#conversions) has the `CallIntrinsic` helper. The [constant folder](lowering.md#constant-folding) should know the same intrinsics, so `sqrt(16.0)` in a constant becomes `4.0`.
+    ```cpp
+    llvm::Value* CodeGenerator::EmitCall(const BoundCall* call)
+    {
+        std::vector<llvm::Value*> arguments;
+        for (const BoundExpression* a : call->arguments) arguments.push_back(EmitExpression(a));
+        const FunctionSymbol* f = call->function;
+        if (f->intrinsic)                                   // #[intrinsic("llvm.sqrt")]
+        {
+            llvm::Intrinsic::ID id = llvm::Function::lookupIntrinsicID(*f->intrinsic);
+            if (id == llvm::Intrinsic::not_intrinsic) throw std::invalid_argument("unknown intrinsic " + *f->intrinsic);
+            // The maths intrinsics are overloaded on their first argument's type: llvm.sqrt.f32, llvm.ctpop.i32.
+            // LLVM 20 renamed getDeclaration to getOrInsertDeclaration.
+            llvm::Function* intrinsic = llvm::Intrinsic::getDeclaration(module_.get(), id, { arguments[0]->getType() });
+            return builder_.CreateCall(intrinsic, arguments);
+        }
+        return builder_.CreateCall(functions_.at(f), arguments);   // a normal call
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    LLVMValueRef EmitCall(BoundCall c)
+    {
+        var (function, type) = _functions[c.Function];
+        LLVMValueRef[] args = c.Arguments.Select(EmitExpression).ToArray();
+        if (c.Function.Intrinsic is string intrinsic)       // #[intrinsic("llvm.sqrt")]
+        {
+            // The maths intrinsics are overloaded on their first argument's type: llvm.sqrt.f32, llvm.ctpop.i32.
+            return CallIntrinsic(intrinsic, new[] { args[0].TypeOf }, type, args);
+        }
+        string name = c.Function.ReturnType == TypeSymbol.Void ? "" : "call";     // a void call cannot have a name
+        return _builder.BuildCall2(type, function, args, name);
+    }
+    ```
+
+The binder records the attribute's name on the function symbol (`intrinsic`). [Code generation](llvmsharp.md#conversions) has the `CallIntrinsic` helper. Intrinsics overloaded on more than one type, such as `llvm.memcpy.p0.p0.i64`, need their own list of overload types. The [constant folder](lowering.md#constant-folding) should know the same intrinsics, so `sqrt(16.0)` in a constant becomes `4.0`.
 
 ## The prelude
 
