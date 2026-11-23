@@ -162,6 +162,7 @@ A **scope** maps names to symbols, and has a parent:
 
     bool Binder::Declare(Scope& scope, Symbol* symbol, TextSpan nameSpan)
     {
+        if (symbol->name.empty()) return false;                    // a missing name: the parser has reported it
         Symbol* existing = scope.TryDeclare(symbol);
         if (!existing) return true;
         Diagnostic& d = diagnostics_.Report<Diag::DuplicateDefinition>(nameSpan, symbol->name);
@@ -197,6 +198,7 @@ A **scope** maps names to symbols, and has a parent:
 
     bool Declare(Scope scope, Symbol symbol, TextSpan nameSpan)
     {
+        if (symbol.Name.Length == 0) return false;                // a missing name: the parser has reported it
         if (scope.TryDeclare(symbol, out Symbol? existing)) return true;
         Diagnostic d = diagnostics.Report(Diagnostics.DuplicateDefinition, nameSpan, symbol.Name);
         if (existing!.Declaration is not null) d.WithRelated(existing.Declaration.Span, "first defined here");
@@ -298,15 +300,15 @@ Functions and structs can be used before they are declared, and can refer to eac
             switch (item)
             {
                 case StructSyntax s:
-                    var structSymbol = new StructSymbol(s.Name.Text!, s);
+                    var structSymbol = new StructSymbol(s.Name.Text ?? "", s);
                     if (Declare(_global, structSymbol, s.Name.Span)) structs.Add((structSymbol, s));
                     break;
                 case FunctionSyntax f:
-                    var function = new FunctionSymbol(f.Name.Text!, f, isExtern: false);
+                    var function = new FunctionSymbol(f.Name.Text ?? "", f, isExtern: false);
                     if (Declare(_global, function, f.Name.Span)) functions.Add((function, f, f.Parameters, f.ReturnClause));
                     break;
                 case ExternSyntax e:
-                    var external = new FunctionSymbol(e.Name.Text!, e, isExtern: true);
+                    var external = new FunctionSymbol(e.Name.Text ?? "", e, isExtern: true);
                     if (Declare(_global, external, e.Name.Span)) functions.Add((external, null, e.Parameters, e.ReturnClause));
                     break;
             }
@@ -314,10 +316,10 @@ Functions and structs can be used before they are declared, and can refer to eac
 
         // 2. Resolve signatures: field types, parameter types, return types.
         foreach (var (symbol, syntax) in structs)
-            symbol.Fields = [.. syntax.Fields.Items.Select((f, i) => new FieldSymbol(f.Name.Text!, f, BindType(f.Type), i))];
+            symbol.Fields = [.. syntax.Fields.Items.Select((f, i) => new FieldSymbol(f.Name.Text ?? "", f, BindType(f.Type), i))];
         foreach (var (symbol, _, parameters, returnClause) in functions)
         {
-            symbol.Parameters = [.. parameters.Items.Select((p, i) => new ParameterSymbol(p.Name.Text!, p, BindType(p.Type), i))];
+            symbol.Parameters = [.. parameters.Items.Select((p, i) => new ParameterSymbol(p.Name.Text ?? "", p, BindType(p.Type), i))];
             symbol.ReturnType = returnClause is null ? TypeSymbol.Void : BindType(returnClause.Type);
         }
         CheckStructCycles(structs.Select(s => s.Symbol));          // struct A { b: B } struct B { a: A } has infinite size
@@ -359,7 +361,7 @@ Functions and structs can be used before they are declared, and can refer to eac
             initializer = declared ? BindExpression(syntax->initializer, declared, scope)   // check: `let x: u8 = 300;` is an error
                                    : BindExpression(syntax->initializer, scope);           // synthesize: `let x = 300;` is an i32
         const Type* type = declared ? declared : initializer ? initializer->type : &Types::Error;
-        if (!declared && !initializer)
+        if (!declared && !initializer && !syntax->name.isMissing)
             diagnostics_.Report<Diag::CannotInfer>(syntax->name.span, syntax->name.text);  // `var x;`: see inference
         auto* local = Make<LocalSymbol>(std::string(syntax->name.text), syntax, type, syntax->kind == SyntaxKind::VarStatement);
         Declare(scope, local, syntax->name.span);
@@ -408,9 +410,9 @@ Functions and structs can be used before they are declared, and can refer to eac
             : declared is null ? BindExpression(syntax.Initializer, scope)          // synthesize: `let x = 300;` is an i32
             : BindExpression(syntax.Initializer, declared, scope);                  // check: `let x: u8 = 300;` is an error
         TypeSymbol type = declared ?? initializer?.Type ?? TypeSymbol.Error;
-        if (declared is null && initializer is null)
+        if (declared is null && initializer is null && !syntax.Name.IsMissing)
             diagnostics.Report(Diagnostics.CannotInfer, syntax.Name.Span, syntax.Name.Text!);   // `var x;`: see inference
-        var local = new LocalSymbol(syntax.Name.Text!, syntax, type, isMutable: syntax.Keyword.Kind == SyntaxKind.VarKeyword);
+        var local = new LocalSymbol(syntax.Name.Text ?? "", syntax, type, isMutable: syntax.Keyword.Kind == SyntaxKind.VarKeyword);
         Declare(scope, local, syntax.Name.Span);
         return new BoundLet(syntax, local, initializer);
     }
