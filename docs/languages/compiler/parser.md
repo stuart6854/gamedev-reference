@@ -312,6 +312,93 @@ Operators bind by **binding power**: higher binds tighter. Each infix operator h
 | Prefix | `-` `!` `*` `&` | | right power 17 |
 | Postfix | call `f(x)`, member `a.b` | | left power 19 |
 
+### How binding powers work
+
+**The problem.** The parser reads tokens left to right, but the tree has to follow precedence and associativity, not reading order:
+
+| Input | Left to right, or always recursing right | Correct |
+| --- | --- | --- |
+| `1 + 2 * 3` | `(1 + 2) * 3` | `1 + (2 * 3)` |
+| `a - b - c` | `a - (b - c)` | `(a - b) - c` |
+| `a = b = c` | `(a = b) = c` | `a = (b = c)` |
+
+Every operand in the middle (`2`, `b`) sits between two operators, and the only question the parser answers is: **which of the two gets it?**
+
+**Two pulls on each operand.** Think of each operator as pulling on its neighbours, with a left pull and a right pull: the (left, right) numbers in the table. The operand in the middle goes to whichever side pulls harder:
+
+- `1 + 2 * 3`: `2` is pulled by `+`'s right (12) and `*`'s left (13). `*` wins: `1 + (2 * 3)`.
+- `a - b - c`: `b` is pulled by the first `-`'s right (12) and the second `-`'s left (11). The first wins: `(a - b) - c`. A **higher right** power makes an operator win ties against its own kind: left-associative.
+- `a = b = c`: `b` is pulled by the first `=`'s right (1) and the second's left (2). The second wins: `a = (b = c)`. A **higher left** power makes it right-associative.
+
+Only which number is bigger at each operand matters, not the values themselves; leaving gaps lets new operators fit in between.
+
+**The loop and the recursion.** Without postfix operators, casts, and error handling, the parser is this:
+
+=== "C++"
+
+    ```cpp
+    ExpressionSyntax* Parser::ParseExpression(int minPower)    // the pull of the operator to my left
+    {
+        ExpressionSyntax* left = ParsePrefix();                // a literal, a name, ( ... ), or -x
+        for (;;)
+        {
+            std::optional<BindingPower> power = InfixPower(Current().kind);
+            if (!power || power->left < minPower) break;       // the operator to my left wins: let it have `left`
+            Token op = Advance();
+            ExpressionSyntax* right = ParseExpression(power->right);   // keeps going while operators out-pull `op`
+            left = Make<BinarySyntax>(left, op, right);
+        }
+        return left;
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    ExpressionSyntax ParseExpression(int minPower)             // the pull of the operator to my left
+    {
+        ExpressionSyntax left = ParsePrefix();                 // a literal, a name, ( ... ), or -x
+        while (true)
+        {
+            if (InfixPower(Current.Kind) is not var (leftPower, rightPower, _) || leftPower < minPower)
+                break;                                         // the operator to my left wins: let it have `left`
+            Token op = Advance();
+            ExpressionSyntax right = ParseExpression(rightPower);      // keeps going while operators out-pull `op`
+            left = new BinarySyntax(left, op, right);
+        }
+        return left;
+    }
+    ```
+
+- **`minPower` is how hard the operator to the left pulls** on the expression being built. At the top there is none, so it is 0.
+- **The `break` is the tug of war**: the next operator's left power against `minPower`. When the operator to the left wins, the call returns, and its caller attaches `left` to that operator.
+
+**A trace of `1 + 2 * 3 - 4`.** Each indent is a recursive call:
+
+| Step | Call | What happens |
+| --- | --- | --- |
+| 1 | A: `ParseExpression(0)` | `left = 1`. `+` has left 11 ≥ 0: take it, and parse its right side with `ParseExpression(12)` |
+| 2 | → B: `ParseExpression(12)` | `left = 2`. `*` has left 13 ≥ 12: it out-pulls `+`. Take it, and call `ParseExpression(14)` |
+| 3 | → → C: `ParseExpression(14)` | `left = 3`. `-` has left 11 < 14: it loses to `*`. Return `3` |
+| 4 | ← B | `left = 2 * 3`. `-` has left 11 < 12: it loses to `+` too. Return `(2 * 3)` |
+| 5 | ← A | `left = 1 + (2 * 3)`. `-` has left 11 ≥ 0: nothing to the left. Take it, and call `ParseExpression(12)` |
+| 6 | → D: `ParseExpression(12)` | `left = 4`. End of input: return `4` |
+| 7 | ← A | `left = (1 + (2 * 3)) - 4`. End of input: return |
+
+A call keeps taking operators for as long as they pull harder than the one that started it. When a weaker one turns up, the calls unwind to the level where it belongs.
+
+**Prefix, postfix, and parentheses** follow the same rule:
+
+- **Unary minus** has right power 17: `ParsePrefix` takes the `-` and calls `ParseExpression(17)`. In `-a * b`, `*` (13) cannot beat 17, so the operand is `a`: `(-a) * b`.
+- **Calls and member access** are postfix, with left power 19, more than any other operator, so they stay with what is just before them. The loop checks for `(` and `.` first: `a.b(c)` becomes `a`, then `a.b`, then `(a.b)(c)`, and since 19 > 17, `-a.b(c)` is `-(a.b(c))`.
+- **Parentheses** work because `ParsePrefix`, on `(`, calls `ParseExpression(0)`, which resets the pull inside, and then expects `)`. Call arguments do the same between their commas.
+
+To check your understanding, predict how `a - b + c`, `-x * y`, `a = b + c * d`, and `f(a, b).x` group, then print them with the [`Parenthesise` test helper](testing.md#unit-tests). Where one surprises you, find the operand in the middle and compare the two pulls on it.
+
+### The full parser
+
+The complete version adds the postfix operators, `as` casts, chained-comparison errors, and the struct literal flag:
+
 === "C++"
 
     ```cpp
