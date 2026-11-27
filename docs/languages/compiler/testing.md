@@ -91,6 +91,11 @@ For the parser, test precedence by printing with explicit parentheses (this lang
             auto* b = static_cast<const BinarySyntax*>(e);
             return std::format("({} {} {})", Parenthesise(b->left), b->op.text, Parenthesise(b->right));
         }
+        case SyntaxKind::AssignmentExpression:
+        {
+            auto* a = static_cast<const AssignmentSyntax*>(e);
+            return std::format("({} {} {})", Parenthesise(a->target), a->op.text, Parenthesise(a->value));
+        }
         case SyntaxKind::UnaryExpression:
         {
             auto* u = static_cast<const UnarySyntax*>(e);
@@ -129,6 +134,7 @@ For the parser, test precedence by printing with explicit parentheses (this lang
     static string Parenthesise(ExpressionSyntax e) => e switch      // every operation in parentheses
     {
         BinarySyntax b => $"({Parenthesise(b.Left)} {Describe.Kind(b.Operator.Kind).Trim('\'')} {Parenthesise(b.Right)})",
+        AssignmentSyntax a => $"({Parenthesise(a.Target)} {Describe.Kind(a.Operator.Kind).Trim('\'')} {Parenthesise(a.Value)})",
         UnarySyntax u => $"({Describe.Kind(u.Operator.Kind).Trim('\'')}{Parenthesise(u.Operand)})",
         MemberSyntax m => $"({Parenthesise(m.Target)}.{m.Name.Text})",
         CallSyntax c => $"({Parenthesise(c.Callee)}({string.Join(", ", c.Arguments.Items.Select(Parenthesise))}))",
