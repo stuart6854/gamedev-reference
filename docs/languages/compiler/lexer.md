@@ -179,8 +179,9 @@ Multi-character operators win over their prefixes: `->` is one token, not `-` th
         };
         switch (c)
         {
-        case '+': return SyntaxKind::PlusToken;
-        case '-': return pair('>', SyntaxKind::ArrowToken, SyntaxKind::MinusToken);
+        case '+': return pair('=', SyntaxKind::PlusEqualsToken, SyntaxKind::PlusToken);
+        case '-': return next == '>' ? pair('>', SyntaxKind::ArrowToken, SyntaxKind::MinusToken)
+                                     : pair('=', SyntaxKind::MinusEqualsToken, SyntaxKind::MinusToken);
         case '=': return pair('=', SyntaxKind::EqualsEqualsToken, SyntaxKind::EqualsToken);
         case '<': return pair('=', SyntaxKind::LessEqualsToken, SyntaxKind::LessToken);
         case '&': return pair('&', SyntaxKind::AmpersandAmpersandToken, SyntaxKind::AmpersandToken);
@@ -208,8 +209,9 @@ Multi-character operators win over their prefixes: `->` is one token, not `-` th
         }
         switch (c)
         {
-            case '+': return SyntaxKind.PlusToken;
-            case '-': return Pair('>', SyntaxKind.ArrowToken, SyntaxKind.MinusToken);
+            case '+': return Pair('=', SyntaxKind.PlusEqualsToken, SyntaxKind.PlusToken);
+            case '-': return next == '>' ? Pair('>', SyntaxKind.ArrowToken, SyntaxKind.MinusToken)
+                                         : Pair('=', SyntaxKind.MinusEqualsToken, SyntaxKind.MinusToken);
             case '=': return Pair('=', SyntaxKind.EqualsEqualsToken, SyntaxKind.EqualsToken);
             case '<': return Pair('=', SyntaxKind.LessEqualsToken, SyntaxKind.LessToken);
             case '&': return Pair('&', SyntaxKind.AmpersandAmpersandToken, SyntaxKind.AmpersandToken);

@@ -492,7 +492,7 @@ The bound tree is the syntax tree's meaning, with everything later stages need a
         explicit BoundError(const SyntaxNode* s) : BoundExpression(s, &Types::Error) {}
     };
 
-    // Also: BoundLiteral, BoundFunctionReference, BoundUnary, BoundCall, BoundFieldAccess, BoundStructLiteral, BoundAssignment.
+    // Also: BoundLiteral, BoundFunctionReference, BoundUnary, BoundCall, BoundFieldAccess, BoundStructLiteral, BoundAssignment, BoundCompoundAssignment.
     // Statements: BoundBlock, BoundLet, BoundExpressionStatement, BoundReturn, BoundIf, BoundWhile.
     ```
 
@@ -541,7 +541,7 @@ The bound tree is the syntax tree's meaning, with everything later stages need a
         public override TypeSymbol Type => TypeSymbol.Error;
     }
 
-    // Also: BoundLiteral, BoundFunctionReference, BoundUnary, BoundCall, BoundFieldAccess, BoundStructLiteral, BoundAssignment.
+    // Also: BoundLiteral, BoundFunctionReference, BoundUnary, BoundCall, BoundFieldAccess, BoundStructLiteral, BoundAssignment, BoundCompoundAssignment.
     // Statements: BoundBlock, BoundLet, BoundExpressionStatement, BoundReturn, BoundIf, BoundWhile.
     ```
 

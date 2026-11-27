@@ -301,7 +301,7 @@ Operators bind by **binding power**: higher binds tighter. Each infix operator h
 
 | Precedence | Operators | Associativity | (left, right) power |
 | --- | --- | --- | --- |
-| Assignment | `=` | right | (2, 1) |
+| Assignment | `=` `+=` `-=` `*=` `/=` `%=` | right | (2, 1) |
 | Logical or | `\|\|` | left | (3, 4) |
 | Logical and | `&&` | left | (5, 6) |
 | Equality | `==` `!=` | none (`a == b == c` is an error) | (7, 8) |
@@ -328,11 +328,11 @@ Every operand in the middle (`2`, `b`) sits between two operators, and the only 
 
 - `1 + 2 * 3`: `2` is pulled by `+`'s right (12) and `*`'s left (13). `*` wins: `1 + (2 * 3)`.
 - `a - b - c`: `b` is pulled by the first `-`'s right (12) and the second `-`'s left (11). The first wins: `(a - b) - c`. A **higher right** power makes an operator win ties against its own kind: left-associative.
-- `a = b = c`: `b` is pulled by the first `=`'s right (1) and the second's left (2). The second wins: `a = (b = c)`. A **higher left** power makes it right-associative.
+- `a = b = c`: `b` is pulled by the first `=`'s right (1) and the second's left (2). The second wins: `a = (b = c)`. A **higher left** power makes it right-associative. (This language then rejects the inner assignment in the binder: see [assignment](#assignment).)
 
 Only which number is bigger at each operand matters, not the values themselves; leaving gaps lets new operators fit in between.
 
-**The loop and the recursion.** Without postfix operators, casts, and error handling, the parser is this:
+**The loop and the recursion.** Without postfix operators, casts, [assignment](#assignment), and error handling, the parser is this:
 
 === "C++"
 
@@ -397,7 +397,7 @@ To check your understanding, predict how `a - b + c`, `-x * y`, `a = b + c * d`,
 
 ### The full parser
 
-The complete version adds the postfix operators, `as` casts, chained-comparison errors, and the struct literal flag:
+The complete version adds the postfix operators, `as` casts, assignment nodes, chained-comparison errors, and the struct literal flag:
 
 === "C++"
 
@@ -405,34 +405,46 @@ The complete version adds the postfix operators, `as` casts, chained-comparison 
     struct BindingPower { int left, right; bool nonAssociative = false; };
     constexpr int PrefixPower = 17, PostfixPower = 19;
 
-    std::optional<BindingPower> InfixPower(SyntaxKind kind)    // the table above
+    bool IsAssignmentOperator(SyntaxKind kind)
     {
         switch (kind)
         {
-        case SyntaxKind::EqualsToken:             return BindingPower{ 2, 1 };   // right-associative
+        case SyntaxKind::EqualsToken: case SyntaxKind::PlusEqualsToken: case SyntaxKind::MinusEqualsToken:
+        case SyntaxKind::StarEqualsToken: case SyntaxKind::SlashEqualsToken: case SyntaxKind::PercentEqualsToken: return true;
+        default: return false;
+        }
+    }
+
+    std::optional<BindingPower> InfixPower(SyntaxKind kind)
+    {
+        switch (kind)
+        {
+        case SyntaxKind::EqualsToken:      case SyntaxKind::PlusEqualsToken:  case SyntaxKind::MinusEqualsToken:
+        case SyntaxKind::StarEqualsToken:  case SyntaxKind::SlashEqualsToken: case SyntaxKind::PercentEqualsToken:
+                                                  return BindingPower{ 2, 1 };    // = += -= ...: right-associative
         case SyntaxKind::PipePipeToken:           return BindingPower{ 3, 4 };
         case SyntaxKind::AmpersandAmpersandToken: return BindingPower{ 5, 6 };
         case SyntaxKind::EqualsEqualsToken:
         case SyntaxKind::BangEqualsToken:         return BindingPower{ 7, 8, true };
-        case SyntaxKind::LessToken:    case SyntaxKind::LessEqualsToken:
-        case SyntaxKind::GreaterToken: case SyntaxKind::GreaterEqualsToken:
+        case SyntaxKind::LessToken:      case SyntaxKind::LessEqualsToken:
+        case SyntaxKind::GreaterToken:   case SyntaxKind::GreaterEqualsToken:
                                                   return BindingPower{ 9, 10, true };
         case SyntaxKind::PlusToken:
         case SyntaxKind::MinusToken:              return BindingPower{ 11, 12 };
         case SyntaxKind::StarToken: case SyntaxKind::SlashToken:
         case SyntaxKind::PercentToken:            return BindingPower{ 13, 14 };
         case SyntaxKind::AsKeyword:               return BindingPower{ 15, 16 };
-        default:                                  return std::nullopt;           // not an infix operator
+        default:                                  return std::nullopt;            // not an infix operator
         }
     }
 
-    ExpressionSyntax* Parser::ParseExpression(int minPower, bool allowStructLiteral)   // declared with = 0, = true
+    ExpressionSyntax* Parser::ParseExpression(int minPower, bool allowStructLiteral)
     {
         ExpressionSyntax* left = ParsePrefix(allowStructLiteral);
         for (;;)
         {
             SyntaxKind op = Current().kind;
-            if (op == SyntaxKind::OpenParenToken || op == SyntaxKind::DotToken)  // postfix: call, member access
+            if (op == SyntaxKind::OpenParenToken || op == SyntaxKind::DotToken)   // postfix: call, member access
             {
                 if (PostfixPower < minPower) break;
                 left = ParsePostfix(left);
@@ -441,15 +453,20 @@ The complete version adds the postfix operators, `as` casts, chained-comparison 
             std::optional<BindingPower> power = InfixPower(op);
             if (!power || power->left < minPower) break;
             Token opToken = Advance();
-            if (op == SyntaxKind::AsKeyword)            // the right side is a type, not an expression
+            if (op == SyntaxKind::AsKeyword)                       // the right side is a type, not an expression
             {
                 left = Make<CastSyntax>(left, opToken, ParseType());
                 continue;
             }
             ExpressionSyntax* right = ParseExpression(power->right, allowStructLiteral);
+            if (IsAssignmentOperator(op))
+            {
+                left = Make<AssignmentSyntax>(left, opToken, right);   // its own node: not arithmetic
+                continue;
+            }
             left = Make<BinarySyntax>(left, opToken, right);
             std::optional<BindingPower> next = InfixPower(Current().kind);
-            if (power->nonAssociative && next && next->left == power->left)      // a == b == c
+            if (power->nonAssociative && next && next->left == power->left)        // a == b == c
                 diagnostics_.Report<Diag::ChainedComparison>(Current().span);
         }
         return left;
@@ -504,9 +521,12 @@ The complete version adds the postfix operators, `as` casts, chained-comparison 
     ```csharp
     const int PrefixPower = 17, PostfixPower = 19;
 
-    static (int Left, int Right, bool NonAssociative)? InfixPower(SyntaxKind kind) => kind switch   // the table above
+    static bool IsAssignmentOperator(SyntaxKind kind) => kind is SyntaxKind.EqualsToken or SyntaxKind.PlusEqualsToken
+        or SyntaxKind.MinusEqualsToken or SyntaxKind.StarEqualsToken or SyntaxKind.SlashEqualsToken or SyntaxKind.PercentEqualsToken;
+
+    static (int Left, int Right, bool NonAssociative)? InfixPower(SyntaxKind kind) => kind switch
     {
-        SyntaxKind.EqualsToken => (2, 1, false),                         // right-associative
+        _ when IsAssignmentOperator(kind) => (2, 1, false),            // = += -= *= /= %=: right-associative
         SyntaxKind.PipePipeToken => (3, 4, false),
         SyntaxKind.AmpersandAmpersandToken => (5, 6, false),
         SyntaxKind.EqualsEqualsToken or SyntaxKind.BangEqualsToken => (7, 8, true),
@@ -515,7 +535,7 @@ The complete version adds the postfix operators, `as` casts, chained-comparison 
         SyntaxKind.PlusToken or SyntaxKind.MinusToken => (11, 12, false),
         SyntaxKind.StarToken or SyntaxKind.SlashToken or SyntaxKind.PercentToken => (13, 14, false),
         SyntaxKind.AsKeyword => (15, 16, false),
-        _ => null,                                                       // not an infix operator
+        _ => null,                                                        // not an infix operator
     };
 
     ExpressionSyntax ParseExpression(int minPower = 0, bool allowStructLiteral = true)
@@ -524,7 +544,7 @@ The complete version adds the postfix operators, `as` casts, chained-comparison 
         while (true)
         {
             SyntaxKind op = Current.Kind;
-            if (op is SyntaxKind.OpenParenToken or SyntaxKind.DotToken) // postfix: call, member access
+            if (op is SyntaxKind.OpenParenToken or SyntaxKind.DotToken)  // postfix: call, member access
             {
                 if (PostfixPower < minPower) break;
                 left = ParsePostfix(left);
@@ -532,14 +552,19 @@ The complete version adds the postfix operators, `as` casts, chained-comparison 
             }
             if (InfixPower(op) is not var (leftPower, rightPower, nonAssociative) || leftPower < minPower) break;
             Token opToken = Advance();
-            if (op == SyntaxKind.AsKeyword)                              // the right side is a type, not an expression
+            if (op == SyntaxKind.AsKeyword)                               // the right side is a type, not an expression
             {
                 left = new CastSyntax(left, opToken, ParseType());
                 continue;
             }
             ExpressionSyntax right = ParseExpression(rightPower, allowStructLiteral);
+            if (IsAssignmentOperator(op))
+            {
+                left = new AssignmentSyntax(left, opToken, right);        // its own node: not arithmetic
+                continue;
+            }
             left = new BinarySyntax(left, opToken, right);
-            if (nonAssociative && InfixPower(Current.Kind)?.Left == leftPower)   // a == b == c
+            if (nonAssociative && InfixPower(Current.Kind)?.Left == leftPower)    // a == b == c
                 diagnostics.Report(Diagnostics.ChainedComparison, Current.Span);
         }
         return left;
@@ -581,6 +606,273 @@ The complete version adds the postfix operators, `as` casts, chained-comparison 
         return new MemberSyntax(left, dot, Expect(SyntaxKind.IdentifierToken));
     }
     ```
+
+### Assignment
+
+`=` and the compound operators share the lowest binding power, (2, 1), so they are right-associative and everything else on either side binds first: `x = a + b * c` assigns the whole sum. Four decisions go with them.
+
+**A node of its own.** `x = 1` is not arithmetic. Parsing it into an `AssignmentSyntax` (the full parser above does this for every assignment operator) means no later stage can mistake it for a `BinarySyntax` and look up an operator `=` for it:
+
+=== "C++"
+
+    ```cpp
+    struct AssignmentSyntax final : ExpressionSyntax
+    {
+        AssignmentSyntax(ExpressionSyntax* target, Token op, ExpressionSyntax* value)
+            : ExpressionSyntax(SyntaxKind::AssignmentExpression), target(target), op(op), value(value) {}
+        void GetChildren(std::vector<SyntaxChild>& out) const override { out.insert(out.end(), { target, &op, value }); }
+        ExpressionSyntax* const target;
+        const Token op;                                // `=`, or a compound operator such as `+=`
+        ExpressionSyntax* const value;
+    };
+    ```
+
+=== "C#"
+
+    ```csharp
+    public sealed class AssignmentSyntax(ExpressionSyntax target, Token op, ExpressionSyntax value) : ExpressionSyntax
+    {
+        public ExpressionSyntax Target => target;
+        public Token Operator => op;                      // `=`, or a compound operator such as `+=`
+        public ExpressionSyntax Value => value;
+        public override SyntaxKind Kind => SyntaxKind.AssignmentExpression;
+        public override IEnumerable<SyntaxNodeOrToken> GetChildren() { yield return target; yield return op; yield return value; }
+    }
+    ```
+
+**Statement or expression.** In C, an assignment is an expression with a value, so `a = b = c` works, and so does `if (x = 1)`, which is almost always a typo for `==`. The choices:
+
+| Rule | `a = b = c` | `if x = 1` | Used by |
+| --- | --- | --- | --- |
+| An expression whose value is the assigned value | allowed | allowed, a classic bug | C, C++; C# and Java too, but there a condition must be `bool`, so only `if (b = true)` slips through |
+| A statement, in the grammar | parse error | parse error | Go (Python is similar, with `a = b = c` as a special chained form) |
+| Parsed as an expression, but its type is `void` and it may only stand as a whole statement | error | error, with a fix | Rust, Swift (in effect) |
+
+The last keeps the parser simple, because assignment is one more operator in the loop, and puts the rule in the binder, which can give a useful message. A statement that is just an assignment binds it; an assignment anywhere else is reported, and when a `bool` was expected, the error offers `==` as a [fix](source-diagnostics.md#reporting):
+
+=== "C++"
+
+    ```cpp
+    // In BindStatement: a whole expression statement is the one place an assignment may be.
+    case SyntaxKind::ExpressionStatement:
+    {
+        auto* s = static_cast<const ExpressionStatementSyntax*>(syntax);
+        if (s->expression->kind == SyntaxKind::AssignmentExpression)
+            return Make<BoundExpressionStatement>(s, BindAssignment(static_cast<const AssignmentSyntax*>(s->expression), scope));
+        return Make<BoundExpressionStatement>(s, BindExpression(s->expression, scope));
+    }
+
+    // In BindExpression, both modes: an assignment anywhere else.
+    //     case SyntaxKind::AssignmentExpression: return BindAssignmentAsValue(assignment, expected, scope);
+
+    // `if x = 1`, `let y = (x = 1);`, and the inner `=` of `a = b = c`.
+    const BoundExpression* Binder::BindAssignmentAsValue(const AssignmentSyntax* syntax, const Type* expected, const Scope& scope)
+    {
+        Diagnostic& d = diagnostics_.Report<Diag::AssignmentAsValue>(syntax->op.span);
+        if (expected == &Types::Bool && syntax->op.kind == SyntaxKind::EqualsToken)
+            d.WithFix(syntax->op.span, "==");                      // `if x = 1`: almost always meant `==`
+        BindAssignment(syntax, scope);                             // still check both sides
+        return Make<BoundError>(syntax);                           // and report nothing more about it
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    // In BindStatement: a whole expression statement is the one place an assignment may be.
+    ExpressionStatementSyntax { Expression: AssignmentSyntax a } e => new BoundExpressionStatement(e, BindAssignment(a, scope)),
+    ExpressionStatementSyntax e => new BoundExpressionStatement(e, BindExpression(e.Expression, scope)),
+
+    // In BindExpression, both modes: an assignment anywhere else.
+    //     AssignmentSyntax a => BindAssignmentAsValue(a, expected, scope),
+
+    // `if x = 1`, `let y = (x = 1);`, and the inner `=` of `a = b = c`.
+    BoundExpression BindAssignmentAsValue(AssignmentSyntax syntax, TypeSymbol? expected, Scope scope)
+    {
+        Diagnostic d = diagnostics.Report(Diagnostics.AssignmentAsValue, syntax.Operator.Span);
+        if (expected == TypeSymbol.Bool && syntax.Operator.Kind == SyntaxKind.EqualsToken)
+            d.WithFix(syntax.Operator.Span, "==");                            // `if x = 1`: almost always meant `==`
+        BindAssignment(syntax, scope);                                       // still check both sides
+        return new BoundError(syntax);                                       // and report nothing more about it
+    }
+    ```
+
+```text
+main.lang:1:36: error E0213: an assignment has no value; it can only be a statement
+  |
+1 | fn main() -> i32 { var x = 1; if x = 2 { } return 0; }
+  |                                    ^
+  help: replace with '=='
+```
+
+**What can be assigned to.** The parser accepts any expression on the left, so `1 = 2` parses, and the binder decides. That keeps the grammar one rule, and lets the error say why: "cannot be assigned to" for `1` or `f()`, "immutable" for a `let`. A target is a variable, a field of an assignable struct, or anything through a pointer (`*p`, `p.x` with `p: *Vec2`):
+
+=== "C++"
+
+    ```cpp
+    const BoundExpression* Binder::BindAssignment(const AssignmentSyntax* syntax, const Scope& scope)   // only as a whole statement
+    {
+        const BoundExpression* target = BindExpression(syntax->target, scope);
+        if (target->type == &Types::Error) return Make<BoundError>(syntax);
+        const BoundExpression* value = BindExpression(syntax->value, target->type, scope);   // check: `x += 1` with x: u8 adds a u8
+        const Symbol* root = RootVariable(target);
+        if (!root && !ThroughPointer(target))                      // 1 = 2, f() = 3, (a + b) = c
+        {
+            diagnostics_.Report<Diag::NotAssignable>(syntax->target->Span());
+            return Make<BoundError>(syntax);
+        }
+        auto* local = dynamic_cast<const LocalSymbol*>(root);
+        if (dynamic_cast<const ParameterSymbol*>(root) || (local && !local->isMutable))
+        {
+            diagnostics_.Report<Diag::ImmutableAssignment>(syntax->target->Span(), root->name)
+                .WithRelated(root->declaration->Span(), "declared here");
+            return Make<BoundError>(syntax);
+        }
+        if (syntax->op.kind == SyntaxKind::EqualsToken) return Make<BoundAssignment>(syntax, target, value);
+
+        SyntaxKind arithmetic;                                     // += is +, -= is -, ...
+        switch (syntax->op.kind)
+        {
+        case SyntaxKind::PlusEqualsToken:  arithmetic = SyntaxKind::PlusToken; break;
+        case SyntaxKind::MinusEqualsToken: arithmetic = SyntaxKind::MinusToken; break;
+        case SyntaxKind::StarEqualsToken:  arithmetic = SyntaxKind::StarToken; break;
+        case SyntaxKind::SlashEqualsToken: arithmetic = SyntaxKind::SlashToken; break;
+        default:                           arithmetic = SyntaxKind::PercentToken; break;
+        }
+        const BoundBinaryOperator* op = LookupBinaryOperator(arithmetic, target->type, target->type);
+        if (!op) diagnostics_.Report<Diag::NoBinaryOperator>(syntax->op.span, syntax->op.text, target->type->Display(), target->type->Display());
+        if (!op || value->type == &Types::Error) return Make<BoundError>(syntax);
+        return Make<BoundCompoundAssignment>(syntax, target, op, value);
+    }
+
+    static const Symbol* RootVariable(const BoundExpression* e)   // x, x.a, x.a.b: the variable being changed
+    {
+        if (auto* v = dynamic_cast<const BoundVariable*>(e)) return v->symbol;
+        if (auto* f = dynamic_cast<const BoundFieldAccess*>(e); f && f->receiver->type->kind == TypeKind::Struct) return RootVariable(f->receiver);
+        return nullptr;                                            // through a pointer (or not assignable)
+    }
+
+    static bool ThroughPointer(const BoundExpression* e)          // *p, p.x, (*p).a.b: changes memory, not a variable
+    {
+        if (auto* u = dynamic_cast<const BoundUnary*>(e)) return u->op == UnaryOperatorKind::Dereference;
+        if (auto* f = dynamic_cast<const BoundFieldAccess*>(e)) return ThroughPointer(f->receiver);
+        return false;
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    BoundExpression BindAssignment(AssignmentSyntax syntax, Scope scope)   // only as a whole statement
+    {
+        BoundExpression target = BindExpression(syntax.Target, scope);
+        if (target.Type == TypeSymbol.Error) return new BoundError(syntax);
+        BoundExpression value = BindExpression(syntax.Value, target.Type, scope);   // check: `x += 1` with x: u8 adds a u8
+        Symbol? root = RootVariable(target);
+        if (root is null && !ThroughPointer(target))                     // 1 = 2, f() = 3, (a + b) = c
+        {
+            diagnostics.Report(Diagnostics.NotAssignable, syntax.Target.Span);
+            return new BoundError(syntax);
+        }
+        if (root is ParameterSymbol or LocalSymbol { IsMutable: false })
+        {
+            diagnostics.Report(Diagnostics.ImmutableAssignment, syntax.Target.Span, root.Name)
+                       .WithRelated(root.Declaration!.Span, "declared here");
+            return new BoundError(syntax);
+        }
+        if (syntax.Operator.Kind == SyntaxKind.EqualsToken) return new BoundAssignment(syntax, target, value);
+
+        SyntaxKind arithmetic = syntax.Operator.Kind switch                    // += is +, -= is -, ...
+        {
+            SyntaxKind.PlusEqualsToken => SyntaxKind.PlusToken,
+            SyntaxKind.MinusEqualsToken => SyntaxKind.MinusToken,
+            SyntaxKind.StarEqualsToken => SyntaxKind.StarToken,
+            SyntaxKind.SlashEqualsToken => SyntaxKind.SlashToken,
+            _ => SyntaxKind.PercentToken,
+        };
+        BoundBinaryOperator? op = Operators.LookupBinary(arithmetic, target.Type, target.Type);
+        if (op is null || value.Type == TypeSymbol.Error)
+        {
+            if (op is null) diagnostics.Report(Diagnostics.NoBinaryOperator, syntax.Operator.Span, Describe.Kind(syntax.Operator.Kind).Trim('\''),
+                                               target.Type.ToString()!, target.Type.ToString()!);
+            return new BoundError(syntax);
+        }
+        return new BoundCompoundAssignment(syntax, target, op, value);
+    }
+
+    static Symbol? RootVariable(BoundExpression e) => e switch   // x, x.a, x.a.b: the variable being changed
+    {
+        BoundVariable v => v.Symbol,
+        BoundFieldAccess { Receiver: var r } when r.Type is StructType => RootVariable(r),
+        _ => null,                                               // through a pointer (or not assignable)
+    };
+
+    static bool ThroughPointer(BoundExpression e) => e switch   // *p, p.x, (*p).a.b: changes memory, not a variable
+    {
+        BoundUnary { Operator: UnaryOperatorKind.Dereference } => true,
+        BoundFieldAccess f => ThroughPointer(f.Receiver),
+        _ => false,
+    };
+    ```
+
+**Compound assignment.** The lexer reads `+=` as one token (longest match, as for `->`), and the parser treats it like `=`. The binder checks that the arithmetic operator exists for the target's type, and [lowering](lowering.md#desugaring) rewrites `x += e` as `x = x + e`. The target must be **evaluated once**: in `next(p).x += 1`, `next` must be called once, not twice. Lowering computes any pointer in the target into a temporary first:
+
+=== "C++"
+
+    ```cpp
+    void LowerCompoundAssignment(const BoundExpressionStatement* statement, const BoundCompoundAssignment* c)
+    {
+        const BoundExpression* target = EvaluateAddressOnce(c->target);
+        const BoundExpression* sum = Own<BoundBinary>(c->syntax, target, c->op, c->value);
+        Emit<BoundExpressionStatement>(statement->syntax, Own<BoundAssignment>(c->syntax, target, sum));
+    }
+
+    const BoundExpression* EvaluateAddressOnce(const BoundExpression* target)
+    {
+        if (dynamic_cast<const BoundVariable*>(target)) return target;   // reading a variable twice has no side effects
+        if (auto* f = dynamic_cast<const BoundFieldAccess*>(target))
+            return Own<BoundFieldAccess>(f->syntax, EvaluateAddressOnce(f->receiver), f->field);
+        auto* d = dynamic_cast<const BoundUnary*>(target);
+        if (!d || d->op != UnaryOperatorKind::Dereference)
+            throw std::logic_error("the binder only allows variables, fields, and dereferences");
+        if (dynamic_cast<const BoundVariable*>(d->operand)) return target;
+        // *(any pointer expression): compute the pointer once, into a temporary.
+        const LocalSymbol* temp = Own<LocalSymbol>(std::format("temp_{}", ++labelCount_), d->syntax, d->operand->type, false);
+        Emit<BoundLet>(d->syntax, temp, d->operand);
+        return Own<BoundUnary>(d->syntax, UnaryOperatorKind::Dereference, Own<BoundVariable>(d->syntax, temp, temp->type), d->type);
+    }
+    ```
+
+=== "C#"
+
+    ```csharp
+    void LowerCompoundAssignment(BoundExpressionStatement statement, BoundCompoundAssignment c)
+    {
+        BoundExpression target = EvaluateAddressOnce(c.Target);
+        var sum = new BoundBinary(c.Syntax, target, c.Operator, c.Value);
+        _output.Add(new BoundExpressionStatement(statement.Syntax, new BoundAssignment(c.Syntax, target, sum)));
+    }
+
+    BoundExpression EvaluateAddressOnce(BoundExpression target)
+    {
+        switch (target)
+        {
+            case BoundVariable:                                         // reading a variable twice has no side effects
+            case BoundUnary { Operator: UnaryOperatorKind.Dereference, Operand: BoundVariable }:
+                return target;
+            case BoundFieldAccess f:
+                return new BoundFieldAccess(f.Syntax, EvaluateAddressOnce(f.Receiver), f.Field);
+            case BoundUnary { Operator: UnaryOperatorKind.Dereference } d:          // *(any pointer expression)
+                var temp = new LocalSymbol($"temp_{++_labelCount}", d.Syntax, d.Operand.Type, isMutable: false);
+                _output.Add(new BoundLet(d.Syntax, temp, d.Operand));               // the pointer, computed once
+                return new BoundUnary(d.Syntax, UnaryOperatorKind.Dereference, new BoundVariable(d.Syntax, temp), d.Type);
+            default:
+                throw new InvalidOperationException("the binder only allows variables, fields, and dereferences");
+        }
+    }
+    ```
+
+A plain variable, or a field of one, can safely appear twice: reading it has no side effects.
 
 ### The struct literal ambiguity
 

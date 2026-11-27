@@ -267,7 +267,7 @@ The same pattern covers everything else:
 | call `f(a, b)` | `f` is a function; argument count matches; each argument converts to its parameter type; result is the return type |
 | `a.x` | `a` is a struct (or a pointer to one, if `.` auto-dereferences); `x` is one of its fields |
 | `Vec2 { x: .., y: .. }` | every field given exactly once; each value converts to the field's type |
-| `x = v` | `x` is assignable (a mutable local, a field of one, or `*p`); `v` converts to its type |
+| `x = v`, `x += v` | only as a whole statement; `x` is assignable (a mutable local, a field of one, or `*p`); `v` converts to its type; for `+=`, `+` exists for `x`'s type. See [assignment](parser.md#assignment) |
 | `return v` | `v` converts to the function's return type; `return;` only in a `void` function |
 | `e as T` | the conversion from `e`'s type to `T` is an allowed explicit one |
 
